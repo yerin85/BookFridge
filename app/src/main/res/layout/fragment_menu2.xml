@@ -16,6 +16,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:entries="@array/search_list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/editText"
         app:layout_constraintHorizontal_bias="0.888"
@@ -25,24 +26,31 @@
 
     <EditText
         android:id="@+id/editText"
-        android:layout_width="245dp"
+        android:layout_width="0dp"
         android:layout_height="38dp"
+        android:layout_marginStart="102dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="9dp"
         android:layout_marginBottom="8dp"
         android:hint="입력하세요"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.031"
-        tools:layout_editor_absoluteX="102dp" />
+        app:layout_constraintVertical_bias="0.031" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="232dp"
+        android:layout_marginBottom="8dp"
         android:text="여기는 Search 화면"
         android:textSize="50dp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="232dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
         android:id="@+id/imageButton"
@@ -50,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="7dp"
         android:layout_marginBottom="8dp"
         android:src="@drawable/ic_search_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"

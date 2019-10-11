@@ -5,7 +5,6 @@ import android.os.Bundle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 
@@ -14,14 +13,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.View;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManger;
     private Animation fab_open, fab_close;
     private Boolean isFabOpen = false;
     private FloatingActionButton fab1, fab2, fab3, fab4;
-
-
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -74,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 anim();
             }
         });
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
