@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="search_list">
+    <string-array name="search_type_list">
+        <item>제목+저자</item>
         <item>제목</item>
         <item>저자</item>
         <item>출판사</item>
