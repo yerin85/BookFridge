@@ -7,7 +7,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_login">로그인 창</string>
+    <string name="title_activity_login">bookFridge</string>
     <string name="prompt_email">ID</string>
     <string name="prompt_password">PW</string>
     <string name="action_sign_in">Sign in or register</string>

@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,13 +17,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class menu1 extends Fragment {
+public class HomeMenu extends Fragment {
 
     private Animation fab_open, fab_close;
     private FloatingActionButton fab, fab1, fab2, fab3, fab4;
     private Boolean isFabOpen = false;
 
-    public menu1() {
+    public HomeMenu() {
         // Required empty public constructor
 
     }
@@ -36,7 +37,7 @@ public class menu1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_menu1, container, false);
+        View v= inflater.inflate(R.layout.fragment_home_menu, container, false);
 
         fab_open = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fab_close);
@@ -51,7 +52,7 @@ public class menu1 extends Fragment {
 
             @Override
             public void onClick(View view) {
-                getFragmentManager().beginTransaction().replace(R.id.frame_layout, new menu2()).commit();
+                startActivity(new Intent(getActivity(), SearchMenu.class));
                 anim();
             }
         });

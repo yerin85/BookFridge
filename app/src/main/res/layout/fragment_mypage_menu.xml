@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".menu3">
+    tools:context=".MypageMenu">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="서재ㅎㅎ"
+        android:text="마이페이지"
         android:textSize="50dp"/>
 
 </FrameLayout>

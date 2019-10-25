@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class menu4 extends Fragment {
+public class LibraryMenu extends Fragment {
 
 
-    public menu4() {
+    public LibraryMenu() {
         // Required empty public constructor
     }
 
@@ -25,7 +25,7 @@ public class menu4 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_menu4, container, false);
+        return inflater.inflate(R.layout.fragment_library_menu, container, false);
     }
 
 }
