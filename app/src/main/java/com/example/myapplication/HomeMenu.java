@@ -11,8 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+//바코드
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android .IntentResult;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +58,28 @@ public class HomeMenu extends Fragment {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(), SearchMenu.class));
+                anim();
+            }
+        });
+
+        fab3.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),"OCR Test",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), OcrActivity.class);
+                startActivity(intent);
+                anim();
+            }
+        });
+
+        fab4.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                new IntentIntegrator(getActivity()).initiateScan();
+
+                Toast.makeText(getActivity(),"Camera Test",Toast.LENGTH_SHORT).show();
                 anim();
             }
         });
@@ -107,6 +134,7 @@ public class HomeMenu extends Fragment {
             isFabOpen = true;
         }
     }
+
 
 
 }

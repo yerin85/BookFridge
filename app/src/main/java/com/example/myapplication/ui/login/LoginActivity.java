@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getHashKey();
+      //  getHashKey();
         setContentView(R.layout.activity_login);
 
         btn_custom_login = (Button) findViewById(R.id.btn_custom_login);

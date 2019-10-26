@@ -151,7 +151,7 @@ public class SearchMenu extends AppCompatActivity {
             if (view == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.search_item, parent, false);
-            }
+        }
 
             TextView title = view.findViewById(R.id.book_title);
             TextView description = view.findViewById(R.id.book_description);
