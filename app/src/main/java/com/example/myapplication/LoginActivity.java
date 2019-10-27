@@ -33,17 +33,26 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //getHashKey();
         setContentView(R.layout.activity_login);
-
+        sessionCallback = new SessionCallback();
+        Session session = Session.getCurrentSession();
+        session.addCallback(sessionCallback);
+        Session.getCurrentSession().checkAndImplicitOpen();
         btn_custom_login = (Button) findViewById(R.id.btn_custom_login);
         btn_custom_login.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
-                Session session = Session.getCurrentSession();
-                session.addCallback(new SessionCallback());
+
                 session.open(AuthType.KAKAO_LOGIN_ALL, LoginActivity.this);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) { //카카오 로그인 액티비티에서 넘어온 경우일 때 실행
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
     }
 
     @Override
@@ -75,6 +84,9 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(MeV2Response result) {
+                    String nickname = result.getNickname();
+                    Toast.makeText(getApplicationContext(),nickname +"님 안녕하세요",Toast.LENGTH_SHORT).show();
+
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("name", result.getNickname());
                     intent.putExtra("profile", result.getProfileImagePath());
