@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.net.URLEncoder;
+
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
+
 import org.xml.sax.helpers.ParserAdapter;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.Attributes;
@@ -19,10 +21,11 @@ class Item {
     public String author = "";
     public String cover = "";
     public String publisher = "";
+    public String itemId = "";
 }
 
 class AladdinOpenAPIHandler extends DefaultHandler {
-    public List<Item> Items;
+    public ArrayList<Item> Items;
     private Item currentItem;
     private boolean inItemElement = false;
     private String tempValue;
@@ -45,6 +48,8 @@ class AladdinOpenAPIHandler extends DefaultHandler {
         } else if (localName.equals("cover")) {
             tempValue = "";
         } else if (localName.equals("publisher")) {
+            tempValue = "";
+        } else if (localName.equals("itemId")) {
             tempValue = "";
         }
     }
@@ -73,6 +78,8 @@ class AladdinOpenAPIHandler extends DefaultHandler {
                 currentItem.cover = tempValue;
             } else if (localName.equals("publisher")) {
                 currentItem.publisher = tempValue;
+            } else if (localName.equals("itemId")) {
+                currentItem.itemId = tempValue;
             }
         }
     }
@@ -95,6 +102,7 @@ public class AladdinOpenAPI {
         hm.put("Query", URLEncoder.encode(searchWord, "UTF-8"));
         hm.put("QueryType", queryType);
         hm.put("MaxResults", "10");
+        hm.put("Cover", "Big");
         hm.put("start", startPage);
         hm.put("SearchTarget", "Book");
         hm.put("output", "xml");
