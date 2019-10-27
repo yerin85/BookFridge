@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
-import java.util.List;
+import android.text.Html;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
@@ -15,17 +17,20 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-class Item {
+class Item implements Serializable {
     public String title = "";
     public String description = "";
     public String author = "";
     public String cover = "";
     public String publisher = "";
     public String itemId = "";
+    public String pubDate = "";
+    public String categoryName = "";
 }
 
 class AladdinOpenAPIHandler extends DefaultHandler {
     public ArrayList<Item> Items;
+    int totalResults = -1;
     private Item currentItem;
     private boolean inItemElement = false;
     private String tempValue;
@@ -51,6 +56,12 @@ class AladdinOpenAPIHandler extends DefaultHandler {
             tempValue = "";
         } else if (localName.equals("itemId")) {
             tempValue = "";
+        } else if (localName.equals("pubDate")) {
+            tempValue = "";
+        } else if (localName.equals("categoryName")) {
+            tempValue = "";
+        } else if (localName.equals("totalResults")) {
+            tempValue = "";
         }
     }
 
@@ -71,7 +82,7 @@ class AladdinOpenAPIHandler extends DefaultHandler {
             } else if (localName.equals("title")) {
                 currentItem.title = tempValue;
             } else if (localName.equals("description")) {
-                currentItem.description = tempValue;
+                currentItem.description = String.valueOf(Html.fromHtml(tempValue));
             } else if (localName.equals("author")) {
                 currentItem.author = tempValue;
             } else if (localName.equals("cover")) {
@@ -80,7 +91,14 @@ class AladdinOpenAPIHandler extends DefaultHandler {
                 currentItem.publisher = tempValue;
             } else if (localName.equals("itemId")) {
                 currentItem.itemId = tempValue;
+            } else if (localName.equals("pubDate")) {
+                currentItem.pubDate = tempValue;
+            } else if (localName.equals("categoryName")) {
+                currentItem.categoryName = tempValue;
             }
+        } else if (localName.equals("totalResults")) {
+            totalResults = Integer.parseInt(tempValue);
+
         }
     }
 

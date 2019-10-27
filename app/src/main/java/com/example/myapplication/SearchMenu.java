@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,11 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.AladdinOpenAPI;
@@ -28,13 +32,21 @@ public class SearchMenu extends AppCompatActivity {
 
     String query = "";
     String queryTarget = "";
-    Integer page;
+    Integer pageNum;
+    Integer totalPageNum;
+    int itemPosition;
 
     AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
+    ImageButton searchButton;
     InputMethodManager imm;
+    Button nextButton;
+    Button prevButton;
+    TextView totalPage;
+    TextView currnetPage;
+    LinearLayout pageLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +60,36 @@ public class SearchMenu extends AppCompatActivity {
         spinner.setAdapter(adapter);
 
         //search button
-        ImageButton searchButton = findViewById(R.id.search_button);
+        searchButton = findViewById(R.id.search_button);
+        nextButton = findViewById(R.id.next_button);
+        prevButton = findViewById(R.id.prev_button);
+        totalPage = findViewById(R.id.total_page);
+        currnetPage = findViewById(R.id.current_page);
+        pageLayout = findViewById(R.id.page_layout);
 
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(pageNum<totalPageNum){
+                    pageNum++;
+                    SearchTask search = new SearchTask();
+                    search.execute();
+                }
+            }
+        });
+
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(pageNum>0){
+                    if(pageNum!=1){
+                        pageNum--;
+                    }
+                    SearchTask search = new SearchTask();
+                    search.execute();
+                }
+            }
+        });
 
         recyclerView = findViewById(R.id.search_list);
         recyclerView.setHasFixedSize(true);
@@ -57,7 +97,6 @@ public class SearchMenu extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         imm = (InputMethodManager) getSystemService((Context.INPUT_METHOD_SERVICE));
-
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +120,7 @@ public class SearchMenu extends AppCompatActivity {
                         break;
                 }
                 query = editText.getText().toString();
-                page = 1;
+                pageNum = 1;
 
                 SearchTask search = new SearchTask();
                 search.execute();
@@ -103,7 +142,7 @@ public class SearchMenu extends AppCompatActivity {
         protected ArrayList<Item> doInBackground(Void... v) {
 
             try {
-                url = AladdinOpenAPI.GetUrl(queryTarget, query, page.toString());
+                url = AladdinOpenAPI.GetUrl(queryTarget, query, pageNum.toString());
                 api.Items.clear();
                 api.parseXml(url);
             } catch (Exception e) {
@@ -121,6 +160,14 @@ public class SearchMenu extends AppCompatActivity {
         protected void onPostExecute(ArrayList<Item> items) {
             adapter = new MyAdapter(items);
             recyclerView.setAdapter(adapter);
+            if (api.totalResults == 0) {
+                Toast.makeText(getApplicationContext(), "검색 결과가 없습니다", Toast.LENGTH_LONG).show();
+            } else {
+                totalPageNum = (api.totalResults - 1) / 10 + 1;
+                totalPage.setText(totalPageNum.toString());
+                currnetPage.setText(pageNum.toString());
+                pageLayout.setVisibility(View.VISIBLE);
+            }
         }
 
     }
@@ -135,11 +182,12 @@ public class SearchMenu extends AppCompatActivity {
 
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            public TextView title;
-            public TextView description;
-            public TextView author;
-            public ImageView cover;
-            public TextView publisher;
+            TextView title;
+            TextView description;
+            TextView author;
+            ImageView cover;
+            TextView publisher;
+            Button button;
 
             public MyViewHolder(View view) {
                 super(view);
@@ -148,12 +196,25 @@ public class SearchMenu extends AppCompatActivity {
                 author = view.findViewById(R.id.book_author);
                 cover = view.findViewById(R.id.book_cover);
                 publisher = view.findViewById(R.id.book_publisher);
+                button = view.findViewById(R.id.book_detail);
+
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(SearchMenu.this, BookDetail.class);
+                        Item item = items.get(getAdapterPosition());
+                        intent.putExtra("bookItem", item);
+                        startActivity(intent);
+                    }
+                });
             }
         }
+
         @NonNull
         @Override
-        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i){
-            View holderView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.search_item,viewGroup,false);
+        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
+            View holderView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.search_item, viewGroup, false);
             MyViewHolder myViewHolder = new MyViewHolder((holderView));
             return myViewHolder;
         }
@@ -169,7 +230,7 @@ public class SearchMenu extends AppCompatActivity {
         }
 
         @Override
-        public int getItemCount(){
+        public int getItemCount() {
             return items.size();
         }
     }
