@@ -76,18 +76,21 @@ public class MypageMenu extends Fragment {
                                     @Override
                                     public void onSessionClosed(ErrorResult errorResult) {
                                         Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(intent);
                                     }
 
                                     @Override
                                     public void onNotSignedUp() {
                                         Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(intent);
                                     }
 
                                     @Override
                                     public void onSuccess(Long result) {
                                         Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(intent);
                                     }
                                 });
