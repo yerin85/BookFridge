@@ -2,10 +2,13 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,11 +33,10 @@ import java.util.ArrayList;
 
 public class SearchMenu extends AppCompatActivity {
 
-    String query = "";
-    String queryTarget = "";
-    Integer pageNum;
-    Integer totalPageNum;
-    int itemPosition;
+    String query = "";//검색어
+    String queryTarget = "";//검색 타입
+    Integer pageNum;//현재 보여지는 페이지 번호
+    Integer totalPageNum;//전체 페이지 수
 
     AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
     RecyclerView recyclerView;
@@ -47,6 +49,8 @@ public class SearchMenu extends AppCompatActivity {
     TextView totalPage;
     TextView currnetPage;
     LinearLayout pageLayout;
+    Button libButton;
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,7 @@ public class SearchMenu extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        //search button
+        //buttons
         searchButton = findViewById(R.id.search_button);
         nextButton = findViewById(R.id.next_button);
         prevButton = findViewById(R.id.prev_button);
@@ -67,6 +71,7 @@ public class SearchMenu extends AppCompatActivity {
         currnetPage = findViewById(R.id.current_page);
         pageLayout = findViewById(R.id.page_layout);
 
+        //다음 페이지로 넘기기
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +83,7 @@ public class SearchMenu extends AppCompatActivity {
             }
         });
 
+        //이전 페이지로 넘기기
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +110,10 @@ public class SearchMenu extends AppCompatActivity {
                 EditText editText = findViewById(R.id.search_input);
                 Spinner spinner = findViewById(R.id.search_type);
                 queryTarget = spinner.getSelectedItem().toString();
+
+                //키보드 내리기
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
                 switch (queryTarget) {
                     case "제목+저자":
                         queryTarget = "Keyword";
@@ -122,6 +131,7 @@ public class SearchMenu extends AppCompatActivity {
                 query = editText.getText().toString();
                 pageNum = 1;
 
+                //검색 수행
                 SearchTask search = new SearchTask();
                 search.execute();
             }
@@ -197,7 +207,7 @@ public class SearchMenu extends AppCompatActivity {
                 cover = view.findViewById(R.id.book_cover);
                 publisher = view.findViewById(R.id.book_publisher);
                 button = view.findViewById(R.id.book_detail);
-
+                libButton = view.findViewById(R.id.add_library);
 
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -206,6 +216,37 @@ public class SearchMenu extends AppCompatActivity {
                         Item item = items.get(getAdapterPosition());
                         intent.putExtra("bookItem", item);
                         startActivity(intent);
+                    }
+                });
+
+                libButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        /*
+                        * 여기 라이브러리에 추가하는 코드 작성
+                        *
+                        *
+                        *
+                        * */
+                        new AlertDialog.Builder(SearchMenu.this)
+                                .setMessage("라이브러리에 추가되었습니다")
+                                .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        /*fragment로 이동시키는 코드
+                                        *
+                                        *
+                                        *
+                                        *
+                                        * */
+                                    }
+                                })
+                                .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }).show();
                     }
                 });
             }
