@@ -345,7 +345,7 @@ public class OcrActivity extends AppCompatActivity {
         android.app.AlertDialog alertDialog;
         Context mContext = GlobalApplication.getContext();
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.ocr_list, null);
+//        View view = inflater.inflate(R.layout.ocr_list, null);
         ListView listView = view.findViewById(R.id.list);
         @Override
         protected void onPreExecute() {
