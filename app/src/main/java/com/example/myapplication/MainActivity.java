@@ -32,7 +32,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManger;
 
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -70,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     }
+
 
     //바코드 결과 함수
     @Override
