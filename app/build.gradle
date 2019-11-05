@@ -46,11 +46,17 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0-rc01'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     api fileTree(dir: 'libs', include: ['*.jar'])
     api group: project.KAKAO_SDK_GROUP, name: 'usermgmt', version: project.KAKAO_SDK_VERSION
+    //retrofit API- DB JSON 관련
+    implementation 'com.squareup.retrofit2:retrofit:2.6.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
     //바코드 zxing
     implementation 'com.journeyapps:zxing-android-embedded:3.5.0'
     implementation 'com.google.zxing:core:3.2.1'

@@ -61,25 +61,22 @@ public class HomeMenu extends Fragment {
                 anim();
             }
         });
-
+        //OCR버튼
         fab3.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(),"OCR Test",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), OcrActivity.class);
                 startActivity(intent);
                 anim();
             }
         });
-
+        //바코드 버튼
         fab4.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 new IntentIntegrator(getActivity()).initiateScan();
-
-                Toast.makeText(getActivity(),"Camera Test",Toast.LENGTH_SHORT).show();
                 anim();
             }
         });

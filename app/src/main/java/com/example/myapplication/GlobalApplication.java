@@ -13,10 +13,21 @@ public class GlobalApplication extends Application {
 
     private static volatile GlobalApplication instance = null;
 
+    private static Application sApplication;
+
+    public static Application getApplication() {
+        return sApplication;
+    }
+
+    public static Context getContext() {
+        return getApplication().getApplicationContext();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
+        sApplication = this;
 
         KakaoSDK.init(new KakaoSDKAdapter());
     }

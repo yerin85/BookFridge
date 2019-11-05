@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import com.bumptech.glide.Glide;
+import com.example.myapplication.GlobalApplication;
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,7 +19,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +66,7 @@ public class OcrActivity extends AppCompatActivity {
     private static final int GALLERY_IMAGE_REQUEST = 1;
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
-
+    public static String storeMessage = null;
     private TextView mImageDetails;
     private ImageView mMainImage;
 
@@ -262,7 +270,9 @@ public class OcrActivity extends AppCompatActivity {
             if (activity != null && !activity.isFinishing()) {
                 TextView imageDetail = activity.findViewById(R.id.image_details);
                 imageDetail.setText(result);
+                storeMessage = result;
             }
+
         }
     }
 
@@ -274,6 +284,17 @@ public class OcrActivity extends AppCompatActivity {
         try {
             AsyncTask<Object, Void, String> labelDetectionTask = new LableDetectionTask(this, prepareAnnotationRequest(bitmap));
             labelDetectionTask.execute();
+            /* 알라딘 적용 예정
+            if(storeMessage!=null){
+                String books[] = storeMessage.split("\n");
+                SearchSimple simple = new SearchSimple();
+                for (String book : books) {
+                    simple.query = book;
+                    simple.queryTarget = "Title";
+                    simple.page = 1;
+                    simple.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }*/
         } catch (IOException e) {
             Log.d(TAG, "failed to make API request because of other IOException " +
                     e.getMessage());
@@ -301,18 +322,131 @@ public class OcrActivity extends AppCompatActivity {
     }
 
     private static String convertResponseToString(BatchAnnotateImagesResponse response) {
-        StringBuilder message = new StringBuilder("I found these things:\n\n");
-
+        String message;
         List<EntityAnnotation> labels = response.getResponses().get(0).getTextAnnotations();
         if (labels != null) {
-            for (EntityAnnotation label : labels) {
-                message.append(String.format(Locale.US, "%.3f: %s", label.getScore(), label.getDescription()));
-                message.append("\n");
-            }
+            message = labels.get(0).getDescription();
         } else {
-            message.append("nothing");
+            message = "nothing";
+        }
+        return message;
+
+    }
+
+    public static class SearchSimple extends AsyncTask<Void, Void, List<Item>> {
+        AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
+        String queryTarget;
+        String query;
+        Integer page;
+        String url = "";
+        MyAdapter myAdapter = new MyAdapter();
+
+        android.app.AlertDialog.Builder builder;
+        android.app.AlertDialog alertDialog;
+        Context mContext = GlobalApplication.getContext();
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.ocr_list, null);
+        ListView listView = view.findViewById(R.id.list);
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
 
-        return message.toString();
+        @Override
+        protected List<Item> doInBackground(Void... v) {
+
+            try {
+                url = AladdinOpenAPI.GetUrl(queryTarget, query, page.toString());
+                api.parseXml(url);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return api.Items;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... v) {
+        }
+
+        @Override
+        protected void onPostExecute(List<Item> items) {
+            Toast.makeText(GlobalApplication.getContext(),"why",Toast.LENGTH_SHORT).show();
+            myAdapter.items.clear();
+            myAdapter.notifyDataSetChanged();
+            for(Item item : items){
+                myAdapter.addItem(item.title, item.description,item.author, item.cover,item.publisher);
+            }
+            listView.setAdapter(null);
+            listView.setAdapter(myAdapter);
+
+            builder = new android.app.AlertDialog.Builder(mContext);
+            builder.setView(view);
+
+            alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
+
+    public static class MyAdapter extends BaseAdapter {
+
+        private ArrayList<Item> items = new ArrayList<>();
+
+        @Override
+        public int getCount() {
+            return items.size();
+        }
+
+        @Override
+        public Item getItem(int position) {
+            return items.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup parent) {
+
+            Context context = parent.getContext();
+
+            if (view == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.search_item, parent, false);
+            }
+
+            TextView title = view.findViewById(R.id.book_title);
+            TextView description = view.findViewById(R.id.book_description);
+            TextView author = view.findViewById(R.id.book_author);
+            ImageView cover = view.findViewById(R.id.book_cover);
+            TextView publisher = view.findViewById(R.id.book_publisher);
+
+            Item item = getItem(position);
+
+            title.setText(item.title);
+            description.setText(item.description);
+            author.setText(item.author);
+            Glide.with(context).load(item.cover).into(cover);
+            publisher.setText(item.publisher);
+
+            /* (위젯에 대한 이벤트리스너를 지정하고 싶다면 여기에 작성하면된다..)  */
+
+            return view;
+        }
+
+        public void addItem(String title, String description, String author, String cover, String publisher) {
+            Item item = new Item();
+
+            item.title= title;
+            item.description=description;
+            item.author=author;
+            item.cover= cover;
+            item.publisher=publisher;
+
+            items.add(item);
+        }
+    }
+
 }
