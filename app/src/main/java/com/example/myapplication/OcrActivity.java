@@ -332,7 +332,8 @@ public class OcrActivity extends AppCompatActivity {
         return message;
 
     }
-
+}
+/*
     public static class SearchSimple extends AsyncTask<Void, Void, List<Item>> {
         AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
         String queryTarget;
@@ -346,7 +347,7 @@ public class OcrActivity extends AppCompatActivity {
         Context mContext = GlobalApplication.getContext();
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 //        View view = inflater.inflate(R.layout.ocr_list, null);
-        ListView listView = view.findViewById(R.id.list);
+//        ListView listView = view.findViewById(R.id.list);
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -431,7 +432,6 @@ public class OcrActivity extends AppCompatActivity {
             Glide.with(context).load(item.cover).into(cover);
             publisher.setText(item.publisher);
 
-            /* (위젯에 대한 이벤트리스너를 지정하고 싶다면 여기에 작성하면된다..)  */
 
             return view;
         }
@@ -448,5 +448,4 @@ public class OcrActivity extends AppCompatActivity {
             items.add(item);
         }
     }
-
-}
+*/
