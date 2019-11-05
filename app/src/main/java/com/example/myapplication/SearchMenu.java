@@ -75,7 +75,7 @@ public class SearchMenu extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(pageNum<totalPageNum){
+                if (pageNum < totalPageNum) {
                     pageNum++;
                     SearchTask search = new SearchTask();
                     search.execute();
@@ -87,8 +87,8 @@ public class SearchMenu extends AppCompatActivity {
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(pageNum>0){
-                    if(pageNum!=1){
+                if (pageNum > 0) {
+                    if (pageNum != 1) {
                         pageNum--;
                     }
                     SearchTask search = new SearchTask();
@@ -223,22 +223,22 @@ public class SearchMenu extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         /*
-                        * 여기 라이브러리에 추가하는 코드 작성
-                        *
-                        *
-                        *
-                        * */
+                         * 여기 라이브러리에 추가하는 코드 작성
+                         *
+                         *
+                         *
+                         * */
                         new AlertDialog.Builder(SearchMenu.this)
                                 .setMessage("라이브러리에 추가되었습니다")
                                 .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         /*fragment로 이동시키는 코드
-                                        *
-                                        *
-                                        *
-                                        *
-                                        * */
+                                         *
+                                         *
+                                         *
+                                         *
+                                         * */
                                     }
                                 })
                                 .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
@@ -273,6 +273,43 @@ public class SearchMenu extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return items.size();
+        }
+    }
+
+    public String categorizeBooks(String genre) {
+        if (genre.contains("만화")) {
+            return "comics";
+        } else if (genre.contains("소설")) {
+            if (genre.contains("과학")) {
+                return "sf";
+            } else if (genre.contains("추리")) {
+                return "mystery";
+            } else if (genre.contains("호러")) {
+                return "horror";
+            }else if(genre.contains("고전")){
+                return "classical";
+            }else if(genre.contains("액션")){
+                return "action";
+            }else if(genre.contains("판타지")){
+                return "fantasy";
+            }
+            else if(genre.contains(">희곡")){
+                return "theatrical";
+            }else if(genre.contains(">에세이")){
+                return "essay";
+            }
+            else if(genre.contains(">시")){
+                return "poem";
+            }
+            else if(genre.contains("무협")){
+                return "martialArt";
+            }
+            else {
+                return "novel";
+            }
+        }
+        else{
+            return "others";
         }
     }
 }
