@@ -10,10 +10,10 @@ public class WishlistResponse {
     private String isbn;
 
     @SerializedName("title")
-    String title;
+    private String title;
 
     @SerializedName("cover")
-    String cover;
+    private String cover;
 
     public String getUserId() {
         return userId;

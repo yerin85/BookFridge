@@ -25,10 +25,10 @@ public class LibraryResponse {
     private String genre;
 
     @SerializedName("title")
-    String title;
+    private String title;
 
     @SerializedName("cover")
-    String cover;
+    private String cover;
 
     public String getUserId() {
         return userId;

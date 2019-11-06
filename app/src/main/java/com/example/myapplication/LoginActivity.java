@@ -13,6 +13,7 @@ import android.widget.Toast;
 import android.content.Intent;
 
 import com.example.myapplication.data.BasicResponse;
+import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserPrivateData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
@@ -113,7 +114,26 @@ public class LoginActivity extends AppCompatActivity {
                     service= RetrofitClient.getClient().create(ServiceApi.class);
 
                     //priv에 받은 값(공개는0 비공개는1)을 string형태로 넣어야 합니다
-                    service.postUserPrivate(new UserPrivateData(userId,"1")).enqueue(new Callback<BasicResponse>() {
+                    service.createUserPrivate(new UserPrivateData(userId,"1")).enqueue(new Callback<BasicResponse>() {
+                        @Override
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse result = response.body();
+                            if(result.getCode()!=200){//오류
+                                Toast.makeText(LoginActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                                //종료
+                                finish();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            Toast.makeText(LoginActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                            //종료
+                            finish();
+                        }
+                    });
+
+                    service.createMyPage(new MyPageData(userId,"")).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();

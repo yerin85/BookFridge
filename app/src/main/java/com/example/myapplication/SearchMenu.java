@@ -239,7 +239,7 @@ public class SearchMenu extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Item item = items.get(getAdapterPosition());
-                        service.postLibrary(new LibraryData(userInfo.userId,item.isbn,0,"",getDateString(),getDateString(),categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                        service.saveLibrary(new LibraryData(userInfo.userId,item.isbn,0,"",getDateString(),getDateString(),categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result= response.body();
@@ -283,7 +283,7 @@ public class SearchMenu extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Item item = items.get(getAdapterPosition());
-                        service.postWishlist(new WishlistData(userInfo.userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                        service.saveWishlist(new WishlistData(userInfo.userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result = response.body();
