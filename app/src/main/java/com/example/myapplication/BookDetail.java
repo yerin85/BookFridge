@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryData;
+import com.example.myapplication.data.WishlistData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 
@@ -28,6 +29,7 @@ import static com.example.myapplication.data.Functions.getDateString;
 
 public class BookDetail extends AppCompatActivity {
     Button libButton;
+    Button wishButton;
     String userId;
     ServiceApi service;
 
@@ -44,6 +46,7 @@ public class BookDetail extends AppCompatActivity {
         displayDetails(item);
 
         libButton = findViewById(R.id.detail_add_library);
+        wishButton=findViewById(R.id.detail_wishlist);
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
 
@@ -61,6 +64,46 @@ public class BookDetail extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             /*fragment로 이동시키는 코드
+                                             *
+                                             *
+                                             *
+                                             *
+                                             * */
+                                        }
+                                    })
+                                    .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    }).show();
+                        } else {
+                            Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                        Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        wishButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                service.postWishlist(new WishlistData(userId, item.isbn)).enqueue(new Callback<BasicResponse>() {
+                    @Override
+                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                        BasicResponse result = response.body();
+                        if (result.getCode() == 200) {
+                            new AlertDialog.Builder(BookDetail.this)
+                                    .setMessage(result.getMessage())
+                                    .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            /*wishlist fragment로 이동시키는 코드
                                              *
                                              *
                                              *
