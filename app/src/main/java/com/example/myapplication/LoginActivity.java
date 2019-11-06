@@ -15,6 +15,7 @@ import android.content.Intent;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserPrivateData;
+import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.kakao.auth.ApiErrorCode;
@@ -113,6 +114,26 @@ public class LoginActivity extends AppCompatActivity {
                     String imagePath = result.getProfileImagePath();
                     service= RetrofitClient.getClient().create(ServiceApi.class);
 
+                    //userProfile 저장
+                    service.createUserProfile(new UserProfileData(userId,nickname,imagePath)).enqueue(new Callback<BasicResponse>() {
+                        @Override
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse result = response.body();
+                            if(result.getCode()!=200){//오류
+                                Toast.makeText(LoginActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                                //종료
+                                finish();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            Toast.makeText(LoginActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                            //종료
+                            finish();
+                        }
+                    });
+
                     //priv에 받은 값(공개는0 비공개는1)을 string형태로 넣어야 합니다
                     service.createUserPrivate(new UserPrivateData(userId,"1")).enqueue(new Callback<BasicResponse>() {
                         @Override
@@ -133,6 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
 
+                    //myPage table entry 생성
                     service.createMyPage(userId).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {

@@ -12,6 +12,7 @@ import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserPrivateData;
+import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.data.WishlistData;
 import com.example.myapplication.data.WishlistResponse;
 
@@ -20,6 +21,9 @@ import java.util.ArrayList;
 public interface ServiceApi {
     @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=JS&Version=20131101")
     Call<NewItemResponse> listCheck(@Query("searchCategoryId") String searchCategoryId);
+
+    @POST("/user/createUserProfile")
+    Call<BasicResponse> createUserProfile(@Body UserProfileData data);
 
     @POST("/user/saveLibrary")
     Call<BasicResponse> saveLibrary(@Body LibraryData data);
