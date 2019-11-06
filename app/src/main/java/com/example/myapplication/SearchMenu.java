@@ -181,7 +181,7 @@ public class SearchMenu extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<Item> items) {
-            adapter = new MyAdapter(items);
+            adapter = new SearchAdapter(items);
             recyclerView.setAdapter(adapter);
             if (api.totalResults == 0) {
                 Toast.makeText(getApplicationContext(), "검색 결과가 없습니다", Toast.LENGTH_LONG).show();
@@ -195,16 +195,16 @@ public class SearchMenu extends AppCompatActivity {
 
     }
 
-    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+    public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
         private ArrayList<Item> items;
 
-        public MyAdapter(ArrayList<Item> items) {
+        public SearchAdapter(ArrayList<Item> items) {
             this.items = items;
         }
 
 
-        public class MyViewHolder extends RecyclerView.ViewHolder {
+        public class SearchViewHolder extends RecyclerView.ViewHolder {
             TextView title;
             TextView description;
             TextView author;
@@ -212,7 +212,7 @@ public class SearchMenu extends AppCompatActivity {
             TextView publisher;
             Button button;
 
-            public MyViewHolder(View view) {
+            public SearchViewHolder(View view) {
                 super(view);
                 title = view.findViewById(R.id.book_title);
                 description = view.findViewById(R.id.book_description);
@@ -338,14 +338,14 @@ public class SearchMenu extends AppCompatActivity {
 
         @NonNull
         @Override
-        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
+        public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
             View holderView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.search_item, viewGroup, false);
-            MyViewHolder myViewHolder = new MyViewHolder((holderView));
-            return myViewHolder;
+            SearchViewHolder viewHolder = new SearchViewHolder((holderView));
+            return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
             Item item = items.get(position);
             holder.title.setText(item.title);
             holder.description.setText(item.description);

@@ -2,7 +2,9 @@ package com.example.myapplication.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LibraryResponse {
+import java.io.Serializable;
+
+public class LibraryResponse implements Serializable {
     @SerializedName("userId")
     private String userId;
 
