@@ -32,7 +32,8 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private FragmentManager fragmentManger;
+    private FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
     UserInfo userInfo;
 
 
@@ -41,27 +42,27 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            fragmentManger=getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManger.beginTransaction();
+            fragmentManager=getFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
                     fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_library:
                     fragmentTransaction.replace(R.id.frame_layout,LibraryMenu.newInstance(userInfo));
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
                     fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_mypage:
                     fragmentTransaction.replace(R.id.frame_layout,MypageMenu.newInstance(userInfo));
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new MypageMenu());
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new MypageMenu());
                     fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_setting:
                     fragmentTransaction.replace(R.id.frame_layout,SettingMenu.newInstance(userInfo));
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new SettingMenu());
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new SettingMenu());
                     fragmentTransaction.commit();
                     return true;
             }
@@ -81,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        fragmentManger=getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManger.beginTransaction();
+        fragmentManager=getFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
-        fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
+        fragmentManager.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
         fragmentTransaction.commit();
     }
 
