@@ -28,17 +28,27 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.AladdinOpenAPI;
+import com.example.myapplication.data.*;
+import com.example.myapplication.network.*;
 
 import java.util.ArrayList;
 
-public class SearchMenu extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import static com.example.myapplication.data.Functions.categorizeBooks;
+import static com.example.myapplication.data.Functions.getDateString;
+
+public class SearchMenu extends AppCompatActivity {
     String query = "";//검색어
     String queryTarget = "";//검색 타입
     Integer pageNum;//현재 보여지는 페이지 번호
     Integer totalPageNum;//전체 페이지 수
+    String userId;
 
     AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
+    ServiceApi service;
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
@@ -50,12 +60,14 @@ public class SearchMenu extends AppCompatActivity {
     TextView currnetPage;
     LinearLayout pageLayout;
     Button libButton;
-    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_menu);
+
+        Intent intent = getIntent();
+        userId = intent.getExtras().getString("userId");
 
         //dropdown list
         Spinner spinner = findViewById(R.id.search_type);
@@ -208,6 +220,7 @@ public class SearchMenu extends AppCompatActivity {
                 publisher = view.findViewById(R.id.book_publisher);
                 button = view.findViewById(R.id.book_detail);
                 libButton = view.findViewById(R.id.add_library);
+                service= RetrofitClient.getClient().create(ServiceApi.class);
 
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -215,6 +228,7 @@ public class SearchMenu extends AppCompatActivity {
                         Intent intent = new Intent(SearchMenu.this, BookDetail.class);
                         Item item = items.get(getAdapterPosition());
                         intent.putExtra("bookItem", item);
+                        intent.putExtra("userId",userId);
                         startActivity(intent);
                     }
                 });
@@ -222,31 +236,43 @@ public class SearchMenu extends AppCompatActivity {
                 libButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        /*
-                         * 여기 라이브러리에 추가하는 코드 작성
-                         *
-                         *
-                         *
-                         * */
-                        new AlertDialog.Builder(SearchMenu.this)
-                                .setMessage("라이브러리에 추가되었습니다")
-                                .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        /*fragment로 이동시키는 코드
-                                         *
-                                         *
-                                         *
-                                         *
-                                         * */
-                                    }
-                                })
-                                .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                }).show();
+                        Item item = items.get(getAdapterPosition());
+                        service.postLibrary(new LibraryData(userId,item.isbn,0,"",getDateString(),getDateString(),categorizeBooks(item.categoryName))).enqueue(new Callback<BasicResponse>() {
+                            @Override
+                            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                BasicResponse result= response.body();
+                                if(result.getCode()==200){
+                                    new AlertDialog.Builder(SearchMenu.this)
+                                            .setMessage(result.getMessage())
+                                            .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    /*fragment로 이동시키는 코드
+                                                     *
+                                                     *
+                                                     *
+                                                     *
+                                                     * */
+                                                }
+                                            })
+                                            .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            }).show();
+                                }
+                                else{
+                                    Toast.makeText(SearchMenu.this,result.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                Toast.makeText(SearchMenu.this,t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                     }
                 });
             }
@@ -273,43 +299,6 @@ public class SearchMenu extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return items.size();
-        }
-    }
-
-    public String categorizeBooks(String genre) {
-        if (genre.contains("만화")) {
-            return "comics";
-        } else if (genre.contains("소설")) {
-            if (genre.contains("과학")) {
-                return "sf";
-            } else if (genre.contains("추리")) {
-                return "mystery";
-            } else if (genre.contains("호러")) {
-                return "horror";
-            }else if(genre.contains("고전")){
-                return "classical";
-            }else if(genre.contains("액션")){
-                return "action";
-            }else if(genre.contains("판타지")){
-                return "fantasy";
-            }
-            else if(genre.contains(">희곡")){
-                return "theatrical";
-            }else if(genre.contains(">에세이")){
-                return "essay";
-            }
-            else if(genre.contains(">시")){
-                return "poem";
-            }
-            else if(genre.contains("무협")){
-                return "martialArt";
-            }
-            else {
-                return "novel";
-            }
-        }
-        else{
-            return "others";
         }
     }
 }

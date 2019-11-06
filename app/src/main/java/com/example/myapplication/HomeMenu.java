@@ -26,6 +26,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -125,7 +127,12 @@ public class HomeMenu extends Fragment {
 
     public void newList(){
         String categoryId ="0";
-        service = RetrofitClient.getClient().create(ServiceApi.class);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.aladin.co.kr/ttb/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        service = retrofit.create(ServiceApi.class);
         service.listCheck(categoryId).enqueue(new Callback<NewItemResponse>() {
             @Override
             public void onResponse(Call<NewItemResponse> call, Response<NewItemResponse> response) {

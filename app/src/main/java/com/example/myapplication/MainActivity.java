@@ -31,6 +31,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManger;
+    UserInfo userInfo;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -42,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
                     fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu()).commit();
                     return true;
                 case R.id.navigation_search:
-                    startActivity(new Intent(getApplicationContext(), SearchMenu.class));
+                    Intent intent = new Intent(getApplicationContext(), SearchMenu.class);
+                    intent.putExtra("userId", userInfo.kakaoId);
+                    startActivity(intent);
                     return true;
                 case R.id.navigation_library:
                     fragmentManger.beginTransaction().replace(R.id.frame_layout, new LibraryMenu()).commit();
@@ -60,18 +63,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent = getIntent();
+        userInfo = (UserInfo)intent.getSerializableExtra("userInfo");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         fragmentManger = getSupportFragmentManager();
         fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu()).commit();
-
-
-
-
     }
-
 
     //바코드 결과 함수
     @Override
