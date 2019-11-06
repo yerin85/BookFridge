@@ -23,7 +23,7 @@ class Item implements Serializable {
     public String author = "";
     public String cover = "";
     public String publisher = "";
-    public String itemId = "";
+    public String isbn = "";
     public String pubDate = "";
     public String categoryName = "";
 }
@@ -54,7 +54,7 @@ class AladdinOpenAPIHandler extends DefaultHandler {
             tempValue = "";
         } else if (localName.equals("publisher")) {
             tempValue = "";
-        } else if (localName.equals("itemId")) {
+        } else if (localName.equals("isbn")) {
             tempValue = "";
         } else if (localName.equals("pubDate")) {
             tempValue = "";
@@ -89,8 +89,8 @@ class AladdinOpenAPIHandler extends DefaultHandler {
                 currentItem.cover = tempValue;
             } else if (localName.equals("publisher")) {
                 currentItem.publisher = tempValue;
-            } else if (localName.equals("itemId")) {
-                currentItem.itemId = tempValue;
+            } else if (localName.equals("isbn")) {
+                currentItem.isbn = tempValue;
             } else if (localName.equals("pubDate")) {
                 currentItem.pubDate = tempValue;
             } else if (localName.equals("categoryName")) {

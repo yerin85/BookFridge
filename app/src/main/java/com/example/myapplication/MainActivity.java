@@ -42,14 +42,14 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu()).commit();
                     return true;
+                case R.id.navigation_search:
+                    startActivity(new Intent(getApplicationContext(), SearchMenu.class));
+                    return true;
                 case R.id.navigation_library:
                     fragmentManger.beginTransaction().replace(R.id.frame_layout, new LibraryMenu()).commit();
                     return true;
                 case R.id.navigation_mypage:
                     fragmentManger.beginTransaction().replace(R.id.frame_layout, new MypageMenu()).commit();
-                    return true;
-                case R.id.navigation_setting:
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new SettingMenu()).commit();
                     return true;
             }
 
