@@ -2,15 +2,18 @@ package com.example.myapplication.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class UserGenreData {
+public class UserGenreResponse {
     @SerializedName("userId")
     String userId;
 
     @SerializedName("genre")
     String genre;
 
-    public UserGenreData(String userId, String genre){
-        this.userId=userId;
-        this.genre=genre;
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getGenre() {
+        return genre;
     }
 }

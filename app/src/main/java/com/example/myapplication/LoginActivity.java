@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
 
-                    service.createMyPage(new MyPageData(userId,"")).enqueue(new Callback<BasicResponse>() {
+                    service.createMyPage(userId).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();

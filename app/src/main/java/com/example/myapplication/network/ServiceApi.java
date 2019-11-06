@@ -13,6 +13,8 @@ import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserPrivateData;
 import com.example.myapplication.data.WishlistData;
 
+import java.util.List;
+
 public interface ServiceApi {
     @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=JS&Version=20131101")
     Call<NewItemResponse> listCheck(@Query("searchCategoryId") String searchCategoryId);
@@ -20,12 +22,25 @@ public interface ServiceApi {
     @POST("/user/saveLibrary")
     Call<BasicResponse> saveLibrary(@Body LibraryData data);
 
+    @GET("user/getLibrary")
+    Call<List<LibraryData>> getLibrary(@Query("userId") String userId);
+
     @POST("/user/saveWishlist")
     Call<BasicResponse> saveWishlist(@Body WishlistData data);
+
+    @GET("user/getWishlist")
+    Call<List<WishlistData>> getWishlist(@Query("userId") String userId);
 
     @POST("/user/createUserPrivate")
     Call<BasicResponse> createUserPrivate(@Body UserPrivateData data);
 
     @POST("/user/createMyPage")
-    Call<BasicResponse> createMyPage(@Body MyPageData data);
+    Call<BasicResponse> createMyPage(@Query("userId") String userId);
+
+    @POST("/user/updateUserPrivate")
+    Call<BasicResponse> updateUserPrivate(@Body UserPrivateData data);
+
+    @POST("/user/updateMyPage")
+    Call<BasicResponse> updateMyPage(@Body MyPageData data);
+
 }
