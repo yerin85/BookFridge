@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.AladdinOpenAPI;
 import com.example.myapplication.data.*;
 import com.example.myapplication.network.*;
+import com.kakao.usermgmt.response.model.User;
 
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class SearchMenu extends AppCompatActivity {
     String queryTarget = "";//검색 타입
     Integer pageNum;//현재 보여지는 페이지 번호
     Integer totalPageNum;//전체 페이지 수
-    String userId;
+    UserInfo userInfo;
 
     AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
     ServiceApi service;
@@ -67,8 +68,7 @@ public class SearchMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_menu);
 
-        Intent intent = getIntent();
-        userId = intent.getExtras().getString("userId");
+        userInfo = (UserInfo)getIntent().getSerializableExtra("userInfo");
 
         //dropdown list
         Spinner spinner = findViewById(R.id.search_type);
@@ -230,7 +230,7 @@ public class SearchMenu extends AppCompatActivity {
                         Intent intent = new Intent(SearchMenu.this, BookDetail.class);
                         Item item = items.get(getAdapterPosition());
                         intent.putExtra("bookItem", item);
-                        intent.putExtra("userId",userId);
+                        intent.putExtra("userId",userInfo.userId);
                         startActivity(intent);
                     }
                 });
@@ -239,7 +239,7 @@ public class SearchMenu extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Item item = items.get(getAdapterPosition());
-                        service.postLibrary(new LibraryData(userId,item.isbn,0,"",getDateString(),getDateString(),categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                        service.postLibrary(new LibraryData(userInfo.userId,item.isbn,0,"",getDateString(),getDateString(),categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result= response.body();
@@ -283,7 +283,7 @@ public class SearchMenu extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Item item = items.get(getAdapterPosition());
-                        service.postWishlist(new WishlistData(userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                        service.postWishlist(new WishlistData(userInfo.userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result = response.body();

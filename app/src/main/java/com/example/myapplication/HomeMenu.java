@@ -84,7 +84,9 @@ public class HomeMenu extends Fragment {
 
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), SearchMenu.class));
+                Intent intent = new Intent(getActivity(),SearchMenu.class);
+                intent.putExtra("userInfo",userInfo);
+                startActivity(intent);
                 anim();
             }
         });
