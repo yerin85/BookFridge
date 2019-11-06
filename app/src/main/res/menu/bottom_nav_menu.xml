@@ -6,10 +6,6 @@
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
 
-    <item
-        android:id="@+id/navigation_search"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/title_search" />
 
     <item
         android:id="@+id/navigation_library"
@@ -20,5 +16,11 @@
         android:id="@+id/navigation_mypage"
         android:icon="@drawable/ic_person_black_24dp"
         android:title="@string/title_mypage" />
+
+    <item
+        android:id="@+id/navigation_setting"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="Setting"
+        />
 
 </menu>
