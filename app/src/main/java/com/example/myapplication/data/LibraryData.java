@@ -24,7 +24,13 @@ public class LibraryData {
     @SerializedName("genre")
     String genre;
 
-    public LibraryData(String userId, String isbn, float rating, String note, String startDate, String endDate, String genre) {
+    @SerializedName("title")
+    String title;
+
+    @SerializedName("cover")
+    String cover;
+
+    public LibraryData(String userId, String isbn, float rating, String note, String startDate, String endDate, String genre,String title, String cover) {
         this.userId = userId;
         this.isbn = isbn;
         this.rating = rating;
@@ -32,5 +38,7 @@ public class LibraryData {
         this.startDate = startDate;
         this.endDate = endDate;
         this.genre = genre;
+        this.title=title;
+        this.cover=cover;
     }
 }

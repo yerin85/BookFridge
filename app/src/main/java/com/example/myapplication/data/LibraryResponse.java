@@ -24,6 +24,12 @@ public class LibraryResponse {
     @SerializedName("genre")
     private String genre;
 
+    @SerializedName("title")
+    String title;
+
+    @SerializedName("cover")
+    String cover;
+
     public String getUserId() {
         return userId;
     }
@@ -50,5 +56,13 @@ public class LibraryResponse {
 
     public String getGenre() {
         return genre;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCover() {
+        return cover;
     }
 }

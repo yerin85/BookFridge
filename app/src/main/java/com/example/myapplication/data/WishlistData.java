@@ -9,8 +9,16 @@ public class WishlistData {
     @SerializedName("isbn")
     String isbn;
 
-    public WishlistData(String userId, String isbn) {
+    @SerializedName("title")
+    String title;
+
+    @SerializedName("cover")
+    String cover;
+
+    public WishlistData(String userId, String isbn, String title, String cover) {
         this.userId = userId;
         this.isbn = isbn;
+        this.title=title;
+        this.cover=cover;
     }
 }
