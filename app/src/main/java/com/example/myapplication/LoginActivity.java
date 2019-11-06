@@ -34,12 +34,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 class UserInfo implements Serializable {
-    String kakaoId;
+    String userId;
     String nickname;
     String imagePath;
 
-    UserInfo(String kakaoId, String nickname, String imagePath) {
-        this.kakaoId = kakaoId;
+    UserInfo(String userId, String nickname, String imagePath) {
+        this.userId = userId;
         this.nickname = nickname;
         this.imagePath = imagePath;
     }
@@ -107,13 +107,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(MeV2Response result) {
-                    String kakaoId = String.valueOf(result.getId());
+                    String userId = String.valueOf(result.getId());
                     String nickname = result.getNickname();
                     String imagePath = result.getProfileImagePath();
                     service= RetrofitClient.getClient().create(ServiceApi.class);
 
                     //priv에 받은 값(공개는0 비공개는1)을 string형태로 넣어야 합니다
-                    service.postUserPrivate(new UserPrivateData(kakaoId,"1")).enqueue(new Callback<BasicResponse>() {
+                    service.postUserPrivate(new UserPrivateData(userId,"1")).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
@@ -134,8 +134,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(), nickname + "님 안녕하세요", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    UserInfo userinfo = new UserInfo(kakaoId, nickname, imagePath);
-                    intent.putExtra("userInfo", userinfo);
+                    UserInfo userInfo = new UserInfo(userId, nickname, imagePath);
+                    intent.putExtra("userInfo", userInfo);
                     startActivity(intent);
                     finish();
                 }

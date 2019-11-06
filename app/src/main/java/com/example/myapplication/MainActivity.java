@@ -25,12 +25,15 @@ import androidx.annotation.NonNull;
 import android.view.MenuItem;
 
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+
 import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManger;
+    UserInfo userInfo;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -38,18 +41,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            fragmentManger=getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManger.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu()).commit();
+                    fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
+                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
+                    fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_library:
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new LibraryMenu()).commit();
+                    fragmentTransaction.replace(R.id.frame_layout,LibraryMenu.newInstance(userInfo));
+                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
+                    fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_mypage:
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new MypageMenu()).commit();
+                    fragmentTransaction.replace(R.id.frame_layout,MypageMenu.newInstance(userInfo));
+                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new MypageMenu());
+                    fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_setting:
-                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new SettingMenu()).commit();
+                    fragmentTransaction.replace(R.id.frame_layout,SettingMenu.newInstance(userInfo));
+                    fragmentManger.beginTransaction().replace(R.id.frame_layout, new SettingMenu());
+                    fragmentTransaction.commit();
                     return true;
             }
 
@@ -63,13 +76,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = getIntent();
+        userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        fragmentManger = getSupportFragmentManager();
-        fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu()).commit();
 
-
-
+        fragmentManger=getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManger.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
+        fragmentManger.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
+        fragmentTransaction.commit();
     }
 
     //바코드 결과 함수

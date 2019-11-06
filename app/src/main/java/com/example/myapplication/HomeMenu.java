@@ -4,7 +4,7 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+import android.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
@@ -41,10 +41,18 @@ public class HomeMenu extends Fragment {
     private ViewPager viewPager;
     private ViewPagerAdapter pagerAdapter;
     private ServiceApi service;
+    UserInfo userInfo;
 
     public HomeMenu() {
         // Required empty public constructor
+    }
 
+    public static Fragment newInstance(UserInfo userInfo){
+        HomeMenu homeMenu = new HomeMenu();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("userInfo",userInfo);
+        homeMenu.setArguments(bundle);
+        return homeMenu;
     }
 
     @Override
@@ -57,6 +65,8 @@ public class HomeMenu extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_home_menu, container, false);
+
+        userInfo = (UserInfo)getArguments().getSerializable("userInfo");
 
         fab_open = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fab_close);

@@ -13,7 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
+import android.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.kakao.network.ErrorResult;
@@ -28,8 +28,17 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class SettingMenu extends Fragment {
+    UserInfo userInfo;
+
     public SettingMenu() {
         // Required empty public constructor
+    }
+    public static Fragment newInstance(UserInfo userInfo) {
+        SettingMenu settingMenu = new SettingMenu();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("userInfo", userInfo);
+        settingMenu.setArguments(bundle);
+        return settingMenu;
     }
 
     @Override
@@ -42,6 +51,8 @@ public class SettingMenu extends Fragment {
                              Bundle savedInstanceState) {
 
         View v= inflater.inflate(R.layout.fragment_setting_menu, container, false);
+
+        userInfo = (UserInfo)getArguments().getSerializable("userInfo");
 
         Button button_logout = v.findViewById(R.id.button_logout);
         Button button_exit = v.findViewById(R.id.button_exit);
