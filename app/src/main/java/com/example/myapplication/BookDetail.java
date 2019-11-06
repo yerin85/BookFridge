@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryData;
+import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.WishlistData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
@@ -58,6 +59,21 @@ public class BookDetail extends AppCompatActivity {
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();
                         if (result.getCode() == 200) {
+                            service.updateMyPage(new MyPageData(userId, categorizeBooks(item.categoryName))).enqueue(new Callback<BasicResponse>() {
+                                @Override
+                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                    BasicResponse result = response.body();
+                                    if (result.getCode() != 200) {
+                                        Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                    Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             new AlertDialog.Builder(BookDetail.this)
                                     .setMessage(result.getMessage())
                                     .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {

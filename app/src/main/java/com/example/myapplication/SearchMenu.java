@@ -68,7 +68,7 @@ public class SearchMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_menu);
 
-        userInfo = (UserInfo)getIntent().getSerializableExtra("userInfo");
+        userInfo = (UserInfo) getIntent().getSerializableExtra("userInfo");
 
         //dropdown list
         Spinner spinner = findViewById(R.id.search_type);
@@ -222,7 +222,7 @@ public class SearchMenu extends AppCompatActivity {
                 button = view.findViewById(R.id.book_detail);
                 libButton = view.findViewById(R.id.add_library);
                 wishButton = view.findViewById(R.id.wishlist);
-                service= RetrofitClient.getClient().create(ServiceApi.class);
+                service = RetrofitClient.getClient().create(ServiceApi.class);
 
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -230,20 +230,36 @@ public class SearchMenu extends AppCompatActivity {
                         Intent intent = new Intent(SearchMenu.this, BookDetail.class);
                         Item item = items.get(getAdapterPosition());
                         intent.putExtra("bookItem", item);
-                        intent.putExtra("userId",userInfo.userId);
+                        intent.putExtra("userId", userInfo.userId);
                         startActivity(intent);
                     }
                 });
 
+                //라이브러리에 추가
                 libButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Item item = items.get(getAdapterPosition());
-                        service.saveLibrary(new LibraryData(userInfo.userId,item.isbn,0,"",getDateString(),getDateString(),categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                        service.saveLibrary(new LibraryData(userInfo.userId, item.isbn, 0, "", getDateString(), getDateString(), categorizeBooks(item.categoryName), item.title, item.cover)).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                                BasicResponse result= response.body();
-                                if(result.getCode()==200){
+                                BasicResponse result = response.body();
+                                if (result.getCode() == 200) {
+                                    service.updateMyPage(new MyPageData(userInfo.userId, categorizeBooks(item.categoryName))).enqueue(new Callback<BasicResponse>() {
+                                        @Override
+                                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                            BasicResponse result = response.body();
+                                            if (result.getCode() != 200) {
+                                                Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                            Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                                     new AlertDialog.Builder(SearchMenu.this)
                                             .setMessage(result.getMessage())
                                             .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
@@ -263,18 +279,16 @@ public class SearchMenu extends AppCompatActivity {
                                                     dialog.dismiss();
                                                 }
                                             }).show();
-                                }
-                                else{
-                                    Toast.makeText(SearchMenu.this,result.getMessage(), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<BasicResponse> call, Throwable t) {
-                                Toast.makeText(SearchMenu.this,t.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
-
                     }
                 });
 
@@ -283,7 +297,7 @@ public class SearchMenu extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Item item = items.get(getAdapterPosition());
-                        service.saveWishlist(new WishlistData(userInfo.userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                        service.saveWishlist(new WishlistData(userInfo.userId, item.isbn, item.title, item.cover)).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result = response.body();
