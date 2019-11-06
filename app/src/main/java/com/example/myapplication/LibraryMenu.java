@@ -47,6 +47,7 @@ public class LibraryMenu extends Fragment {
     ServiceApi service;
     RecyclerView recyclerView;
     LibAdapter adapter;
+    boolean allowRefresh;
 
     public LibraryMenu() {
         // Required empty public constructor
@@ -65,19 +66,18 @@ public class LibraryMenu extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_library_menu, container, false);
 
+        allowRefresh = false;
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
         service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
-                ArrayList<LibraryResponse> litItems = response.body();
-                for (int i = 0; i < litItems.size(); i++) {
-                    recyclerView = (RecyclerView) getActivity().findViewById(R.id.library_list);
-                    adapter = new LibAdapter(litItems);
-                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-                    recyclerView.setAdapter(adapter);
-                }
+                ArrayList<LibraryResponse> libItems = response.body();
+                recyclerView = (RecyclerView) getActivity().findViewById(R.id.library_list);
+                adapter = new LibAdapter(libItems);
+                recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -113,9 +113,10 @@ public class LibraryMenu extends Fragment {
                 libLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        allowRefresh = true;
                         Intent intent = new Intent(getActivity(), BookNote.class);
-                        LibraryResponse libitem = libItems.get(getAdapterPosition());
-                        intent.putExtra("libItem", libitem);
+                        LibraryResponse libItem = libItems.get(getAdapterPosition());
+                        intent.putExtra("libItem", libItem);
                         startActivity(intent);
                     }
                 });
@@ -141,6 +142,29 @@ public class LibraryMenu extends Fragment {
         @Override
         public int getItemCount() {
             return libItems.size();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (allowRefresh) {
+            allowRefresh = false;
+            service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
+                @Override
+                public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
+                    ArrayList<LibraryResponse> libItems = response.body();
+                    recyclerView = (RecyclerView) getActivity().findViewById(R.id.library_list);
+                    adapter = new LibAdapter(libItems);
+                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+                    recyclerView.setAdapter(adapter);
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<LibraryResponse>> call, Throwable t) {
+
+                }
+            });
         }
     }
 }
