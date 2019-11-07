@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,6 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.data.AladinResponse;
+import com.example.myapplication.data.NewItem;
+import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android .IntentResult;
@@ -33,6 +38,12 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
@@ -98,71 +109,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        ServiceApi service;
         // QR코드/바코드를 스캔한 결과 값을 가져옵니다.
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
-        SearchSimple simple = new SearchSimple();
-        simple.query=result.getContents();
-        simple.queryTarget="Keyword";
-        simple.page=1;
-        simple.execute();
-
-    }
-
-    public class SearchSimple extends AsyncTask<Void, Void, List<Item>> {
-        AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
-        String queryTarget;
-        String query;
-        Integer page;
-        String url="";
-        @Override
-        protected void onPreExecute(){
-            super.onPreExecute();
-        }
-
-        @Override
-        protected List<Item> doInBackground(Void... v){
-
-            try{
-                url = AladdinOpenAPI.GetUrl(queryTarget,query,page.toString());
-                api.parseXml(url);
-            }catch (Exception e){
-                e.printStackTrace();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.aladin.co.kr/ttb/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        service = retrofit.create(ServiceApi.class);
+        service.itemSearch("Keyword",result.getContents(),"1").enqueue(new Callback<AladinResponse>() {
+            @Override
+            public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                AladinResponse responseResult = response.body();
+                List<NewItem> newItems = responseResult.getNewItems();
+                Item item = new Item();
+                item.convert(newItems.get(0));
+                Intent intent = new Intent(MainActivity.this, BookDetail.class);
+                intent.putExtra("bookItem", item);
+                intent.putExtra("userId", userInfo.userId);
+                startActivity(intent);
             }
 
-            return api.Items;
-        }
+            @Override
+            public void onFailure(Call<AladinResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this,"Fail", Toast.LENGTH_SHORT).show();                    }
+        });
 
-        @Override
-        protected void onProgressUpdate(Void... v){}
 
-        @Override
-        protected void onPostExecute(List<Item> items) {
-            AlertDialog.Builder builder;
-            AlertDialog alertDialog;
-            Context mContext = MainActivity.this;
-            LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.search_item,null);
-            TextView title = view.findViewById(R.id.book_title);
-            TextView description = view.findViewById(R.id.book_description);
-            TextView author = view.findViewById(R.id.book_author);
-            ImageView cover = view.findViewById(R.id.book_cover);
-            TextView publisher = view.findViewById(R.id.book_publisher);
-
-            title.setText(items.get(0).title);
-            description.setText(items.get(0).description);
-            author.setText(items.get(0).author);
-            Glide.with(mContext).load(items.get(0).cover).into(cover);
-            publisher.setText(items.get(0).publisher);
-
-            builder = new AlertDialog.Builder(mContext);
-            builder.setView(view);
-
-            alertDialog = builder.create();
-            alertDialog.show();
-        }
     }
-
     public void showDialog() {
         final List<String> ListItems = new ArrayList<String>();
         ListItems.add("만화");

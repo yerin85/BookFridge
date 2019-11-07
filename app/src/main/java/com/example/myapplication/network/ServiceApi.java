@@ -6,7 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-import com.example.myapplication.NewItemResponse;
+import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
@@ -20,8 +20,11 @@ import com.example.myapplication.data.WishlistResponse;
 import java.util.ArrayList;
 
 public interface ServiceApi {
-    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=JS&Version=20131101")
-    Call<NewItemResponse> listCheck(@Query("searchCategoryId") String searchCategoryId);
+    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=BestSeller&MaxResults=20&start=1&SearchTarget=Book&output=JS&Version=20131101")
+    Call<AladinResponse> itemList(@Query("categoryId") String searchCategoryId);
+
+    @GET("ItemSearch.aspx?ttbkey=ttb0318592203001&MaxResults=1&start=1&SearchTarget=Book&output=JS&Version=20131101")
+    Call<AladinResponse> itemSearch( @Query("QueryType") String queryType,@Query("Query") String query,@Query("page") String pageNum);
 
     @POST("/user/createUserProfile")
     Call<BasicResponse> createUserProfile(@Body UserProfileData data);

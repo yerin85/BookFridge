@@ -12,10 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.data.NewItem;
+import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 //바코드
@@ -66,6 +66,9 @@ public class HomeMenu extends Fragment {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_home_menu, container, false);
 
+        viewPager = v.findViewById(R.id.viewPager);
+        newList();
+
         userInfo = (UserInfo)getArguments().getSerializable("userInfo");
 
         fab_open = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fab_open);
@@ -77,8 +80,6 @@ public class HomeMenu extends Fragment {
         fab3 = v.findViewById(R.id.fab3);
         fab4 = v.findViewById(R.id.fab4);
 
-        viewPager = v.findViewById(R.id.viewPager);
-        newList();
 
         fab2.setOnClickListener(new View.OnClickListener() {
 
@@ -138,6 +139,7 @@ public class HomeMenu extends Fragment {
     }
 
     public void newList(){
+
         String categoryId ="0";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.aladin.co.kr/ttb/api/")
@@ -145,19 +147,18 @@ public class HomeMenu extends Fragment {
                 .build();
 
         service = retrofit.create(ServiceApi.class);
-        service.listCheck(categoryId).enqueue(new Callback<NewItemResponse>() {
+        service.itemList(categoryId).enqueue(new Callback<AladinResponse>() {
             @Override
-            public void onResponse(Call<NewItemResponse> call, Response<NewItemResponse> response) {
-                NewItemResponse result = response.body();
+            public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                AladinResponse result = response.body();
                 List<NewItem> newItems = result.getNewItems();
-
                 pagerAdapter = new ViewPagerAdapter(getActivity(),newItems);
                 viewPager.setAdapter(pagerAdapter);
 
             }
 
             @Override
-            public void onFailure(Call<NewItemResponse> call, Throwable t) {
+            public void onFailure(Call<AladinResponse> call, Throwable t) {
                 Toast.makeText(getActivity(),"Fail", Toast.LENGTH_SHORT).show();                    }
         });
     }

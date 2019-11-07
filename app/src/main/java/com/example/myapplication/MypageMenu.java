@@ -86,7 +86,6 @@ public class MypageMenu extends Fragment {
         myname.setText(userInfo.nickname +" 님");
         Glide.with(this).load(userInfo.imagePath).into(myimage);
 
-
         pieChart = v.findViewById(R.id.piechart);
         pieChart.setUsePercentValues(true);
 

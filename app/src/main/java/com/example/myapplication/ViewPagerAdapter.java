@@ -1,25 +1,38 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.data.AladinResponse;
+import com.example.myapplication.data.NewItem;
+import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.network.ServiceApi;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
+    ServiceApi service;
     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
     private Context mContext = null ;
     private List<NewItem> newItems = null;
-    private int index=0;
+    private String title;
+    Context context =GlobalApplication.getContext();
     public ViewPagerAdapter() {
 
     }
@@ -32,37 +45,30 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View view = null ;
-        if(index==newItems.size())index=0;
+        View view = null;
         if (mContext != null) {
             // LayoutInflater를 통해 "/res/layout/fragment_newlist.xml"을 뷰로 생성.
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.fragment_newlist, container, false);
-            TextView textView1 = view.findViewById(R.id.textView1) ;
-            TextView textView2 = view.findViewById(R.id.textView2) ;
-            TextView textView3 = view.findViewById(R.id.textView3) ;
-            TextView textView4 = view.findViewById(R.id.textView4) ;
-            ImageView imageView1 = view.findViewById(R.id.imageView1);
-            ImageView imageView2 = view.findViewById(R.id.imageView2);
-            ImageView imageView3 = view.findViewById(R.id.imageView3);
-            ImageView imageView4 = view.findViewById(R.id.imageView4);
-            NewItem newItem1 = newItems.get(index++);
-            if(index==newItems.size())index=0;
-            NewItem newItem2 = newItems.get(index++);
-            if(index==newItems.size())index=0;
-            NewItem newItem3 = newItems.get(index++);
-            if(index==newItems.size())index=0;
-            NewItem newItem4 = newItems.get(index++);
+            ArrayList<TextView> textViewArrayList = new ArrayList<>();
+            ArrayList<ImageView> imageViewArrayList = new ArrayList<>();
+            textViewArrayList.add(view.findViewById(R.id.textView1)) ;
+            textViewArrayList.add(view.findViewById(R.id.textView2)) ;
+            textViewArrayList.add(view.findViewById(R.id.textView3)) ;
+            textViewArrayList.add(view.findViewById(R.id.textView4)) ;
+            imageViewArrayList.add(view.findViewById(R.id.imageView1));
+            imageViewArrayList.add(view.findViewById(R.id.imageView2));
+            imageViewArrayList.add(view.findViewById(R.id.imageView3));
+            imageViewArrayList.add(view.findViewById(R.id.imageView4));
+            for (int i=0;i<4;i++){
+                NewItem newItem = newItems.get(i+position*4);
+                if(newItem.getTitle().length()>16) title = newItem.getTitle().substring(0,10) +"\n"+newItem.getTitle().substring(10,16)+"...";
+                else if (newItem.getTitle().length()>10) title = newItem.getTitle().substring(0,10) +"\n"+newItem.getTitle().substring(10);
+                else title = newItem.getTitle();
+                textViewArrayList.get(i).setText(title);
+                Glide.with(view.getContext()).load(newItem.getCover()).into(imageViewArrayList.get(i));
+            }
 
-            textView1.setText(newItem1.getTitle());
-            textView2.setText(newItem2.getTitle());
-            textView3.setText(newItem3.getTitle());
-            textView4.setText(newItem4.getTitle());
-
-            Glide.with(view.getContext()).load(newItem1.getCover()).into(imageView1);
-            Glide.with(view.getContext()).load(newItem2.getCover()).into(imageView2);
-            Glide.with(view.getContext()).load(newItem3.getCover()).into(imageView3);
-            Glide.with(view.getContext()).load(newItem4.getCover()).into(imageView4);
         }
 
         // 뷰페이저에 추가.
@@ -79,12 +85,12 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        // 전체 페이지 수는 10개로 고정.
-        return 10;
+        // 전체 페이지 수
+        return newItems.size()/4;
     }
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return (view == (View)object);
+        return (view == object);
     }
 }
