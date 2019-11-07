@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryResponse;
+import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 
@@ -25,6 +26,8 @@ import org.w3c.dom.Text;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.example.myapplication.data.Functions.categorizeBooks;
 
 public class BookNote extends AppCompatActivity {
     LibraryResponse libItem;
@@ -62,11 +65,19 @@ public class BookNote extends AppCompatActivity {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
-                                        if (result.getCode() == 200) {
-                                            Toast.makeText(BookNote.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(BookNote.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
+                                        Toast.makeText(BookNote.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                        Toast.makeText(BookNote.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                service.subMypage(new MyPageData(libItem.getUserId(), categorizeBooks(libItem.getGenre()))).enqueue(new Callback<BasicResponse>() {
+                                    @Override
+                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                        BasicResponse result = response.body();
+                                        Toast.makeText(BookNote.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override

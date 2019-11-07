@@ -55,7 +55,9 @@ public interface ServiceApi {
     @POST("/user/updateUserPrivate")
     Call<BasicResponse> updateUserPrivate(@Body UserPrivateData data);
 
-    @POST("/user/updateMyPage")
-    Call<BasicResponse> updateMyPage(@Body MyPageData data);
+    @POST("/user/addMypage")
+    Call<BasicResponse> addMypage(@Body MyPageData data);
 
+    @POST("/user/subMypage")
+    Call<BasicResponse> subMypage(@Body MyPageData data);
 }

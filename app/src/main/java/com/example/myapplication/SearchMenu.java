@@ -245,7 +245,7 @@ public class SearchMenu extends AppCompatActivity {
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result = response.body();
                                 if (result.getCode() == 200) {
-                                    service.updateMyPage(new MyPageData(userInfo.userId, categorizeBooks(item.categoryName))).enqueue(new Callback<BasicResponse>() {
+                                    service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(item.categoryName))).enqueue(new Callback<BasicResponse>() {
                                         @Override
                                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                             BasicResponse result = response.body();
