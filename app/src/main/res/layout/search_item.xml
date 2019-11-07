@@ -33,6 +33,7 @@
             android:layout_margin="2dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:breakStrategy="high_quality"
             android:text="title"
             android:textSize="13dp" />
 
