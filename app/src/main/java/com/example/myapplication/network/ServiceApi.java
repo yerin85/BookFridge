@@ -61,7 +61,7 @@ public interface ServiceApi {
 
     @POST("/user/subMypage")
     Call<BasicResponse> subMypage(@Body MyPageData data);
-    
+
     @POST("user/getMypage")
     Call <ArrayList<MyPageResponse>> getMypage(@Query("userId") String userId);
 }
