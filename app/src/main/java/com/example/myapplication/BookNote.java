@@ -73,7 +73,7 @@ public class BookNote extends AppCompatActivity {
                                         Toast.makeText(BookNote.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                                service.subMypage(new MyPageData(libItem.getUserId(), categorizeBooks(libItem.getGenre()))).enqueue(new Callback<BasicResponse>() {
+                                service.subMypage(new MyPageData(libItem.getUserId(), libItem.getGenre())).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
