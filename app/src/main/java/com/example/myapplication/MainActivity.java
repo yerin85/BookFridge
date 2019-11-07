@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,12 +30,15 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     UserInfo userInfo;
+
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
+        showDialog();
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -156,6 +161,53 @@ public class MainActivity extends AppCompatActivity {
             alertDialog = builder.create();
             alertDialog.show();
         }
+    }
+
+    public void showDialog() {
+        final List<String> ListItems = new ArrayList<String>();
+        ListItems.add("만화");
+        ListItems.add("SF");
+        ListItems.add("추리");
+        ListItems.add("고전");
+        ListItems.add("액션");
+        ListItems.add("판타지");
+        ListItems.add("희곡");
+        ListItems.add("에세이");
+        ListItems.add("시");
+        ListItems.add("무협");
+
+        //checked 부분은 데이터 받아와서 변경하는걸로!!
+        final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
+        final List SelectedItems = new ArrayList();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("좋아하는 장르를 선택해주세요");
+        builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
+
+                if (isChecked) SelectedItems.add(i);
+                else if (SelectedItems.contains(i)) SelectedItems.remove(Integer.valueOf(i));
+            }
+        });
+
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                for (int j = 0; j < SelectedItems.size(); j++) {
+                    //사용자db에 들어가서 변경하기
+                }
+            }
+        });
+
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.show();
     }
 
 }

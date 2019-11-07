@@ -190,10 +190,17 @@ public class SettingMenu extends Fragment {
     }
 
     public void showDialog() {
-        final List<String> ListItems = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            ListItems.add(String.valueOf(i));
-        }
+        final List<String> ListItems = new ArrayList<String>();
+        ListItems.add("만화");
+        ListItems.add("SF");
+        ListItems.add("추리");
+        ListItems.add("고전");
+        ListItems.add("액션");
+        ListItems.add("판타지");
+        ListItems.add("희곡");
+        ListItems.add("에세이");
+        ListItems.add("시");
+        ListItems.add("무협");
 
         //checked 부분은 데이터 받아와서 변경하는걸로!!
         final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
@@ -207,14 +214,6 @@ public class SettingMenu extends Fragment {
 
                 if (isChecked) SelectedItems.add(i);
                 else if (SelectedItems.contains(i)) SelectedItems.remove(Integer.valueOf(i));
-
-                if (SelectedItems.size() > 3) {
-                    Toast.makeText(getContext(), "최대 3개까지 선택 가능합니다.", Toast.LENGTH_LONG).show();
-                    SelectedItems.remove(Integer.valueOf(i));
-                    ((AlertDialog) dialogInterface).getListView().setItemChecked(i, false);
-
-
-                }
             }
         });
 

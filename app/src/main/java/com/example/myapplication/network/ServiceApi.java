@@ -11,6 +11,7 @@ import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
+import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.UserPrivateData;
 import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.data.WishlistData;
@@ -57,5 +58,8 @@ public interface ServiceApi {
 
     @POST("/user/updateMyPage")
     Call<BasicResponse> updateMyPage(@Body MyPageData data);
+
+    @POST("user/getMypage")
+    Call <ArrayList<MyPageResponse>> getMypage(@Query("userId") String userId);
 
 }
