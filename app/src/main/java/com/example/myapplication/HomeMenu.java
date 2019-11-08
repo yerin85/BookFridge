@@ -67,7 +67,7 @@ public class HomeMenu extends Fragment {
         View v= inflater.inflate(R.layout.fragment_home_menu, container, false);
 
         viewPager = v.findViewById(R.id.viewPager);
-       // newList();
+        newList();
 
         userInfo = (UserInfo)getArguments().getSerializable("userInfo");
 

@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.UserGenreData;
+import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -84,7 +86,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
-        showDialog();
+
+        final boolean[] show = {false};
+
+        //함수적용예정
+
+        if(show[0]) {
+            showDialog();
+        }
+
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
