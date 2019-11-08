@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.LibraryData;
+import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.WishlistData;
@@ -44,6 +45,7 @@ public class BookDetail extends AppCompatActivity {
     RecyclerView recyclerView;
     NoteAdapter noteAdapter;
     RecyclerView.LayoutManager layoutManager;
+    TextView myNote;
 
 
     @Override
@@ -58,14 +60,27 @@ public class BookDetail extends AppCompatActivity {
         //도서 상세 정보를 화면에 보여준다
         displayDetails(bookItem);
 
-        libButton = findViewById(R.id.detail_add_library);
-        wishButton = findViewById(R.id.detail_wishlist);
         service = RetrofitClient.getClient().create(ServiceApi.class);
-
         recyclerView = findViewById(R.id.detail_othersNote);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        myNote = findViewById(R.id.detail_myNote);
+        libButton = findViewById(R.id.detail_add_library);
+        wishButton = findViewById(R.id.detail_wishlist);
+
+        service.getMyNote(userId,bookItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
+            @Override
+            public void onResponse(Call<LibraryResponse> call, Response<LibraryResponse> response) {
+                LibraryResponse libItem = response.body();
+                myNote.setText(libItem.getNote());
+            }
+            @Override
+            public void onFailure(Call<LibraryResponse> call, Throwable t) {
+                Toast.makeText(BookDetail.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
 
         service.getUserComments(userId, bookItem.getIsbn()).enqueue(new Callback<ArrayList<UserNoteResponse>>() {
             @Override
