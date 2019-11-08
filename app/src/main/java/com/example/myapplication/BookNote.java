@@ -32,7 +32,14 @@ import static com.example.myapplication.data.Functions.categorizeBooks;
 public class BookNote extends AppCompatActivity {
     LibraryResponse libItem;
     ServiceApi service;
+    ImageView cover;
+    TextView title;
+    TextView startDate;
+    TextView endDate;
+    RatingBar rating;
+    TextView myNote;
     Button shareButton;
+    Button detailButton;
     Button deleteButton;
     Button editButton;
 
@@ -41,6 +48,13 @@ public class BookNote extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_note);
 
+        cover = findViewById(R.id.note_cover);
+        title = findViewById(R.id.note_title);
+        startDate = findViewById(R.id.note_start_date);
+        endDate = findViewById(R.id.note_end_date);
+        rating = findViewById(R.id.rating_star);
+        myNote = findViewById(R.id.my_note);
+
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
         libItem = (LibraryResponse) getIntent().getSerializableExtra("libItem");
@@ -48,9 +62,16 @@ public class BookNote extends AppCompatActivity {
         displayNote(libItem);
 
         shareButton = findViewById(R.id.note_share);
+        detailButton = findViewById(R.id.note_detail);
         deleteButton = findViewById(R.id.note_delete);
         editButton = findViewById(R.id.note_edit);
 
+        detailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
 
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,26 +123,28 @@ public class BookNote extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(BookNote.this, BookNoteEdit.class);
                 intent.putExtra("libItem", libItem);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
     }
 
     public void displayNote(LibraryResponse libItem) {
-        ImageView cover = findViewById(R.id.note_cover);
-        TextView title = findViewById(R.id.note_title);
-        TextView startDate = findViewById(R.id.note_start_date);
-        TextView endDate = findViewById(R.id.note_end_date);
-        RatingBar rating = findViewById(R.id.rating_star);
-        TextView myNote = findViewById(R.id.my_note);
-
-
         Glide.with(this).load(libItem.getCover()).into(cover);
         title.setText(libItem.getTitle());
         startDate.setText(libItem.getStartDate());
         endDate.setText(libItem.getEndDate());
         rating.setRating(libItem.getRating());
         myNote.setText(libItem.getNote());
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 1) {
+            rating.setRating(data.getFloatExtra("rating",0));
+            myNote.setText(data.getStringExtra("myNote"));
+            startDate.setText(data.getStringExtra("startDate"));
+            endDate.setText(data.getStringExtra("endDate"));
+        }
     }
 
 }
