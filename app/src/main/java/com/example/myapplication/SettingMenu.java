@@ -18,6 +18,8 @@ import android.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.myapplication.data.BasicResponse;
+import com.example.myapplication.data.UserGenreData;
+import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserPrivateData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
@@ -132,6 +134,22 @@ public class SettingMenu extends Fragment {
                                     }
                                 });
 
+                                service.subUserProfile(userInfo.userId).enqueue(new Callback<BasicResponse>() {
+                                    @Override
+                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                        BasicResponse result = response.body();
+                                        if (result.getCode() != 200) {
+                                            Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
                                 dialog.dismiss();
                             }
                         })
@@ -202,26 +220,84 @@ public class SettingMenu extends Fragment {
         ListItems.add("시");
         ListItems.add("무협");
 
-        //checked 부분은 데이터 받아와서 변경하는걸로!!
+        final List<String> GenreList = new ArrayList<>();
+        GenreList.add("comics");
+        GenreList.add("sf");
+        GenreList.add("mystery");
+        GenreList.add("classical");
+        GenreList.add("action");
+        GenreList.add("fantasy");
+        GenreList.add("theatrical");
+        GenreList.add("essay");
+        GenreList.add("poem");
+        GenreList.add("martialArt");
+
         final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
-        final List SelectedItems = new ArrayList();
+        final boolean[] checkArray = new boolean[10];
+
+        service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
+                ArrayList<UserGenreResponse> userGenres = response.body();
+
+                for(int i=0; i<userGenres.size();i++){
+                    if(GenreList.contains(userGenres.get(i).getGenre())){
+                        checkArray[GenreList.indexOf(userGenres.get(i).getGenre())]=true;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
+
+            }
+        });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("장르 변경");
-        builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+        builder.setMultiChoiceItems(items, checkArray, new DialogInterface.OnMultiChoiceClickListener() {
+
             @Override
             public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
 
-                if (isChecked) SelectedItems.add(i);
-                else if (SelectedItems.contains(i)) SelectedItems.remove(Integer.valueOf(i));
+                if (isChecked) {
+                    checkArray[i]=isChecked;
+                }
+                else if (checkArray[i]) {
+                    checkArray[i]=false;
+                }
             }
         });
 
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                for (int j = 0; j < SelectedItems.size(); j++) {
-                    //사용자db에 들어가서 변경하기
+
+                for(int j=0;j<10;j++){
+                    String s = GenreList.get(j);
+
+                    if(checkArray[j]){
+                        service.addUserGenre(new UserGenreData(userInfo.userId,s)).enqueue(new Callback<BasicResponse>() {
+                            @Override
+                            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                BasicResponse result = response.body();
+                            }
+                            @Override
+                            public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            }
+                        });
+                    }else{
+                        service.subUserGenre(new UserGenreData(userInfo.userId,s)).enqueue(new Callback<BasicResponse>() {
+                            @Override
+                            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                BasicResponse result = response.body();
+                            }
+                            @Override
+                            public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            }
+                        });
+
+                    }
                 }
             }
         });
