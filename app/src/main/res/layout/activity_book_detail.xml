@@ -195,7 +195,7 @@
         app:layout_constraintTop_toBottomOf="@id/detail_description">
 
         <TextView
-            android:id="@+id/detail_myComment"
+            android:id="@+id/detail_myCommentText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="나의 코멘트"
@@ -207,14 +207,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            app:layout_constraintTop_toBottomOf="@id/detail_myComment" />
+            android:textSize="16dp"
+            app:layout_constraintTop_toBottomOf="@id/detail_myCommentText" />
+
+        <TextView
+            android:id="@+id/detail_othersCommentText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="다른 사람의 코멘트"
+            android:textSize="16dp"
+            app:layout_constraintTop_toBottomOf="@id/detail_myNote"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/others_note"
+            android:id="@+id/detail_othersNote"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10dp"
-            app:layout_constraintTop_toBottomOf="@id/detail_myNote" />
+            app:layout_constraintTop_toBottomOf="@id/detail_othersCommentText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

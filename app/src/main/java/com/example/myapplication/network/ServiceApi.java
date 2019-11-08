@@ -58,9 +58,6 @@ public interface ServiceApi {
     @POST("/user/subWishlist")
     Call<BasicResponse> subWishlist(@Query("userId") String userId,@Query("isbn") String isbn);
 
-    @POST("/user/createUserPrivate")
-    Call<BasicResponse> createUserPrivate(@Body UserPrivateData data);
-
     @POST("/user/createMyPage")
     Call<BasicResponse> createMyPage(@Query("userId") String userId);
 
