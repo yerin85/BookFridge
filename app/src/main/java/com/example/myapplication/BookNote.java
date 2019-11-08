@@ -61,7 +61,7 @@ public class BookNote extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                service.deleteLibrary(libItem.getUserId(), libItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+                                service.subLibrary(libItem.getUserId(), libItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();

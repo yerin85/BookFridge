@@ -54,7 +54,7 @@ public class BookDetail extends AppCompatActivity {
         libButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.saveLibrary(new LibraryData(userId, item.isbn, 0, "", getDateString(), getDateString(), categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                service.addLibrary(new LibraryData(userId, item.isbn, 0, "", getDateString(), getDateString(), categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();
@@ -109,7 +109,7 @@ public class BookDetail extends AppCompatActivity {
         wishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.saveWishlist(new WishlistData(userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                service.addWishlist(new WishlistData(userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();

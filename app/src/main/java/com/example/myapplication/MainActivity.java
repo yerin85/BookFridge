@@ -18,7 +18,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.AladinResponse;
+import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.NewItem;
+import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     UserInfo userInfo;
+    ServiceApi service;
 
 
 
@@ -151,9 +154,22 @@ public class MainActivity extends AppCompatActivity {
         ListItems.add("시");
         ListItems.add("무협");
 
+        final List<String> GenreList = new ArrayList<>();
+        GenreList.add("comics");
+        GenreList.add("sf");
+        GenreList.add("mystery");
+        GenreList.add("classical");
+        GenreList.add("action");
+        GenreList.add("fantasy");
+        GenreList.add("theatrical");
+        GenreList.add("essay");
+        GenreList.add("poem");
+        GenreList.add("martialArt");
+
         //checked 부분은 데이터 받아와서 변경하는걸로!!
         final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
-        final List SelectedItems = new ArrayList();
+        final List<Integer> SelectedItems = new ArrayList();
+        service = RetrofitClient.getClient().create(ServiceApi.class);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("좋아하는 장르를 선택해주세요");
@@ -170,7 +186,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 for (int j = 0; j < SelectedItems.size(); j++) {
-                    //사용자db에 들어가서 변경하기
+                    service.addUserGenre(new UserGenreData(userInfo.userId,GenreList.get(SelectedItems.get(j)))).enqueue(new Callback<BasicResponse>() {
+                        @Override
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse result = response.body();
+                            Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 }
             }
         });
