@@ -134,6 +134,22 @@ public class SettingMenu extends Fragment {
                                     }
                                 });
 
+                                service.subUserProfile(userInfo.userId).enqueue(new Callback<BasicResponse>() {
+                                    @Override
+                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                        BasicResponse result = response.body();
+                                        if (result.getCode() != 200) {
+                                            Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
                                 dialog.dismiss();
                             }
                         })

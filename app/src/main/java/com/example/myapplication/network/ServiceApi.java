@@ -32,6 +32,9 @@ public interface ServiceApi {
     @POST("/user/createUserProfile")
     Call<BasicResponse> createUserProfile(@Body UserProfileData data);
 
+    @POST("/user/subUserProfile")
+    Call<BasicResponse> subUserProfile(@Query("userId") String userId);
+
     @POST("/user/addLibrary")
     Call<BasicResponse> addLibrary(@Body LibraryData data);
 
