@@ -26,7 +26,7 @@ import me.relex.circleindicator.CircleIndicator;
  * A simple {@link Fragment} subclass.
  */
 public class MypageMenu extends Fragment {
-    UserInfo userInfo;
+    static UserInfo userInfo;
     ServiceApi service;
     Map<String, Integer> map = new HashMap<>();
     ViewPager viewPager;
@@ -68,6 +68,7 @@ public class MypageMenu extends Fragment {
     public static class MyPagerAdapter extends FragmentStatePagerAdapter {
         private static int NUM_ITEMS = 2;
 
+
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
@@ -83,7 +84,7 @@ public class MypageMenu extends Fragment {
 
             switch (position) {
                 case 0:
-                    return new reading();
+                    return new reading().newInstance(userInfo);
                 case 1:
                     return new calendar();
                 default:

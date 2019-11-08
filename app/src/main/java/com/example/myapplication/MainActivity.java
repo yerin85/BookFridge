@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity {
     UserInfo userInfo;
     ServiceApi service;
 
-
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -89,15 +87,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
 
-        final boolean[] show = {false};
-
-        //함수적용예정
-
-        if(show[0]) {
-            showDialog();
-        }
-
+        service = RetrofitClient.getClient().create(ServiceApi.class);
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
+        service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
+                ArrayList<UserGenreResponse> arr = response.body();
+
+                if(arr.isEmpty()) {
+                    showDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
+
+            }
+        });
+
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
