@@ -4,72 +4,45 @@
     android:id="@+id/search_layer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
-
-    <ImageView
-        android:id="@+id/book_cover"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:src="@mipmap/ic_launcher"/>
+    android:padding="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/book_info_layout"
-        android:layout_width="0dp"
+        android:id="@+id/userProfile_layout"
+        android:layout_width="85dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        app:layout_constraintStart_toEndOf="@+id/book_cover"
-        app:layout_constraintEnd_toStartOf="@+id/book_buttons_layout"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/user_profile"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
-            android:id="@+id/book_title"
+            android:id="@+id/user_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:breakStrategy="high_quality"
-            android:text="title"
-            android:textSize="13dp" />
-
-
-        <TextView
-            android:id="@+id/book_author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/book_title"
-            android:text="author"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/book_publisher"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/book_author"
-            android:text="publisher"
-            android:textSize="10dp" />
-
-        <TextView
-            android:id="@+id/book_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_publisher"
-            android:text="description"
-            android:textSize="10dp"
-            android:maxLines="4"
-            android:ellipsize="end"/>
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:ellipsize="end"
+            android:textSize="14dp"
+            app:layout_constraintTop_toBottomOf="@id/user_profile"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/user_note"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toEndOf="@+id/userProfile_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="14dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

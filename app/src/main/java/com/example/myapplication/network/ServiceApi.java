@@ -8,11 +8,11 @@ import retrofit2.http.Query;
 
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
-import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.MyPageResponse;
+import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserPrivateData;
@@ -39,7 +39,7 @@ public interface ServiceApi {
     Call<BasicResponse> updateLibrary(@Body LibraryData data);
 
     //한 유저의 전체 라이브러리
-    @POST("user/getLibrary")
+    @POST("/user/getLibrary")
     Call<ArrayList<LibraryResponse>> getLibrary(@Query("userId") String userId);
 
     //한 유저의 특정 책 노트 정보
@@ -52,7 +52,7 @@ public interface ServiceApi {
     @POST("/user/addWishlist")
     Call<BasicResponse> addWishlist(@Body WishlistData data);
 
-    @POST("user/getWishlist")
+    @POST("/user/getWishlist")
     Call<ArrayList<WishlistResponse>> getWishlist(@Query("userId") String userId);
 
     @POST("/user/subWishlist")
@@ -70,15 +70,18 @@ public interface ServiceApi {
     @POST("/user/subMypage")
     Call<BasicResponse> subMypage(@Body MyPageData data);
 
-    @POST("user/getMypage")
+    @POST("/user/getMypage")
     Call <ArrayList<MyPageResponse>> getMypage(@Query("userId") String userId);
 
-    @POST("user/addUserGenre")
+    @POST("/user/addUserGenre")
     Call<BasicResponse> addUserGenre(@Body UserGenreData data);
 
-    @POST("user/subUserGenre")
+    @POST("/user/subUserGenre")
     Call<BasicResponse> subUserGenre(@Body UserGenreData data);
 
-    @POST("user/getUserGenre")
+    @POST("/user/getUserGenre")
     Call<ArrayList<UserGenreResponse>> getUserGenre(@Query("userId") String userId);
+
+    @POST("/user/getUserComments")
+    Call<ArrayList<UserNoteResponse>> getUserComments(@Query("userId") String userId, @Query("isbn") String isbn);
 }

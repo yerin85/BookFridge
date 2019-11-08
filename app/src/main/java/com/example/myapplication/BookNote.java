@@ -28,6 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.example.myapplication.data.Functions.categorizeBooks;
+import static com.example.myapplication.data.Functions.goToBookDetail;
 
 public class BookNote extends AppCompatActivity {
     LibraryResponse libItem;
@@ -69,7 +70,7 @@ public class BookNote extends AppCompatActivity {
         detailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                goToBookDetail(BookNote.this,libItem.getUserId(),libItem.getIsbn());
             }
         });
 

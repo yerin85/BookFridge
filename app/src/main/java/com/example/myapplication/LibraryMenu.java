@@ -63,7 +63,7 @@ public class LibraryMenu extends Fragment {
             @Override
             public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
                 ArrayList<LibraryResponse> libItems = response.body();
-                recyclerView = (RecyclerView) getActivity().findViewById(R.id.library_list);
+                recyclerView = getActivity().findViewById(R.id.library_list);
                 adapter = new LibAdapter(libItems);
                 recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
                 recyclerView.setAdapter(adapter);
