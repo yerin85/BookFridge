@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
+import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.WishlistData;
@@ -40,11 +41,11 @@ public class BookDetail extends AppCompatActivity {
         setContentView(R.layout.activity_book_detail);
 
         Intent intent = getIntent();
-        Item item = (Item) intent.getSerializableExtra("bookItem");
-        userId = intent.getExtras().getString("userId");
+        BookItem bookItem = (BookItem) intent.getSerializableExtra("bookItem");
+       userId = intent.getExtras().getString("userId");
 
         //도서 상세 정보를 화면에 보여준다
-        displayDetails(item);
+        displayDetails(bookItem);
 
         libButton = findViewById(R.id.detail_add_library);
         wishButton=findViewById(R.id.detail_wishlist);
@@ -54,12 +55,12 @@ public class BookDetail extends AppCompatActivity {
         libButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.addLibrary(new LibraryData(userId, item.isbn, 0, "", getDateString(), getDateString(), categorizeBooks(item.categoryName),item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                service.addLibrary(new LibraryData(userId, bookItem.getIsbn(), 0, "", getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()),bookItem.getTitle(),bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();
                         if (result.getCode() == 200) {
-                            service.addMypage(new MyPageData(userId, categorizeBooks(item.categoryName))).enqueue(new Callback<BasicResponse>() {
+                            service.addMypage(new MyPageData(userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
                                 @Override
                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                     BasicResponse result = response.body();
@@ -109,7 +110,7 @@ public class BookDetail extends AppCompatActivity {
         wishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.addWishlist(new WishlistData(userId, item.isbn,item.title,item.cover)).enqueue(new Callback<BasicResponse>() {
+                service.addWishlist(new WishlistData(userId, bookItem.getIsbn(),bookItem.getTitle(),bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();
@@ -147,7 +148,7 @@ public class BookDetail extends AppCompatActivity {
         });
     }
 
-    public void displayDetails(Item item) {
+    public void displayDetails(BookItem bookItem) {
         TextView title = findViewById(R.id.detail_title);
         TextView description = findViewById(R.id.detail_description);
         TextView author = findViewById(R.id.detail_author);
@@ -156,12 +157,12 @@ public class BookDetail extends AppCompatActivity {
         TextView category = findViewById(R.id.detail_category);
         TextView date = findViewById(R.id.detail_date);
 
-        title.setText(item.title);
-        description.setText(item.description);
-        author.setText(item.author);
-        Glide.with(this).load(item.cover).into(cover);
-        publisher.setText(item.publisher);
-        category.setText(item.categoryName);
-        date.setText(item.pubDate);
+        title.setText(bookItem.getTitle());
+        description.setText(bookItem.getDescription());
+        author.setText(bookItem.getAuthor());
+        Glide.with(this).load(bookItem.getCover()).into(cover);
+        publisher.setText(bookItem.getPublisher());
+        category.setText(bookItem.getCategoryName());
+        date.setText(bookItem.getPubDate());
     }
 }

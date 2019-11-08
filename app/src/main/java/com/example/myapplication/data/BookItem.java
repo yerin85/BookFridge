@@ -1,25 +1,36 @@
 package com.example.myapplication.data;
 
+import android.text.Html;
+
 import com.google.gson.annotations.SerializedName;
 
-public class NewItem{
+import java.io.Serializable;
+
+public class BookItem implements Serializable {
 
     @SerializedName("title")
     private String title;
+
     @SerializedName("description")
-    public String description;
+    private String description;
+
     @SerializedName("author")
-    public String author;
+    private String author;
+
     @SerializedName("cover")
-    public String cover ;
+    private String cover ;
+
     @SerializedName("publisher")
-    public String publisher ;
+    private String publisher ;
+
     @SerializedName("isbn")
-    public String isbn ;
+    private String isbn ;
+
     @SerializedName("pubDate")
-    public String pubDate ;
+    private String pubDate ;
+
     @SerializedName("categoryName")
-    public String categoryName ;
+    private String categoryName ;
 
 
     public String getTitle() {
@@ -35,7 +46,7 @@ public class NewItem{
     }
 
     public String getDescription() {
-        return description;
+        return String.valueOf(Html.fromHtml(description));
     }
 
     public String getIsbn() {

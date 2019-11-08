@@ -1,8 +1,22 @@
 package com.example.myapplication.data;
 
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
+import com.example.myapplication.BookDetail;
+import com.example.myapplication.network.ServiceApi;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Functions {
 
@@ -47,5 +61,31 @@ public class Functions {
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.KOREA);
         String str_date = df.format(new Date());
         return str_date;
+    }
+
+    public static void goToBookDetail(Context context, String userId, String isbn){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.aladin.co.kr/ttb/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ServiceApi service = retrofit.create(ServiceApi.class);
+
+        service = retrofit.create(ServiceApi.class);
+        service.itemSearch("Keyword",isbn,1,1).enqueue(new Callback<AladinResponse>() {
+            @Override
+            public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                AladinResponse responseResult = response.body();
+                ArrayList<BookItem> bookItems = responseResult.getBookItems();
+                BookItem bookItem = bookItems.get(0);
+                Intent intent = new Intent(context, BookDetail.class);
+                intent.putExtra("bookItem", bookItem);
+                intent.putExtra("userId", userId);
+                context.startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Call<AladinResponse> call, Throwable t) {
+                Toast.makeText(context,"Fail", Toast.LENGTH_SHORT).show();                    }
+        });
     }
 }

@@ -3,7 +3,6 @@ package com.example.myapplication;
 import android.text.Html;
 
 import com.example.myapplication.data.AladinResponse;
-import com.example.myapplication.data.NewItem;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,17 +28,6 @@ class Item implements Serializable {
     public String isbn = "";
     public String pubDate = "";
     public String categoryName = "";
-
-    public void convert(NewItem newItem){
-        title = newItem.getTitle();
-        description = newItem.getDescription();
-        author = newItem.getAuthor();
-        cover = newItem.getCover();
-        categoryName =newItem.getCategoryName();
-        isbn = newItem.getIsbn();
-        pubDate = newItem.getPubDate();
-        publisher = newItem.getPublisher();
-    }
 }
 
 class AladdinOpenAPIHandler extends DefaultHandler {

@@ -81,7 +81,6 @@ public class BookNote extends AppCompatActivity {
                         .setPositiveButton("네", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
                                 service.subLibrary(libItem.getUserId(), libItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -98,7 +97,6 @@ public class BookNote extends AppCompatActivity {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
-                                        Toast.makeText(BookNote.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override
@@ -106,6 +104,7 @@ public class BookNote extends AppCompatActivity {
                                         Toast.makeText(BookNote.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
+                                dialog.dismiss();
                                 finish();
                             }
                         })

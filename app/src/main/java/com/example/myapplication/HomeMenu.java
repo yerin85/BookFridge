@@ -14,7 +14,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
-import com.example.myapplication.data.NewItem;
+import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -151,8 +151,8 @@ public class HomeMenu extends Fragment {
             @Override
             public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                 AladinResponse result = response.body();
-                List<NewItem> newItems = result.getNewItems();
-                pagerAdapter = new ViewPagerAdapter(getActivity(),newItems);
+                List<BookItem> bookItems = result.getBookItems();
+                pagerAdapter = new ViewPagerAdapter(getActivity(), bookItems);
                 viewPager.setAdapter(pagerAdapter);
 
             }

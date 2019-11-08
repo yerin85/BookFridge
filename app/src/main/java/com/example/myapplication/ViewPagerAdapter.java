@@ -1,36 +1,28 @@
 package com.example.myapplication;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
-import com.example.myapplication.data.AladinResponse;
-import com.example.myapplication.data.NewItem;
-import com.example.myapplication.network.RetrofitClient;
+import com.example.myapplication.data.BookItem;
 import com.example.myapplication.network.ServiceApi;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
     ServiceApi service;
     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
     private Context mContext = null ;
-    private List<NewItem> newItems = null;
+    private List<BookItem> bookItems = null;
     private String title;
     Context context =GlobalApplication.getContext();
     public ViewPagerAdapter() {
@@ -38,9 +30,9 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     // Context를 전달받아 mContext에 저장하는 생성자 추가.
-    public ViewPagerAdapter(Context context, List<NewItem> items) {
+    public ViewPagerAdapter(Context context, List<BookItem> items) {
         mContext = context ;
-        newItems = items;
+        bookItems = items;
     }
 
     @Override
@@ -61,12 +53,12 @@ public class ViewPagerAdapter extends PagerAdapter {
             imageViewArrayList.add(view.findViewById(R.id.imageView3));
             imageViewArrayList.add(view.findViewById(R.id.imageView4));
             for (int i=0;i<4;i++){
-                NewItem newItem = newItems.get(i+position*4);
-                if(newItem.getTitle().length()>16) title = newItem.getTitle().substring(0,10) +"\n"+newItem.getTitle().substring(10,16)+"...";
-                else if (newItem.getTitle().length()>10) title = newItem.getTitle().substring(0,10) +"\n"+newItem.getTitle().substring(10);
-                else title = newItem.getTitle();
+                BookItem bookItem = bookItems.get(i+position*4);
+                if(bookItem.getTitle().length()>16) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10,16)+"...";
+                else if (bookItem.getTitle().length()>10) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10);
+                else title = bookItem.getTitle();
                 textViewArrayList.get(i).setText(title);
-                Glide.with(view.getContext()).load(newItem.getCover()).into(imageViewArrayList.get(i));
+                Glide.with(view.getContext()).load(bookItem.getCover()).into(imageViewArrayList.get(i));
             }
 
         }
@@ -86,7 +78,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         // 전체 페이지 수
-        return newItems.size()/4;
+        return bookItems.size()/4;
     }
 
     @Override

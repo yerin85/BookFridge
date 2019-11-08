@@ -8,6 +8,7 @@ import retrofit2.http.Query;
 
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
+import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
@@ -25,8 +26,8 @@ public interface ServiceApi {
     @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=BestSeller&MaxResults=20&start=1&SearchTarget=Book&output=JS&Version=20131101")
     Call<AladinResponse> itemList(@Query("categoryId") String searchCategoryId);
 
-    @GET("ItemSearch.aspx?ttbkey=ttb0318592203001&MaxResults=1&start=1&SearchTarget=Book&output=JS&Version=20131101")
-    Call<AladinResponse> itemSearch( @Query("QueryType") String queryType,@Query("Query") String query,@Query("page") String pageNum);
+    @GET("ItemSearch.aspx?ttbkey=ttb0318592203001&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
+    Call<AladinResponse> itemSearch( @Query("QueryType") String queryType,@Query("Query") String query,@Query("page") int pageNum, @Query("MaxResults") int maxResults);
 
     @POST("/user/createUserProfile")
     Call<BasicResponse> createUserProfile(@Body UserProfileData data);

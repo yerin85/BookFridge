@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,7 +9,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,16 +25,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.myapplication.AladdinOpenAPI;
 import com.example.myapplication.data.*;
 import com.example.myapplication.network.*;
-import com.kakao.usermgmt.response.model.User;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.myapplication.data.Functions.categorizeBooks;
 import static com.example.myapplication.data.Functions.getDateString;
@@ -48,10 +46,9 @@ public class SearchMenu extends AppCompatActivity {
     Integer totalPageNum;//전체 페이지 수
     UserInfo userInfo;
 
-    AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
     ServiceApi service;
     RecyclerView recyclerView;
-    RecyclerView.Adapter adapter;
+    SearchAdapter searchAdapter;
     RecyclerView.LayoutManager layoutManager;
     ImageButton searchButton;
     InputMethodManager imm;
@@ -90,8 +87,7 @@ public class SearchMenu extends AppCompatActivity {
             public void onClick(View v) {
                 if (pageNum < totalPageNum) {
                     pageNum++;
-                    SearchTask search = new SearchTask();
-                    search.execute();
+                    bookItemSearch(queryTarget,query,pageNum);
                 }
             }
         });
@@ -104,8 +100,7 @@ public class SearchMenu extends AppCompatActivity {
                     if (pageNum != 1) {
                         pageNum--;
                     }
-                    SearchTask search = new SearchTask();
-                    search.execute();
+                    bookItemSearch(queryTarget,query,pageNum);
                 }
             }
         });
@@ -145,62 +140,47 @@ public class SearchMenu extends AppCompatActivity {
                 pageNum = 1;
 
                 //검색 수행
-                SearchTask search = new SearchTask();
-                search.execute();
+                bookItemSearch(queryTarget,query,pageNum);
             }
         });
 
     }
 
-    public class SearchTask extends AsyncTask<Void, Void, ArrayList<Item>> {
-
-        String url = "";
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected ArrayList<Item> doInBackground(Void... v) {
-
-            try {
-                url = AladdinOpenAPI.GetUrl(queryTarget, query, pageNum.toString());
-                api.Items.clear();
-                api.parseXml(url);
-            } catch (Exception e) {
-                e.printStackTrace();
+    public void bookItemSearch(String queryTarget,String query,int pageNum){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.aladin.co.kr/ttb/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        service = retrofit.create(ServiceApi.class);
+        service.itemSearch(queryTarget,query,pageNum,10).enqueue(new Callback<AladinResponse>() {
+            @Override
+            public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                AladinResponse responseResult = response.body();
+                ArrayList<BookItem> bookItems = responseResult.getBookItems();
+                searchAdapter = new SearchAdapter(bookItems);
+                recyclerView.setAdapter(searchAdapter);
+                if (responseResult.getTotalResults() == 0) {
+                    Toast.makeText(getApplicationContext(), "검색 결과가 없습니다", Toast.LENGTH_LONG).show();
+                } else {
+                    totalPageNum = (responseResult.getTotalResults() - 1) / 10 + 1;
+                    totalPage.setText(totalPageNum.toString());
+                    currnetPage.setText(Integer.toString(pageNum));
+                    pageLayout.setVisibility(View.VISIBLE);
+                }
             }
 
-            return api.Items;
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... v) {
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Item> items) {
-            adapter = new SearchAdapter(items);
-            recyclerView.setAdapter(adapter);
-            if (api.totalResults == 0) {
-                Toast.makeText(getApplicationContext(), "검색 결과가 없습니다", Toast.LENGTH_LONG).show();
-            } else {
-                totalPageNum = (api.totalResults - 1) / 10 + 1;
-                totalPage.setText(totalPageNum.toString());
-                currnetPage.setText(pageNum.toString());
-                pageLayout.setVisibility(View.VISIBLE);
-            }
-        }
-
+            @Override
+            public void onFailure(Call<AladinResponse> call, Throwable t) {
+                Toast.makeText(SearchMenu.this,"서버 오류입니다", Toast.LENGTH_SHORT).show();                    }
+        });
     }
 
     public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
-        private ArrayList<Item> items;
+        private ArrayList<BookItem> bookItems;
 
-        public SearchAdapter(ArrayList<Item> items) {
-            this.items = items;
+        public SearchAdapter(ArrayList<BookItem> bookItems) {
+            this.bookItems = bookItems;
         }
 
 
@@ -228,8 +208,8 @@ public class SearchMenu extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(SearchMenu.this, BookDetail.class);
-                        Item item = items.get(getAdapterPosition());
-                        intent.putExtra("bookItem", item);
+                        BookItem bookItem = bookItems.get(getAdapterPosition());
+                        intent.putExtra("bookItem", bookItem);
                         intent.putExtra("userId", userInfo.userId);
                         startActivity(intent);
                     }
@@ -239,13 +219,13 @@ public class SearchMenu extends AppCompatActivity {
                 libButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Item item = items.get(getAdapterPosition());
-                        service.addLibrary(new LibraryData(userInfo.userId, item.isbn, 0, "", getDateString(), getDateString(), categorizeBooks(item.categoryName), item.title, item.cover)).enqueue(new Callback<BasicResponse>() {
+                        BookItem bookItem = bookItems.get(getAdapterPosition());
+                        service.addLibrary(new LibraryData(userInfo.userId, bookItem.getIsbn(), 0, "", getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result = response.body();
                                 if (result.getCode() == 200) {
-                                    service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(item.categoryName))).enqueue(new Callback<BasicResponse>() {
+                                    service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
                                         @Override
                                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                             BasicResponse result = response.body();
@@ -296,8 +276,8 @@ public class SearchMenu extends AppCompatActivity {
                 wishButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Item item = items.get(getAdapterPosition());
-                        service.addWishlist(new WishlistData(userInfo.userId, item.isbn, item.title, item.cover)).enqueue(new Callback<BasicResponse>() {
+                        BookItem bookItem = bookItems.get(getAdapterPosition());
+                        service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 BasicResponse result = response.body();
@@ -346,17 +326,17 @@ public class SearchMenu extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
-            Item item = items.get(position);
-            holder.title.setText(item.title);
-            holder.description.setText(item.description);
-            holder.author.setText(item.author);
-            Glide.with(holder.itemView.getContext()).load(item.cover).into(holder.cover);
-            holder.publisher.setText(item.publisher);
+            BookItem bookItem = bookItems.get(position);
+            holder.title.setText(bookItem.getTitle());
+            holder.description.setText(bookItem.getDescription());
+            holder.author.setText(bookItem.getAuthor());
+            Glide.with(holder.itemView.getContext()).load(bookItem.getCover()).into(holder.cover);
+            holder.publisher.setText(bookItem.getPublisher());
         }
 
         @Override
         public int getItemCount() {
-            return items.size();
+            return bookItems.size();
         }
     }
 }
