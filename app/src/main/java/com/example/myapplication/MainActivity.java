@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
-        showDialog();
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -104,76 +103,6 @@ public class MainActivity extends AppCompatActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
         goToBookDetail(MainActivity.this,userInfo.userId,result.getContents());
-    }
-    public void showDialog() {
-        final List<String> ListItems = new ArrayList<String>();
-        ListItems.add("만화");
-        ListItems.add("SF");
-        ListItems.add("추리");
-        ListItems.add("고전");
-        ListItems.add("액션");
-        ListItems.add("판타지");
-        ListItems.add("희곡");
-        ListItems.add("에세이");
-        ListItems.add("시");
-        ListItems.add("무협");
-
-        final List<String> GenreList = new ArrayList<>();
-        GenreList.add("comics");
-        GenreList.add("sf");
-        GenreList.add("mystery");
-        GenreList.add("classical");
-        GenreList.add("action");
-        GenreList.add("fantasy");
-        GenreList.add("theatrical");
-        GenreList.add("essay");
-        GenreList.add("poem");
-        GenreList.add("martialArt");
-
-        //checked 부분은 데이터 받아와서 변경하는걸로!!
-        final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
-        final List<Integer> SelectedItems = new ArrayList();
-        service = RetrofitClient.getClient().create(ServiceApi.class);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("좋아하는 장르를 선택해주세요");
-        builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
-
-                if (isChecked) SelectedItems.add(i);
-                else if (SelectedItems.contains(i)) SelectedItems.remove(Integer.valueOf(i));
-            }
-        });
-
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                for (int j = 0; j < SelectedItems.size(); j++) {
-                    service.addUserGenre(new UserGenreData(userInfo.userId,GenreList.get(SelectedItems.get(j)))).enqueue(new Callback<BasicResponse>() {
-                        @Override
-                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            BasicResponse result = response.body();
-                            Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                        @Override
-                        public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                }
-            }
-        });
-
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        builder.show();
     }
 
 }

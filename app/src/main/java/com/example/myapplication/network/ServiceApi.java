@@ -47,7 +47,7 @@ public interface ServiceApi {
 
     //한 유저의 특정 책 노트 정보
     @POST("/user/getMyNote")
-    Call<BasicResponse> getMyNote(@Query("userId") String userId,@Query("isbn") String isbn);
+    Call<LibraryResponse> getMyNote(@Query("userId") String userId,@Query("isbn") String isbn);
 
     @POST("/user/subLibrary")
     Call<BasicResponse> subLibrary(@Query("userId") String userId,@Query("isbn") String isbn);

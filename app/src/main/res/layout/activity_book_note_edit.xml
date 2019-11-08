@@ -69,11 +69,14 @@
 
             <TextView
                 android:id="@+id/edit_note_start_date"
-                android:layout_width="match_parent"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/round_corner_gray"
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
                 android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/edit_note_start_text" />
 
             <TextView
@@ -88,11 +91,14 @@
 
             <TextView
                 android:id="@+id/edit_note_end_date"
-                android:layout_width="match_parent"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/round_corner_gray"
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
                 android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/edit_note_end_text" />
 
             <TextView
@@ -132,11 +138,11 @@
         android:layout_height="0dp"
         android:layout_margin="20dp"
         android:textSize="16dp"
-        android:background="#ECECEC"
+        android:background="@drawable/round_corner_gray"
         android:gravity="top"
         android:breakStrategy="high_quality"
         android:cursorVisible="true"
-        android:padding="5dp"
+        android:padding="10dp"
         app:layout_constraintTop_toBottomOf="@+id/edit_note_book_layout"
         app:layout_constraintBottom_toTopOf="@+id/edit_note_buttons_layout"/>
 
