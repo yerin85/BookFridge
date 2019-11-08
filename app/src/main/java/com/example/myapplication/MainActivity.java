@@ -23,8 +23,8 @@ import androidx.annotation.NonNull;
 
 import android.view.MenuItem;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            fragmentManager=getFragmentManager();
+            fragmentManager=getSupportFragmentManager();
+
             fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_library:
+
                     fragmentTransaction.replace(R.id.frame_layout,LibraryMenu.newInstance(userInfo));
                     fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
                     fragmentTransaction.commit();
@@ -99,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        fragmentManager=getFragmentManager();
+        fragmentManager=getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
         fragmentManager.beginTransaction().replace(R.id.frame_layout, new HomeMenu());

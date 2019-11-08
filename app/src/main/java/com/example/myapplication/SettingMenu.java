@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import androidx.fragment.app.Fragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -12,8 +13,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
-
-import android.app.Fragment;
 
 import androidx.fragment.app.FragmentActivity;
 
