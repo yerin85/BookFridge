@@ -15,7 +15,6 @@ import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
-import com.example.myapplication.data.UserPrivateData;
 import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.data.WishlistData;
 import com.example.myapplication.data.WishlistResponse;
@@ -27,10 +26,16 @@ public interface ServiceApi {
     Call<AladinResponse> itemList(@Query("categoryId") String searchCategoryId);
 
     @GET("ItemSearch.aspx?ttbkey=ttb0318592203001&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
-    Call<AladinResponse> itemSearch( @Query("QueryType") String queryType,@Query("Query") String query,@Query("page") int pageNum, @Query("MaxResults") int maxResults);
+    Call<AladinResponse> itemSearch(@Query("QueryType") String queryType, @Query("Query") String query, @Query("page") int pageNum, @Query("MaxResults") int maxResults);
 
     @POST("/user/createUserProfile")
     Call<BasicResponse> createUserProfile(@Body UserProfileData data);
+
+    @POST("/user/updateUserProfile")
+    Call<BasicResponse> updateUserProfile(@Query("userId") String userId, @Query("nickname") String nickname, @Query("profile") String profile);
+
+    @POST("/user/existUserProfile")
+    Call<BasicResponse> existUserProfile(@Query("userId") String userId);
 
     @POST("/user/subUserProfile")
     Call<BasicResponse> subUserProfile(@Query("userId") String userId);
@@ -47,10 +52,10 @@ public interface ServiceApi {
 
     //한 유저의 특정 책 노트 정보
     @POST("/user/getMyNote")
-    Call<LibraryResponse> getMyNote(@Query("userId") String userId,@Query("isbn") String isbn);
+    Call<LibraryResponse> getMyNote(@Query("userId") String userId, @Query("isbn") String isbn);
 
     @POST("/user/subLibrary")
-    Call<BasicResponse> subLibrary(@Query("userId") String userId,@Query("isbn") String isbn);
+    Call<BasicResponse> subLibrary(@Query("userId") String userId, @Query("isbn") String isbn);
 
     @POST("/user/addWishlist")
     Call<BasicResponse> addWishlist(@Body WishlistData data);
@@ -59,13 +64,13 @@ public interface ServiceApi {
     Call<ArrayList<WishlistResponse>> getWishlist(@Query("userId") String userId);
 
     @POST("/user/subWishlist")
-    Call<BasicResponse> subWishlist(@Query("userId") String userId,@Query("isbn") String isbn);
+    Call<BasicResponse> subWishlist(@Query("userId") String userId, @Query("isbn") String isbn);
 
     @POST("/user/createMyPage")
     Call<BasicResponse> createMyPage(@Query("userId") String userId);
 
     @POST("/user/updateUserPrivate")
-    Call<BasicResponse> updateUserPrivate(@Body UserPrivateData data);
+    Call<BasicResponse> updateUserPrivate(@Query("userId") String userId,@Query("priv") String priv);
 
     @POST("/user/addMypage")
     Call<BasicResponse> addMypage(@Body MyPageData data);
@@ -74,7 +79,7 @@ public interface ServiceApi {
     Call<BasicResponse> subMypage(@Body MyPageData data);
 
     @POST("/user/getMypage")
-    Call <ArrayList<MyPageResponse>> getMypage(@Query("userId") String userId);
+    Call<ArrayList<MyPageResponse>> getMypage(@Query("userId") String userId);
 
     @POST("/user/addUserGenre")
     Call<BasicResponse> addUserGenre(@Body UserGenreData data);
@@ -87,4 +92,7 @@ public interface ServiceApi {
 
     @POST("/user/getUserComments")
     Call<ArrayList<UserNoteResponse>> getUserComments(@Query("userId") String userId, @Query("isbn") String isbn);
+
+    @POST("/user/getAvgRating")
+    Call<String> getAvgRating(@Query("isbn") String isbn);
 }

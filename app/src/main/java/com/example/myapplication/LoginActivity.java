@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import android.app.Service;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +11,6 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.content.Intent;
 
-import com.example.myapplication.data.BasicResponse;
-import com.example.myapplication.data.MyPageData;
-import com.example.myapplication.data.UserPrivateData;
-import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.kakao.auth.ApiErrorCode;
@@ -29,11 +24,6 @@ import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.util.exception.KakaoException;
 
 import java.io.Serializable;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 class UserInfo implements Serializable {
     String userId;
@@ -112,47 +102,6 @@ public class LoginActivity extends AppCompatActivity {
                     String userId = String.valueOf(result.getId());
                     String nickname = result.getNickname();
                     String imagePath = result.getProfileImagePath();
-                    service= RetrofitClient.getClient().create(ServiceApi.class);
-
-                    //userProfile 저장
-                    service.createUserProfile(new UserProfileData(userId,nickname,imagePath)).enqueue(new Callback<BasicResponse>() {
-                        @Override
-                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            BasicResponse result = response.body();
-                            if(result.getCode()!=200){//오류
-                                Toast.makeText(LoginActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
-                                //종료
-                                finish();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(LoginActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
-                            //종료
-                            finish();
-                        }
-                    });
-
-                    //myPage table entry 생성
-                    service.createMyPage(userId).enqueue(new Callback<BasicResponse>() {
-                        @Override
-                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            BasicResponse result = response.body();
-                            if(result.getCode()!=200){//오류
-                                Toast.makeText(LoginActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
-                                //종료
-                                finish();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(LoginActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
-                            //종료
-                            finish();
-                        }
-                    });
 
                     Toast.makeText(getApplicationContext(), nickname + "님 안녕하세요", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);

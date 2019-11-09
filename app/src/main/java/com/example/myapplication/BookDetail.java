@@ -8,12 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Rating;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ public class BookDetail extends AppCompatActivity {
     NoteAdapter noteAdapter;
     RecyclerView.LayoutManager layoutManager;
     TextView myNote;
+    RatingBar rating;
 
 
     @Override
@@ -67,8 +70,23 @@ public class BookDetail extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         myNote = findViewById(R.id.detail_myNote);
+        rating = findViewById(R.id.rating_star);
         libButton = findViewById(R.id.detail_add_library);
         wishButton = findViewById(R.id.detail_wishlist);
+
+        service.getAvgRating(bookItem.getIsbn()).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Float star = Float.parseFloat(response.body());
+                rating.setRating(Math.round(star*10)/10);
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+
 
         service.getMyNote(userId,bookItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
             @Override

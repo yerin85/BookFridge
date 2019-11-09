@@ -12,6 +12,7 @@ import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
+import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -87,17 +88,84 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
 
-        final boolean[] show = {false};
-
-        //함수적용예정
-
-        if(show[0]) {
-            showDialog();
-        }
-
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        service= RetrofitClient.getClient().create(ServiceApi.class);
+
+
+        service.existUserProfile(userInfo.userId).enqueue(new Callback<BasicResponse>() {
+            @Override
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                BasicResponse result = response.body();
+                if(result.getCode()==400){
+                    showDialog();
+                    String userId = String.valueOf(userInfo.userId);
+                    String nickname = userInfo.nickname;
+                    String imagePath = userInfo.imagePath;
+
+                    //userProfile 저장
+                    service.createUserProfile(new UserProfileData(userId,nickname,imagePath)).enqueue(new Callback<BasicResponse>() {
+                        @Override
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse result = response.body();
+                            if(result.getCode()!=200){//오류
+                                Toast.makeText(MainActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                                //종료
+                                finish();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                            //종료
+                            finish();
+                        }
+                    });
+
+                    //myPage table entry 생성
+                    service.createMyPage(userId).enqueue(new Callback<BasicResponse>() {
+                        @Override
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse result = response.body();
+                            if(result.getCode()!=200){//오류
+                                Toast.makeText(MainActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                                //종료
+                                finish();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                            //종료
+                            finish();
+                        }
+                    });
+                }else{
+                    //있는 계정이면 프로필 정보 디비에 업데이트
+                    service.updateUserProfile(userInfo.userId,userInfo.nickname,userInfo.imagePath).enqueue(new Callback<BasicResponse>() {
+                        @Override
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse result=response.body();
+                            if(result.getCode()!=200){
+                                Toast.makeText(MainActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
+
+            }
+        });
 
         fragmentManager=getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -143,8 +211,6 @@ public class MainActivity extends AppCompatActivity {
         //checked 부분은 데이터 받아와서 변경하는걸로!!
         final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
         final List<Integer> SelectedItems = new ArrayList();
-        service = RetrofitClient.getClient().create(ServiceApi.class);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("좋아하는 장르를 선택해주세요");
         builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {

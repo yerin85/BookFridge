@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,12 +14,9 @@ import android.widget.Toast;
 
 import android.app.Fragment;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
-import com.example.myapplication.data.UserPrivateData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.kakao.network.ErrorResult;
@@ -167,7 +163,7 @@ public class SettingMenu extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
                     Toast.makeText(getContext(), "공개여부에 동의하셨습니다.", Toast.LENGTH_LONG).show();
-                    service.updateUserPrivate(new UserPrivateData(userInfo.userId, "0")).enqueue(new Callback<BasicResponse>() {
+                    service.updateUserPrivate(userInfo.userId, "0").enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
@@ -184,7 +180,7 @@ public class SettingMenu extends Fragment {
                     });
                 } else {
                     Toast.makeText(getContext(), "비공개로 전환하였습니다", Toast.LENGTH_LONG).show();
-                    service.updateUserPrivate(new UserPrivateData(userInfo.userId, "1")).enqueue(new Callback<BasicResponse>() {
+                    service.updateUserPrivate(userInfo.userId, "1").enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
