@@ -24,8 +24,8 @@ import androidx.annotation.NonNull;
 
 import android.view.MenuItem;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +44,13 @@ public class MainActivity extends AppCompatActivity {
     UserInfo userInfo;
     ServiceApi service;
 
-
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            fragmentManager=getFragmentManager();
+            fragmentManager=getSupportFragmentManager();
+
             fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
@@ -60,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_library:
+
                     fragmentTransaction.replace(R.id.frame_layout,LibraryMenu.newInstance(userInfo));
                     fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
                     fragmentTransaction.commit();
@@ -89,6 +89,25 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
+        service = RetrofitClient.getClient().create(ServiceApi.class);
+        userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
+        service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
+                ArrayList<UserGenreResponse> arr = response.body();
+
+                if(arr.isEmpty()) {
+                    showDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
+
+            }
+        });
+
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         service= RetrofitClient.getClient().create(ServiceApi.class);
@@ -167,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        fragmentManager=getFragmentManager();
+        fragmentManager=getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
         fragmentManager.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
@@ -239,13 +258,6 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                 }
-            }
-        });
-
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
             }
         });
 
