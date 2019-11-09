@@ -26,7 +26,7 @@ public interface ServiceApi {
     Call<AladinResponse> itemList(@Query("categoryId") String searchCategoryId);
 
     @GET("ItemSearch.aspx?ttbkey=ttb0318592203001&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
-    Call<AladinResponse> itemSearch(@Query("QueryType") String queryType, @Query("Query") String query, @Query("page") int pageNum, @Query("MaxResults") int maxResults);
+    Call<AladinResponse> itemSearch(@Query("QueryType") String queryType, @Query("Query") String query, @Query("start") int pageNum, @Query("MaxResults") int maxResults);
 
     @POST("/user/createUserProfile")
     Call<BasicResponse> createUserProfile(@Body UserProfileData data);

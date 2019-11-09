@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.AladinResponse;
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 //바코드

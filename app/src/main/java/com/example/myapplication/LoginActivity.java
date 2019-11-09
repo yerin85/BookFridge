@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.content.Intent;
 
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.kakao.auth.ApiErrorCode;
@@ -24,18 +25,6 @@ import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.util.exception.KakaoException;
 
 import java.io.Serializable;
-
-class UserInfo implements Serializable {
-    String userId;
-    String nickname;
-    String imagePath;
-
-    UserInfo(String userId, String nickname, String imagePath) {
-        this.userId = userId;
-        this.nickname = nickname;
-        this.imagePath = imagePath;
-    }
-}
 
 public class LoginActivity extends AppCompatActivity {
 

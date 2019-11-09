@@ -100,7 +100,6 @@ public class BookNoteEdit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //깂이 변경되지 않았음
-                setResult(0);
                 finish();
             }
         });
@@ -114,15 +113,9 @@ public class BookNoteEdit extends AppCompatActivity {
                         BasicResponse result = response.body();
                         Toast.makeText(BookNoteEdit.this, result.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
                         if (result.getCode() == 200) {
-                            //값이 변경되었음
-                            Intent intent = new Intent();
-                            intent.putExtra("rating",rating.getRating());
-                            intent.putExtra("myNote",myNote.getText().toString());
-                            intent.putExtra("startDate",startDate.getText().toString());
-                            intent.putExtra("endDate",endDate.getText().toString());
-                            setResult(1,intent);
                             finish();
                         }
+                        Toast.makeText(BookNoteEdit.this, result.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

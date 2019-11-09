@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.kakao.network.ErrorResult;

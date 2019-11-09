@@ -18,8 +18,10 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
+import com.kakao.usermgmt.response.model.User;
 
 import org.w3c.dom.Text;
 
@@ -32,6 +34,7 @@ import static com.example.myapplication.data.Functions.goToBookDetail;
 
 public class BookNote extends AppCompatActivity {
     LibraryResponse libItem;
+    UserInfo userInfo;
     ServiceApi service;
     ImageView cover;
     TextView title;
@@ -58,7 +61,9 @@ public class BookNote extends AppCompatActivity {
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
-        libItem = (LibraryResponse) getIntent().getSerializableExtra("libItem");
+        Intent intent =getIntent();
+        libItem = (LibraryResponse) intent.getSerializableExtra("libItem");
+        userInfo =(UserInfo) intent.getSerializableExtra("userInfo") ;
 
         displayNote(libItem);
 
@@ -70,7 +75,7 @@ public class BookNote extends AppCompatActivity {
         detailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToBookDetail(BookNote.this,libItem.getUserId(),libItem.getIsbn());
+                goToBookDetail(BookNote.this,userInfo,libItem.getIsbn());
             }
         });
 
@@ -123,7 +128,7 @@ public class BookNote extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(BookNote.this, BookNoteEdit.class);
                 intent.putExtra("libItem", libItem);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
             }
         });
     }
@@ -137,14 +142,21 @@ public class BookNote extends AppCompatActivity {
         myNote.setText(libItem.getNote());
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 1) {
-            rating.setRating(data.getFloatExtra("rating",0));
-            myNote.setText(data.getStringExtra("myNote"));
-            startDate.setText(data.getStringExtra("startDate"));
-            endDate.setText(data.getStringExtra("endDate"));
-        }
-    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        service.getMyNote(userInfo.userId,libItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
+            @Override
+            public void onResponse(Call<LibraryResponse> call, Response<LibraryResponse> response) {
+                LibraryResponse libraryResponse = response.body();
+                libItem =libraryResponse;
+                displayNote(libItem);
+            }
 
+            @Override
+            public void onFailure(Call<LibraryResponse> call, Throwable t) {
+                Toast.makeText(BookNote.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

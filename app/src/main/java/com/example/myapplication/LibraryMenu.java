@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.LibraryResponse;
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 
@@ -106,6 +107,7 @@ public class LibraryMenu extends Fragment {
                         Intent intent = new Intent(getActivity(), BookNote.class);
                         LibraryResponse libItem = libItems.get(getAdapterPosition());
                         intent.putExtra("libItem", libItem);
+                        intent.putExtra("userInfo",userInfo);
                         startActivity(intent);
                     }
                 });

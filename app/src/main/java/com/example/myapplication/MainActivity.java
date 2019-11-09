@@ -12,12 +12,13 @@ import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android .IntentResult;
+import com.google.zxing.integration.android.IntentResult;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
@@ -41,45 +42,10 @@ import static com.example.myapplication.data.Functions.goToBookDetail;
 public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
+    BottomNavigationView navView;
     UserInfo userInfo;
     ServiceApi service;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            fragmentManager=getSupportFragmentManager();
-
-            fragmentTransaction = fragmentManager.beginTransaction();
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
-                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
-                    fragmentTransaction.commit();
-                    return true;
-                case R.id.navigation_library:
-
-                    fragmentTransaction.replace(R.id.frame_layout,LibraryMenu.newInstance(userInfo));
-                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
-                    fragmentTransaction.commit();
-                    return true;
-                case R.id.navigation_mypage:
-                    fragmentTransaction.replace(R.id.frame_layout,MypageMenu.newInstance(userInfo));
-                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new MypageMenu());
-                    fragmentTransaction.commit();
-                    return true;
-                case R.id.navigation_setting:
-                    fragmentTransaction.replace(R.id.frame_layout,SettingMenu.newInstance(userInfo));
-                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new SettingMenu());
-                    fragmentTransaction.commit();
-                    return true;
-            }
-
-
-            return false;
-        }
-    };
+    int fragmentNumber;
 
 
     @Override
@@ -89,47 +55,32 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
+        fragmentNumber = intent.getIntExtra("fragmentNumber", 1);
+
         service = RetrofitClient.getClient().create(ServiceApi.class);
-        userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
-        service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
-            @Override
-            public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
-                ArrayList<UserGenreResponse> arr = response.body();
 
-                if(arr.isEmpty()) {
-                    showDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
-
-            }
-        });
-
-
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+        navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        service= RetrofitClient.getClient().create(ServiceApi.class);
+        service = RetrofitClient.getClient().create(ServiceApi.class);
 
 
         service.existUserProfile(userInfo.userId).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 BasicResponse result = response.body();
-                if(result.getCode()==400){
+                if (result.getCode() == 400) {
                     showDialog();
                     String userId = String.valueOf(userInfo.userId);
                     String nickname = userInfo.nickname;
                     String imagePath = userInfo.imagePath;
 
                     //userProfile 저장
-                    service.createUserProfile(new UserProfileData(userId,nickname,imagePath)).enqueue(new Callback<BasicResponse>() {
+                    service.createUserProfile(new UserProfileData(userId, nickname, imagePath)).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
-                            if(result.getCode()!=200){//오류
-                                Toast.makeText(MainActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                            if (result.getCode() != 200) {//오류
+                                Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                 //종료
                                 finish();
                             }
@@ -137,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                             //종료
                             finish();
                         }
@@ -148,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
-                            if(result.getCode()!=200){//오류
-                                Toast.makeText(MainActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                            if (result.getCode() != 200) {//오류
+                                Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                 //종료
                                 finish();
                             }
@@ -157,24 +108,25 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                             //종료
                             finish();
                         }
                     });
-                }else{
+                } else {
                     //있는 계정이면 프로필 정보 디비에 업데이트
-                    service.updateUserProfile(userInfo.userId,userInfo.nickname,userInfo.imagePath).enqueue(new Callback<BasicResponse>() {
+                    service.updateUserProfile(userInfo.userId, userInfo.nickname, userInfo.imagePath).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            BasicResponse result=response.body();
-                            if(result.getCode()!=200){
-                                Toast.makeText(MainActivity.this,result.getMessage(),Toast.LENGTH_SHORT).show();
+                            BasicResponse result = response.body();
+                            if (result.getCode() != 200) {
+                                Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
+
                         @Override
                         public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -186,11 +138,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        fragmentManager=getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout,HomeMenu.newInstance(userInfo));
-        fragmentManager.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
-        fragmentTransaction.commit();
+       changeFragment(fragmentNumber);
+    }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            fragmentManager = getSupportFragmentManager();
+
+            fragmentTransaction = fragmentManager.beginTransaction();
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    fragmentTransaction.replace(R.id.frame_layout, HomeMenu.newInstance(userInfo));
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new HomeMenu());
+                    fragmentTransaction.commit();
+                    return true;
+                case R.id.navigation_library:
+                    fragmentTransaction.replace(R.id.frame_layout, LibraryMenu.newInstance(userInfo));
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
+                    fragmentTransaction.commit();
+                    return true;
+                case R.id.navigation_mypage:
+                    fragmentTransaction.replace(R.id.frame_layout, MypageMenu.newInstance(userInfo));
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new MypageMenu());
+                    fragmentTransaction.commit();
+                    return true;
+                case R.id.navigation_setting:
+                    fragmentTransaction.replace(R.id.frame_layout, SettingMenu.newInstance(userInfo));
+                    fragmentManager.beginTransaction().replace(R.id.frame_layout, new SettingMenu());
+                    fragmentTransaction.commit();
+                    return true;
+            }
+
+
+            return false;
+        }
+    };
+
+    public void changeFragment(int fragmentNumber) {
+        switch (fragmentNumber) {
+            case 1:
+                navView.setSelectedItemId(R.id.navigation_home);
+                break;
+            case 2:
+                navView.setSelectedItemId(R.id.navigation_library);
+                break;
+            case 3:
+                navView.setSelectedItemId(R.id.navigation_mypage);
+                break;
+            case 4:
+                navView.setSelectedItemId(R.id.navigation_setting);
+                break;
+        }
     }
 
     //바코드 결과 함수
@@ -200,8 +201,9 @@ public class MainActivity extends AppCompatActivity {
         // QR코드/바코드를 스캔한 결과 값을 가져옵니다.
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
-        goToBookDetail(MainActivity.this,userInfo.userId,result.getContents());
+        goToBookDetail(MainActivity.this, userInfo, result.getContents());
     }
+
     public void showDialog() {
         final List<String> ListItems = new ArrayList<String>();
         ListItems.add("만화");
@@ -245,12 +247,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 for (int j = 0; j < SelectedItems.size(); j++) {
-                    service.addUserGenre(new UserGenreData(userInfo.userId,GenreList.get(SelectedItems.get(j)))).enqueue(new Callback<BasicResponse>() {
+                    service.addUserGenre(new UserGenreData(userInfo.userId, GenreList.get(SelectedItems.get(j)))).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
                             Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                         }
+
                         @Override
                         public void onFailure(Call<BasicResponse> call, Throwable t) {
                             Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();

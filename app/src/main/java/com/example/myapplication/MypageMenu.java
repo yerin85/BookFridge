@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.ServiceApi;
 
 import java.util.HashMap;

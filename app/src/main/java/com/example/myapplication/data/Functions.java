@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.example.myapplication.BookDetail;
+import com.example.myapplication.LibraryMenu;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.network.ServiceApi;
 
 import java.text.SimpleDateFormat;
@@ -63,7 +65,7 @@ public class Functions {
         return str_date;
     }
 
-    public static void goToBookDetail(Context context, String userId, String isbn){
+    public static void goToBookDetail(Context context, UserInfo userInfo, String isbn){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.aladin.co.kr/ttb/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -79,7 +81,7 @@ public class Functions {
                 BookItem bookItem = bookItems.get(0);
                 Intent intent = new Intent(context, BookDetail.class);
                 intent.putExtra("bookItem", bookItem);
-                intent.putExtra("userId", userId);
+                intent.putExtra("userInfo", userInfo);
                 context.startActivity(intent);
             }
 
@@ -87,5 +89,13 @@ public class Functions {
             public void onFailure(Call<AladinResponse> call, Throwable t) {
                 Toast.makeText(context,"Fail", Toast.LENGTH_SHORT).show();                    }
         });
+    }
+
+    public static void goToLibrary(Context context, UserInfo userInfo){
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("userInfo",userInfo);
+        intent.putExtra("fragmentNumber",2);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
     }
 }

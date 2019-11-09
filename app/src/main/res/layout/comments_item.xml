@@ -39,7 +39,6 @@
         android:id="@+id/user_note"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="90dp"
         android:layout_marginLeft="10dp"
         android:background="@drawable/round_corner_gray"
         android:padding="6dp"

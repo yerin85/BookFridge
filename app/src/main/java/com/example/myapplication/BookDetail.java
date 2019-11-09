@@ -25,6 +25,7 @@ import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
+import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.WishlistData;
 import com.example.myapplication.network.RetrofitClient;
@@ -38,16 +39,18 @@ import retrofit2.Response;
 
 import static com.example.myapplication.data.Functions.categorizeBooks;
 import static com.example.myapplication.data.Functions.getDateString;
+import static com.example.myapplication.data.Functions.goToLibrary;
 
 public class BookDetail extends AppCompatActivity {
     Button libButton;
     Button wishButton;
-    String userId;
+    UserInfo userInfo;
     ServiceApi service;
     RecyclerView recyclerView;
     NoteAdapter noteAdapter;
     RecyclerView.LayoutManager layoutManager;
     TextView myNote;
+    TextView averageRating;
     RatingBar rating;
 
 
@@ -58,7 +61,7 @@ public class BookDetail extends AppCompatActivity {
 
         Intent intent = getIntent();
         BookItem bookItem = (BookItem) intent.getSerializableExtra("bookItem");
-        userId = intent.getExtras().getString("userId");
+        userInfo = (UserInfo)intent.getSerializableExtra("userInfo");
 
         //도서 상세 정보를 화면에 보여준다
         displayDetails(bookItem);
@@ -70,6 +73,7 @@ public class BookDetail extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         myNote = findViewById(R.id.detail_myNote);
+        averageRating =findViewById(R.id.rating_average);
         rating = findViewById(R.id.rating_star);
         libButton = findViewById(R.id.detail_add_library);
         wishButton = findViewById(R.id.detail_wishlist);
@@ -77,8 +81,9 @@ public class BookDetail extends AppCompatActivity {
         service.getAvgRating(bookItem.getIsbn()).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Float star = Float.parseFloat(response.body());
-                rating.setRating(Math.round(star*10)/10);
+                float star = Math.round(Float.parseFloat(response.body())*10)/10;
+                rating.setRating(star);
+                averageRating.setText("("+new Float(star).toString()+")");
             }
 
             @Override
@@ -88,7 +93,7 @@ public class BookDetail extends AppCompatActivity {
         });
 
 
-        service.getMyNote(userId,bookItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
+        service.getMyNote(userInfo.userId,bookItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
             @Override
             public void onResponse(Call<LibraryResponse> call, Response<LibraryResponse> response) {
                 LibraryResponse libItem = response.body();
@@ -96,11 +101,10 @@ public class BookDetail extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<LibraryResponse> call, Throwable t) {
-                Toast.makeText(BookDetail.this,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
 
-        service.getUserComments(userId, bookItem.getIsbn()).enqueue(new Callback<ArrayList<UserNoteResponse>>() {
+        service.getUserComments(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<ArrayList<UserNoteResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<UserNoteResponse>> call, Response<ArrayList<UserNoteResponse>> response) {
                 ArrayList<UserNoteResponse> noteItems = response.body();
@@ -117,12 +121,12 @@ public class BookDetail extends AppCompatActivity {
         libButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.addLibrary(new LibraryData(userId, bookItem.getIsbn(), 0, "", getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                service.addLibrary(new LibraryData(userInfo.userId, bookItem.getIsbn(), 0, "", getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();
                         if (result.getCode() == 200) {
-                            service.addMypage(new MyPageData(userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                            service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
                                 @Override
                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                     BasicResponse result = response.body();
@@ -142,12 +146,8 @@ public class BookDetail extends AppCompatActivity {
                                     .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            /*fragment로 이동시키는 코드
-                                             *
-                                             *
-                                             *
-                                             *
-                                             * */
+                                            //library로 이동
+                                            goToLibrary(BookDetail.this,userInfo);
                                         }
                                     })
                                     .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
@@ -172,7 +172,7 @@ public class BookDetail extends AppCompatActivity {
         wishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.addWishlist(new WishlistData(userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();

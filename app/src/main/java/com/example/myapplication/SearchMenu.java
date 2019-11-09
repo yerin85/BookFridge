@@ -38,6 +38,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.myapplication.data.Functions.categorizeBooks;
 import static com.example.myapplication.data.Functions.getDateString;
+import static com.example.myapplication.data.Functions.goToLibrary;
 
 public class SearchMenu extends AppCompatActivity {
     String query = "";//검색어
@@ -210,7 +211,7 @@ public class SearchMenu extends AppCompatActivity {
                         Intent intent = new Intent(SearchMenu.this, BookDetail.class);
                         BookItem bookItem = bookItems.get(getAdapterPosition());
                         intent.putExtra("bookItem", bookItem);
-                        intent.putExtra("userId", userInfo.userId);
+                        intent.putExtra("userInfo", userInfo);
                         startActivity(intent);
                     }
                 });
@@ -245,12 +246,8 @@ public class SearchMenu extends AppCompatActivity {
                                             .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    /*fragment로 이동시키는 코드
-                                                     *
-                                                     *
-                                                     *
-                                                     *
-                                                     * */
+                                                    //library로 이동
+                                                    goToLibrary(SearchMenu.this,userInfo);
                                                 }
                                             })
                                             .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
