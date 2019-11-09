@@ -186,13 +186,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
         builder.show();
     }
 
