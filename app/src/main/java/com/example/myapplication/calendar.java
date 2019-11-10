@@ -148,10 +148,11 @@ public class calendar extends Fragment {
                     endData = mylibrary.get(i).getEndDate().split("/");
                     genre = mylibrary.get(i).getGenre();
 
-                        CalendarDay day = CalendarDay.from(calendar);
-                        int year = Integer.parseInt(startData[0]);
-                        int month = Integer.parseInt(startData[1]);
-                        int dayy = Integer.parseInt(startData[2]);
+                    int year = Integer.parseInt(startData[0]);
+                    int month = Integer.parseInt(startData[1]);
+                    int dayy = Integer.parseInt(startData[2]);
+
+                        CalendarDay day = CalendarDay.from(year, month-1, dayy);
 
                         total.add(day);
                     switch (genre){
@@ -197,8 +198,6 @@ public class calendar extends Fragment {
 
                     }
 
-                        calendar.set(year, month - 1, dayy);
-
                     }
                     materialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
                     @Override
@@ -217,6 +216,8 @@ public class calendar extends Fragment {
                 });
 
 
+
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(124,252,0), dates13, getContext()));
                 materialCalendarView.addDecorator(new EventDecorator(Color.RED, dates1, getContext()));
                 materialCalendarView.addDecorator(new EventDecorator(Color.BLACK, dates2, getContext()));
 
@@ -225,16 +226,14 @@ public class calendar extends Fragment {
 
                 materialCalendarView.addDecorator(new EventDecorator(Color.GRAY, dates5, getContext()));
                 materialCalendarView.addDecorator(new EventDecorator(Color.GREEN, dates6, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.green(111), dates7, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.red(100), dates8, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(0,255,255), dates7, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255,182,193), dates8, getContext()));
 
-                materialCalendarView.addDecorator(new EventDecorator(Color.blue(285), dates9, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.red(10), dates10, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255,250,205), dates9, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(128,0,0), dates10, getContext()));
 
-                materialCalendarView.addDecorator(new EventDecorator(Color.blue(50), dates11, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.green(50), dates12, getContext()));
-
-                materialCalendarView.addDecorator(new EventDecorator(Color.green(200), dates13, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255,140,0), dates11, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(138,43,226), dates12, getContext()));
 
 
 
