@@ -21,14 +21,4 @@ public class RetrofitClient {
 
         return retrofit;
     }
-    public static Retrofit getClientAladin(){
-        if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(ALADIN_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-
-        return retrofit;
-    }
 }

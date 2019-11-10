@@ -16,12 +16,14 @@ import android.widget.Toast;
 
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.AladinResponse;
+import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 //바코드
 import com.google.zxing.integration.android.IntentIntegrator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -39,7 +41,9 @@ public class HomeMenu extends Fragment {
     private Animation fab_open, fab_close;
     private FloatingActionButton fab, fab1, fab2, fab3, fab4;
     private Boolean isFabOpen = false;
-    private ViewPager viewPager;
+    private ViewPager viewPagerBestSeller;
+    private ViewPager viewPagerNewList;
+    private ViewPagerAdapterSolo pagerAdapterSolo;
     private ViewPagerAdapter pagerAdapter;
     private ServiceApi service;
     UserInfo userInfo;
@@ -67,7 +71,9 @@ public class HomeMenu extends Fragment {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_home_menu, container, false);
 
-        viewPager = v.findViewById(R.id.viewPager);
+        viewPagerBestSeller = v.findViewById(R.id.viewPager);
+        viewPagerNewList = v.findViewById(R.id.viewPagerSolo);
+        bestSellerList();
         newList();
 
         userInfo = (UserInfo)getArguments().getSerializable("userInfo");
@@ -98,6 +104,7 @@ public class HomeMenu extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), OcrActivity.class);
+                intent.putExtra("userInfo",userInfo);
                 startActivity(intent);
                 anim();
             }
@@ -139,7 +146,7 @@ public class HomeMenu extends Fragment {
         return v;
     }
 
-    public void newList(){
+    public void bestSellerList(){
 
         String categoryId ="0";
         Retrofit retrofit = new Retrofit.Builder()
@@ -148,14 +155,45 @@ public class HomeMenu extends Fragment {
                 .build();
 
         service = retrofit.create(ServiceApi.class);
-        service.itemList(categoryId).enqueue(new Callback<AladinResponse>() {
+        service.bestSellerList(categoryId).enqueue(new Callback<AladinResponse>() {
             @Override
             public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                 AladinResponse result = response.body();
-                List<BookItem> bookItems = result.getBookItems();
-                pagerAdapter = new ViewPagerAdapter(getActivity(), bookItems);
-                viewPager.setAdapter(pagerAdapter);
+                if(result!=null) {
+                    List<BookItem> bookItems = result.getBookItems();
+                    pagerAdapter = new ViewPagerAdapter(getActivity(),userInfo,bookItems);
+                    viewPagerBestSeller.setAdapter(pagerAdapter);
+                }
+            }
 
+            @Override
+            public void onFailure(Call<AladinResponse> call, Throwable t) {
+                Toast.makeText(getActivity(),"Fail", Toast.LENGTH_SHORT).show();                    }
+        });
+    }
+
+    public void newList(){
+        String categoryId ="0";
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.aladin.co.kr/ttb/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        service = retrofit.create(ServiceApi.class);
+        service.itemNewList(categoryId).enqueue(new Callback<AladinResponse>() {
+            @Override
+            public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                AladinResponse result = response.body();
+                List<BookItem> newBookItems;
+                if(result!=null) {
+                    List<BookItem> bookItems = result.getBookItems();
+                    newBookItems = newListGenere(bookItems);
+                    if (newBookItems.size()>5) newBookItems = newBookItems.subList(0,5);
+                    if(newBookItems.isEmpty())
+                        pagerAdapterSolo = new ViewPagerAdapterSolo(getActivity(),userInfo,bookItems.subList(0,5));
+                    else pagerAdapterSolo = new ViewPagerAdapterSolo(getActivity(),userInfo,newBookItems);
+                    viewPagerNewList.setAdapter(pagerAdapterSolo);
+                }
             }
 
             @Override
@@ -187,6 +225,26 @@ public class HomeMenu extends Fragment {
         }
     }
 
+    public ArrayList<BookItem> newListGenere(List<BookItem> bookItems){
+        ArrayList<BookItem> newbookItems = new ArrayList<BookItem>();
+        service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
+                ArrayList<UserGenreResponse> userGenres = response.body();
+                if(userGenres.isEmpty()) return;
+                for(UserGenreResponse userGenre: userGenres){
+                    for(BookItem bookItem : bookItems){
+                        if (bookItem.getCategoryName() ==userGenre.getGenre())
+                            newbookItems.add(bookItem);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
 
+            }
+        });
+        return newbookItems;
+    }
 
 }
