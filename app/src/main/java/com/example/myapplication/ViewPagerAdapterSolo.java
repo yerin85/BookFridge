@@ -15,24 +15,24 @@ import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.ServiceApi;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.myapplication.data.Functions.goToBookDetail;
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapterSolo extends PagerAdapter {
     UserInfo userInfo;
     ServiceApi service;
     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
     private Context mContext = null ;
     private List<BookItem> bookItems = null;
     private String title;
+    private String description;
     Context context =GlobalApplication.getContext();
-    public ViewPagerAdapter() {
+    public ViewPagerAdapterSolo() {
     }
 
     // Context를 전달받아 mContext에 저장하는 생성자 추가.
-    public ViewPagerAdapter(Context context,UserInfo info, List<BookItem> items) {
+    public ViewPagerAdapterSolo(Context context,UserInfo info, List<BookItem> items) {
         mContext = context ;
         bookItems = items;
         userInfo = info;
@@ -44,31 +44,29 @@ public class ViewPagerAdapter extends PagerAdapter {
         if (mContext != null) {
             // LayoutInflater를 통해 "/res/layout/fragment_bestsellerler.xml"을 뷰로 생성.
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.fragment_bestseller, container, false);
+            view = inflater.inflate(R.layout.fragment_newlist, container, false);
 
+            TextView titleTextView = view.findViewById(R.id.titleTextView);
+            TextView descrpitionTextView = view.findViewById(R.id.descriptionTextView);
 
-            ArrayList<TextView> textViewArrayList = new ArrayList<>();
-            ArrayList<ImageView> imageViewArrayList = new ArrayList<>();
-            textViewArrayList.add(view.findViewById(R.id.textView1)) ;
-            textViewArrayList.add(view.findViewById(R.id.textView2)) ;
-            textViewArrayList.add(view.findViewById(R.id.textView3)) ;
-            imageViewArrayList.add(view.findViewById(R.id.imageView1));
-            imageViewArrayList.add(view.findViewById(R.id.imageView2));
-            imageViewArrayList.add(view.findViewById(R.id.imageView3));
-            for (int i=0;i<3;i++){
-                BookItem bookItem = bookItems.get(i+position*3);
-                if(bookItem.getTitle().length()>16) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10,16)+"...";
-                else if (bookItem.getTitle().length()>10) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10);
-                else title = bookItem.getTitle();
-                textViewArrayList.get(i).setText(title);
-                Glide.with(view.getContext()).load(bookItem.getCover()).into(imageViewArrayList.get(i));
-                imageViewArrayList.get(i).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        goToBookDetail(mContext,userInfo,bookItem.getIsbn());
-                    }
-                });
-            }
+            ImageView imageView = view.findViewById(R.id.imageView);
+            BookItem bookItem = bookItems.get(position);
+            if(bookItem.getTitle().length()>16) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10,16)+"...";
+            else if (bookItem.getTitle().length()>10) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10);
+            else title = bookItem.getTitle();
+            titleTextView.setText(title);
+            if(bookItem.getDescription().length()>16) description = bookItem.getDescription().substring(0,10) +"\n"+ bookItem.getDescription().substring(10,16)+"...";
+            else if (bookItem.getDescription().length()>10) description = bookItem.getDescription().substring(0,10) +"\n"+ bookItem.getDescription().substring(10);
+            else description = bookItem.getDescription();
+            descrpitionTextView.setText(description);
+
+            Glide.with(view.getContext()).load(bookItem.getCover()).into(imageView);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToBookDetail(mContext,userInfo,bookItem.getIsbn());
+                }
+            });
         }
 
         // 뷰페이저에 추가.
@@ -86,7 +84,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         // 전체 페이지 수
-        return bookItems.size()/3;
+        return bookItems.size();
     }
 
     @Override

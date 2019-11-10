@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +31,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.data.AladinResponse;
+import com.example.myapplication.data.BookItem;
+import com.example.myapplication.data.UserInfo;
+import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -49,8 +56,16 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeSet;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class OcrActivity extends AppCompatActivity {
@@ -60,13 +75,15 @@ public class OcrActivity extends AppCompatActivity {
     private static final String ANDROID_PACKAGE_HEADER = "X-Android-Package";
     private static final int MAX_LABEL_RESULTS = 10;
     private static final int MAX_DIMENSION = 1200;
-
+    static UserInfo userInfo;
+    static String storeMessage;
+    static ArrayList<BookItem> bookItems;
     private static final String TAG = OcrActivity.class.getSimpleName();
     private static final int GALLERY_PERMISSIONS_REQUEST = 0;
     private static final int GALLERY_IMAGE_REQUEST = 1;
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
-    public static String storeMessage = null;
+    private static Context mContext;
     private TextView mImageDetails;
     private ImageView mMainImage;
 
@@ -76,7 +93,9 @@ public class OcrActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ocr);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        mContext =this;
+        userInfo = (UserInfo) getIntent().getSerializableExtra("userInfo");
+        bookItems = new ArrayList<BookItem>();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(OcrActivity.this);
@@ -90,6 +109,7 @@ public class OcrActivity extends AppCompatActivity {
 
         mImageDetails = findViewById(R.id.image_details);
         mMainImage = findViewById(R.id.main_image);
+
     }
 
     public void startGalleryChooser() {
@@ -131,6 +151,7 @@ public class OcrActivity extends AppCompatActivity {
             Uri photoUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", getCameraFile());
             uploadImage(photoUri);
         }
+
     }
 
     @Override
@@ -223,7 +244,7 @@ public class OcrActivity extends AppCompatActivity {
             annotateImageRequest.setFeatures(new ArrayList<Feature>() {{
                 Feature labelDetection = new Feature();
                 labelDetection.setType("TEXT_DETECTION");
-                labelDetection.setMaxResults(MAX_LABEL_RESULTS);
+                labelDetection.setMaxResults(100);
                 add(labelDetection);
             }});
 
@@ -270,9 +291,19 @@ public class OcrActivity extends AppCompatActivity {
             if (activity != null && !activity.isFinishing()) {
                 TextView imageDetail = activity.findViewById(R.id.image_details);
                 imageDetail.setText(result);
-                storeMessage = result;
+                storeMessage =result;
             }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(mContext, OcrBookMenu.class);
+                    intent.putExtra("bookItems", bookItems);
+                    intent.putExtra("userInfo",userInfo);
+                    Log.d("test","test"+bookItems.size());
+                    mContext.startActivity(intent);
 
+                }
+            },5000);
         }
     }
 
@@ -284,17 +315,6 @@ public class OcrActivity extends AppCompatActivity {
         try {
             AsyncTask<Object, Void, String> labelDetectionTask = new LableDetectionTask(this, prepareAnnotationRequest(bitmap));
             labelDetectionTask.execute();
-            /* 알라딘 적용 예정
-            if(storeMessage!=null){
-                String books[] = storeMessage.split("\n");
-                SearchSimple simple = new SearchSimple();
-                for (String book : books) {
-                    simple.query = book;
-                    simple.queryTarget = "Title";
-                    simple.page = 1;
-                    simple.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-            }*/
         } catch (IOException e) {
             Log.d(TAG, "failed to make API request because of other IOException " +
                     e.getMessage());
@@ -326,127 +346,85 @@ public class OcrActivity extends AppCompatActivity {
         List<EntityAnnotation> labels = response.getResponses().get(0).getTextAnnotations();
         if (labels != null) {
             message = labels.get(0).getDescription();
+            for(EntityAnnotation label:labels){
+                Log.d("Text",label.getDescription());
+                Log.d("Verticle","wow"+label.getBoundingPoly());
+            }
+            OcrItemSearch(message);
         } else {
             message = "nothing";
         }
         return message;
-
     }
 
-    public static class SearchSimple extends AsyncTask<Void, Void, List<Item>> {
-        AladdinOpenAPIHandler api = new AladdinOpenAPIHandler();
-        String queryTarget;
-        String query;
-        Integer page;
-        String url = "";
-        MyAdapter myAdapter = new MyAdapter();
-
-        android.app.AlertDialog.Builder builder;
-        android.app.AlertDialog alertDialog;
-        Context mContext = GlobalApplication.getContext();
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-//        View view = inflater.inflate(R.layout.ocr_list, null);
-       // ListView listView = view.findViewById(R.id.list);
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected List<Item> doInBackground(Void... v) {
-
-            try {
-                url = AladdinOpenAPI.GetUrl(queryTarget, query, page.toString());
-                api.parseXml(url);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return api.Items;
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... v) {
-        }
-
-        @Override
-        protected void onPostExecute(List<Item> items) {
-            Toast.makeText(GlobalApplication.getContext(),"why",Toast.LENGTH_SHORT).show();
-            myAdapter.items.clear();
-            myAdapter.notifyDataSetChanged();
-            for(Item item : items){
-                myAdapter.addItem(item.title, item.description,item.author, item.cover,item.publisher);
-            }
-            //listView.setAdapter(null);
-            //listView.setAdapter(myAdapter);
-
-            builder = new android.app.AlertDialog.Builder(mContext);
-           // builder.setView(view);
-
-            alertDialog = builder.create();
-            alertDialog.show();
+    private static void OcrItemSearch(String storeMessage){
+        String[] books = storeMessage.split("\n");
+        ServiceApi service;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.aladin.co.kr/ttb/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        service = retrofit.create(ServiceApi.class);
+        for(String book:books) {
+            service.itemSearch("Keyword",book, 1,10).enqueue(new Callback<AladinResponse>() {
+                @Override
+                public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                    AladinResponse responseResult = response.body();
+                    if(responseResult.getBookItems().isEmpty())
+                        Log.d("booksAladinNo",book);
+                    else{
+                        Log.d("bqq",responseResult.getBookItems().get(0).getTitle());
+                        if(!bookItems.add(responseResult.getBookItems().remove(0)))
+                            Log.d("why","bbb");
+                    }
+                }
+                @Override
+                public void onFailure(Call<AladinResponse> call, Throwable t) {
+                    Toast.makeText(mContext, "Fail", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
-    public static class MyAdapter extends BaseAdapter {
+    class BookDefrag{
 
-        private ArrayList<Item> items = new ArrayList<>();
-
-        @Override
-        public int getCount() {
-            return items.size();
-        }
-
-        @Override
-        public Item getItem(int position) {
-            return items.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View view, ViewGroup parent) {
-
-            Context context = parent.getContext();
-
-            if (view == null) {
-                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.search_item, parent, false);
-            }
-
-            TextView title = view.findViewById(R.id.book_title);
-            TextView description = view.findViewById(R.id.book_description);
-            TextView author = view.findViewById(R.id.book_author);
-            ImageView cover = view.findViewById(R.id.book_cover);
-            TextView publisher = view.findViewById(R.id.book_publisher);
-
-            Item item = getItem(position);
-
-            title.setText(item.title);
-            description.setText(item.description);
-            author.setText(item.author);
-            Glide.with(context).load(item.cover).into(cover);
-            publisher.setText(item.publisher);
-
-            /* (위젯에 대한 이벤트리스너를 지정하고 싶다면 여기에 작성하면된다..)  */
-
-            return view;
-        }
-
-        public void addItem(String title, String description, String author, String cover, String publisher) {
-            Item item = new Item();
-
-            item.title= title;
-            item.description=description;
-            item.author=author;
-            item.cover= cover;
-            item.publisher=publisher;
-
-            items.add(item);
-        }
     }
 
+    class BookFragment implements  Comparable<BookFragment>{
+        private int startX;
+        private int endX;
+        private int leftX,rightX;
+        private List<EntityAnnotation> labels;
+        public BookFragment(){
+            startX = 0;
+            endX = 0;
+        }
+        public void compare(EntityAnnotation label){
+            leftX = label.getBoundingPoly().getVertices().get(0).getX();
+            rightX = label.getBoundingPoly().getVertices().get(1).getY();
+            if(startX>leftX && startX<rightX){
+                labels.add(label);
+                startX = leftX;
+            } else if(endX>leftX &&endX<rightX){
+            }
+
+        }
+        public void add(EntityAnnotation label){
+            if(startX>label.getBoundingPoly().getVertices().get(0).getX()) startX=label.getBoundingPoly().getVertices().get(0).getX();
+        }
+        @Override
+        public int compareTo(BookFragment o){
+            if(startX<o.getStartX()) return -1;
+            else if(startX==o.getStartX());
+            return 1;
+        }
+
+        public int getEndX() {
+            return endX;
+        }
+
+        public int getStartX() {
+            return startX;
+        }
+    }
 }
