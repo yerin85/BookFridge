@@ -13,10 +13,10 @@
         android:layout_height="461dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.946">
+        app:layout_constraintVertical_bias="0.614">
 
     </com.github.mikephil.charting.charts.PieChart>
 </androidx.constraintlayout.widget.ConstraintLayout>

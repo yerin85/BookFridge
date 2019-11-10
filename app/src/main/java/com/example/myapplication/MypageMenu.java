@@ -1,5 +1,8 @@
 package com.example.myapplication;
 
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -61,7 +64,14 @@ public class MypageMenu extends Fragment {
         myname.setText(userInfo.nickname +" 님");
         if(!userInfo.imagePath.equals(null)){
             Glide.with(this).load(userInfo.imagePath).into(myimage);
-        }
+       }
+//        myimage.setBackground(new ShapeDrawable(new OvalShape()));
+//        if(Build.VERSION.SDK_INT >= 21) {
+//            myimage.setClipToOutline(true);
+//        }
+
+
+
 
         return v;
     }
@@ -87,7 +97,7 @@ public class MypageMenu extends Fragment {
                 case 0:
                     return new reading().newInstance(userInfo);
                 case 1:
-                    return new calendar();
+                    return new calendar().newInstance(userInfo);
                 default:
                     return null;
             }
