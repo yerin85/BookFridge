@@ -4,23 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CalendarView;
 import android.widget.TextView;
 
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link calendar.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link calendar#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class calendar extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,8 +52,9 @@ public class calendar extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_calendar, container, false);
-        CalendarView calendarView = v.findViewById(R.id.calendarView);
+        MaterialCalendarView calendarView = v.findViewById(R.id.calendarView);
 
+       // calendarView.addDecorator(new Decorater());
         return v;
     }
 

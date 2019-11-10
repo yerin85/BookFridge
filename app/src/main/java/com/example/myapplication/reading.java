@@ -18,6 +18,7 @@ import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -165,7 +166,7 @@ public class reading extends Fragment {
                 desc.setText("");
                 pieChart.setDescription(desc);
                // pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-
+                pieChart.animateY(2000, Easing.EasingOption.EaseInOutCubic);
                 PieData pieData = new PieData(pieDataSet);
 
                 Legend l = pieChart.getLegend();
@@ -184,7 +185,7 @@ public class reading extends Fragment {
                 pieChart.setCenterTextSize(25);
                 pieChart.setHoleRadius(20f);
             }
-        },500);
+        },100);
 
 
         return v;
