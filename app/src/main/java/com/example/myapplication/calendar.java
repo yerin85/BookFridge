@@ -238,7 +238,7 @@ public class calendar extends Fragment {
 
 
             }
-        }, 100);
+        }, 1000);
 
         return v;
     }
@@ -325,3 +325,4 @@ public class calendar extends Fragment {
 
     }
 
+00

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.AladinResponse;
+import com.example.myapplication.data.Functions;
 import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.ServiceApi;
@@ -234,7 +235,7 @@ public class HomeMenu extends Fragment {
                 if(userGenres.isEmpty()) return;
                 for(UserGenreResponse userGenre: userGenres){
                     for(BookItem bookItem : bookItems){
-                        if (bookItem.getCategoryName() ==userGenre.getGenre())
+                        if (Functions.categorizeBooks(bookItem.getCategoryName()) ==userGenre.getGenre())
                             newbookItems.add(bookItem);
                     }
                 }

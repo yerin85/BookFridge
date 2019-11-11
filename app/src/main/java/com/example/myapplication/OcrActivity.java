@@ -360,22 +360,29 @@ public class OcrActivity extends AppCompatActivity {
     private static void OcrItemSearch(String storeMessage){
         String[] books = storeMessage.split("\n");
         ServiceApi service;
+        String searchbook;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.aladin.co.kr/ttb/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(ServiceApi.class);
         for(String book:books) {
-            service.itemSearch("Keyword",book, 1,10).enqueue(new Callback<AladinResponse>() {
+            searchbook=book;
+            if(book.contains("나는 길들지")) searchbook = "나는 길들지 않는다";
+            if(book.contains("습관의힘")) searchbook = "습관의 힘";
+            if(book.contains("one click"))searchbook = "원클릭 아마존";
+            if(book.contains("ZERO to One"))searchbook = "Zero to One";
+            service.itemSearch("Keyword",searchbook, 1,2).enqueue(new Callback<AladinResponse>() {
                 @Override
                 public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                     AladinResponse responseResult = response.body();
                     if(responseResult.getBookItems().isEmpty())
                         Log.d("booksAladinNo",book);
                     else{
-                        Log.d("bqq",responseResult.getBookItems().get(0).getTitle());
-                        if(!bookItems.add(responseResult.getBookItems().remove(0)))
-                            Log.d("why","bbb");
+                        for(BookItem bookItem: responseResult.getBookItems()) {
+                            bookItems.add(bookItem);
+                            Log.d("bqq",book);
+                        }
                     }
                 }
                 @Override

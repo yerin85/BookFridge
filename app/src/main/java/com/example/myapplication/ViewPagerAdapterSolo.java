@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,17 +47,21 @@ public class ViewPagerAdapterSolo extends PagerAdapter {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.fragment_newlist, container, false);
 
-            TextView titleTextView = view.findViewById(R.id.titleTextView);
-            TextView descrpitionTextView = view.findViewById(R.id.descriptionTextView);
+            TextView titleTextView = view.findViewById(R.id.book_title);
+            TextView descrpitionTextView = view.findViewById(R.id.book_description);
 
-            ImageView imageView = view.findViewById(R.id.imageView);
+            ImageView imageView = view.findViewById(R.id.book_cover);
             BookItem bookItem = bookItems.get(position);
-            if(bookItem.getTitle().length()>16) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10,16)+"...";
-            else if (bookItem.getTitle().length()>10) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10);
-            else title = bookItem.getTitle();
+            //if(bookItem.getTitle().length()>16) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10,16);
+            //else if (bookItem.getTitle().length()>10) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10);
+            //else title = bookItem.getTitle();
+            String[] titles = bookItem.getTitle().split("-");
+            title = titles[0];
             titleTextView.setText(title);
-            if(bookItem.getDescription().length()>16) description = bookItem.getDescription().substring(0,10) +"\n"+ bookItem.getDescription().substring(10,16)+"...";
-            else if (bookItem.getDescription().length()>10) description = bookItem.getDescription().substring(0,10) +"\n"+ bookItem.getDescription().substring(10);
+
+            Log.d("bookItem",bookItem.getDescription());
+            Log.d("book",bookItem.getCategoryName());
+            if(bookItem.getDescription().length()>20) description =bookItem.getDescription()+"...";
             else description = bookItem.getDescription();
             descrpitionTextView.setText(description);
 

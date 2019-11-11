@@ -25,7 +25,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     ServiceApi service;
     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
     private Context mContext = null ;
-    private List<BookItem> bookItems = null;
+        private List<BookItem> bookItems = null;
     private String title;
     Context context =GlobalApplication.getContext();
     public ViewPagerAdapter() {
@@ -57,9 +57,11 @@ public class ViewPagerAdapter extends PagerAdapter {
             imageViewArrayList.add(view.findViewById(R.id.imageView3));
             for (int i=0;i<3;i++){
                 BookItem bookItem = bookItems.get(i+position*3);
-                if(bookItem.getTitle().length()>16) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10,16)+"...";
-                else if (bookItem.getTitle().length()>10) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10);
-                else title = bookItem.getTitle();
+//                if(bookItem.getTitle().length()>16) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10,16)+"...";
+    //            else if (bookItem.getTitle().length()>10) title = bookItem.getTitle().substring(0,10) +"\n"+ bookItem.getTitle().substring(10);
+  //              else title = bookItem.getTitle();
+                String[] titles = bookItem.getTitle().split("-");
+                title = titles[0];
                 textViewArrayList.get(i).setText(title);
                 Glide.with(view.getContext()).load(bookItem.getCover()).into(imageViewArrayList.get(i));
                 imageViewArrayList.get(i).setOnClickListener(new View.OnClickListener() {
