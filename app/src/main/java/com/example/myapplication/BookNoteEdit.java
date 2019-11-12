@@ -115,7 +115,6 @@ public class BookNoteEdit extends AppCompatActivity {
                         if (result.getCode() == 200) {
                             finish();
                         }
-                        Toast.makeText(BookNoteEdit.this, result.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

@@ -81,14 +81,12 @@ public class BookDetail extends AppCompatActivity {
         service.getAvgRating(bookItem.getIsbn()).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                float star = Math.round(Float.parseFloat(response.body())*10)/10;
+                float star = Math.round(Float.parseFloat(response.body()) * 10)/(float)10;
                 rating.setRating(star);
                 averageRating.setText("("+new Float(star).toString()+")");
             }
-
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
             }
         });
 
@@ -111,10 +109,8 @@ public class BookDetail extends AppCompatActivity {
                 noteAdapter = new NoteAdapter(noteItems);
                 recyclerView.setAdapter(noteAdapter);
             }
-
             @Override
             public void onFailure(Call<ArrayList<UserNoteResponse>> call, Throwable t) {
-
             }
         });
 
@@ -132,10 +128,8 @@ public class BookDetail extends AppCompatActivity {
                                     BasicResponse result = response.body();
                                     if (result.getCode() != 200) {
                                         Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-
                                     }
                                 }
-
                                 @Override
                                 public void onFailure(Call<BasicResponse> call, Throwable t) {
                                     Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -160,7 +154,6 @@ public class BookDetail extends AppCompatActivity {
                             Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
-
                     @Override
                     public void onFailure(Call<BasicResponse> call, Throwable t) {
                         Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
