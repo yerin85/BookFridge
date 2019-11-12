@@ -2,10 +2,6 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -30,13 +25,9 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.MyPageResponse;
-import com.example.myapplication.data.UserGenreData;
-import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -192,7 +183,7 @@ public class MypageMenu extends Fragment {
                 case 0:
                     return new reading().newInstance(userInfo);
                 case 1:
-                    return new calendar().newInstance(userInfo);
+                    return new Calendar().newInstance(userInfo);
                 default:
                     return null;
             }

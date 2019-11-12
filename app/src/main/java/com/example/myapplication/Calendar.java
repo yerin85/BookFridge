@@ -1,41 +1,24 @@
 package com.example.myapplication;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.os.Handler;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.myapplication.data.LibraryResponse;
-import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
-import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -44,19 +27,15 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class calendar extends Fragment {
+public class Calendar extends Fragment {
 
     ArrayList<LibraryResponse> mylibrary;
     ArrayList<String> bookTitle = new ArrayList<>();
@@ -68,7 +47,7 @@ public class calendar extends Fragment {
     String textArr;
     String temp[];
 
-    Calendar calendar = Calendar.getInstance();
+    java.util.Calendar calendar = java.util.Calendar.getInstance();
     ArrayList<CalendarDay> dates1 = new ArrayList<>();
     ArrayList<CalendarDay> dates2 = new ArrayList<>();
     ArrayList<CalendarDay> dates3 = new ArrayList<>();
@@ -87,13 +66,13 @@ public class calendar extends Fragment {
 
     ArrayList<CalendarDay> total = new ArrayList<>();
 
-    public calendar() {
+    public Calendar() {
         // Required empty public constructor
     }
 
 
     public static Fragment newInstance(UserInfo userInfo) {
-        calendar cal = new calendar();
+        Calendar cal = new Calendar();
         Bundle bundle = new Bundle();
         bundle.putSerializable("userInfo", userInfo);
         cal.setArguments(bundle);
@@ -124,7 +103,7 @@ public class calendar extends Fragment {
                 new SaturdayDecorator());
 
 
-            service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
+        service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
                 mylibrary = response.body();
@@ -152,10 +131,10 @@ public class calendar extends Fragment {
                     int month = Integer.parseInt(startData[1]);
                     int dayy = Integer.parseInt(startData[2]);
 
-                        CalendarDay day = CalendarDay.from(year, month-1, dayy);
+                    CalendarDay day = CalendarDay.from(year, month - 1, dayy);
 
-                        total.add(day);
-                    switch (genre){
+                    total.add(day);
+                    switch (genre) {
                         case "fantasy":
                             dates1.add(day);
                             break;
@@ -198,15 +177,15 @@ public class calendar extends Fragment {
 
                     }
 
-                    }
-                    materialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+                }
+                materialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
                     @Override
                     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                        textArr="";
-                        int count =1;
-                        for (int i=0;i <total.size();i++){
-                            if(total.get(i).getYear() == date.getYear() && total.get(i).getMonth() == date.getMonth() && total.get(i).getDay() == date.getDay()){
-                                textArr += count +": " +bookTitle.get(i) + "  [ ~"+ endPrint.get(i)+ " ]\n";
+                        textArr = "";
+                        int count = 1;
+                        for (int i = 0; i < total.size(); i++) {
+                            if (total.get(i).getYear() == date.getYear() && total.get(i).getMonth() == date.getMonth() && total.get(i).getDay() == date.getDay()) {
+                                textArr += count + ": " + bookTitle.get(i) + "  [ ~" + endPrint.get(i) + " ]\n";
                                 count++;
                             }
                         }
@@ -216,8 +195,7 @@ public class calendar extends Fragment {
                 });
 
 
-
-                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(124,252,0), dates13, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(124, 252, 0), dates13, getContext()));
                 materialCalendarView.addDecorator(new EventDecorator(Color.RED, dates1, getContext()));
                 materialCalendarView.addDecorator(new EventDecorator(Color.BLACK, dates2, getContext()));
 
@@ -226,15 +204,14 @@ public class calendar extends Fragment {
 
                 materialCalendarView.addDecorator(new EventDecorator(Color.GRAY, dates5, getContext()));
                 materialCalendarView.addDecorator(new EventDecorator(Color.GREEN, dates6, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(0,255,255), dates7, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255,182,193), dates8, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(0, 255, 255), dates7, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255, 182, 193), dates8, getContext()));
 
-                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255,250,205), dates9, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(128,0,0), dates10, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255, 250, 205), dates9, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(128, 0, 0), dates10, getContext()));
 
-                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255,140,0), dates11, getContext()));
-                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(138,43,226), dates12, getContext()));
-
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(255, 140, 0), dates11, getContext()));
+                materialCalendarView.addDecorator(new EventDecorator(Color.rgb(138, 43, 226), dates12, getContext()));
 
 
             }
@@ -244,67 +221,66 @@ public class calendar extends Fragment {
     }
 
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        //     mListener = null;
+    }
 
 
-        @Override
-        public void onAttach(Context context) {
-            super.onAttach(context);
+    public class SaturdayDecorator implements DayViewDecorator {
 
+        private final java.util.Calendar calendar = java.util.Calendar.getInstance();
+
+        public SaturdayDecorator() {
         }
 
         @Override
-        public void onDetach() {
-            super.onDetach();
-            //     mListener = null;
+        public boolean shouldDecorate(CalendarDay day) {
+            day.copyTo(calendar);
+            int weekDay = calendar.get(java.util.Calendar.DAY_OF_WEEK);
+            return weekDay == java.util.Calendar.SATURDAY;
         }
 
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.addSpan(new ForegroundColorSpan(Color.BLUE));
+        }
+    }
 
-        public class SaturdayDecorator implements DayViewDecorator {
+    public class SundayDecorator implements DayViewDecorator {
 
-            private final Calendar calendar = Calendar.getInstance();
+        private final java.util.Calendar calendar = java.util.Calendar.getInstance();
 
-            public SaturdayDecorator() {
-            }
-
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                day.copyTo(calendar);
-                int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
-                return weekDay == Calendar.SATURDAY;
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                view.addSpan(new ForegroundColorSpan(Color.BLUE));
-            }
+        public SundayDecorator() {
         }
 
-        public class SundayDecorator implements DayViewDecorator {
-
-            private final Calendar calendar = Calendar.getInstance();
-
-            public SundayDecorator() {
-            }
-
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                day.copyTo(calendar);
-                int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
-                return weekDay == Calendar.SUNDAY;
-            }
-
-            @Override
-            public void decorate(DayViewFacade view) {
-                view.addSpan(new ForegroundColorSpan(Color.RED));
-            }
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            day.copyTo(calendar);
+            int weekDay = calendar.get(java.util.Calendar.DAY_OF_WEEK);
+            return weekDay == java.util.Calendar.SUNDAY;
         }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            view.addSpan(new ForegroundColorSpan(Color.RED));
+        }
+    }
+
     public class EventDecorator implements DayViewDecorator {
 
         private final Drawable drawable;
         private int color;
         private HashSet<CalendarDay> dates;
 
-        public EventDecorator(int color, Collection<CalendarDay> dates,Context f) {
+        public EventDecorator(int color, Collection<CalendarDay> dates, Context f) {
             drawable = f.getResources().getDrawable(R.drawable.more);
             this.color = color;
             this.dates = new HashSet<>(dates);
@@ -321,8 +297,4 @@ public class calendar extends Fragment {
             view.addSpan(new DotSpan(5, color)); // 날자밑에 점
         }
     }
-
-
-    }
-
-00
+}

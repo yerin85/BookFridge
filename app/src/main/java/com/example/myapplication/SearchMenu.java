@@ -117,31 +117,34 @@ public class SearchMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 EditText editText = findViewById(R.id.search_input);
-                Spinner spinner = findViewById(R.id.search_type);
-                queryTarget = spinner.getSelectedItem().toString();
-
-                //키보드 내리기
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-
-                switch (queryTarget) {
-                    case "제목+저자":
-                        queryTarget = "Keyword";
-                        break;
-                    case "제목":
-                        queryTarget = "Title";
-                        break;
-                    case "저자":
-                        queryTarget = "Author";
-                        break;
-                    case "출판사":
-                        queryTarget = "Publisher";
-                        break;
-                }
                 query = editText.getText().toString();
-                pageNum = 1;
+                if(!query.isEmpty()){
+                    System.out.println("abcdefghijk: "+query);
+                    Spinner spinner = findViewById(R.id.search_type);
+                    queryTarget = spinner.getSelectedItem().toString();
 
-                //검색 수행
-                bookItemSearch(queryTarget,query,pageNum);
+                    //키보드 내리기
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+                    switch (queryTarget) {
+                        case "제목+저자":
+                            queryTarget = "Keyword";
+                            break;
+                        case "제목":
+                            queryTarget = "Title";
+                            break;
+                        case "저자":
+                            queryTarget = "Author";
+                            break;
+                        case "출판사":
+                            queryTarget = "Publisher";
+                            break;
+                    }
+                    pageNum = 1;
+
+                    //검색 수행
+                    bookItemSearch(queryTarget,query,pageNum);
+                }
             }
         });
 
