@@ -5,11 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
+import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserInfo;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 BasicResponse result = response.body();
                 if (result.getCode() == 400) {
                     showDialog();
+                    showGoalDialog();
                     String userId = String.valueOf(userInfo.userId);
                     String nickname = userInfo.nickname;
                     String imagePath = userInfo.imagePath;
@@ -204,6 +207,44 @@ public class MainActivity extends AppCompatActivity {
         goToBookDetail(MainActivity.this, userInfo, result.getContents());
     }
 
+    public void showGoalDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("월 독서 목표량 설정");
+        final EditText editText = new EditText(MainActivity.this);
+        editText.setText(0);
+        builder.setView(editText);
+
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Text 값 받아서 로그 남기기
+                int goal = Integer.parseInt(editText.getText().toString());
+                service.addMypage(new MyPageData(userInfo.userId,"sf",goal)).enqueue(new Callback<BasicResponse>() {
+                    @Override
+                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                        BasicResponse result = response.body();
+                    }
+                    @Override
+                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                    }
+                });
+                dialog.dismiss();     //닫기
+                // Event
+            }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();     //닫기
+                // Event
+            }
+        });
+
+        builder.show();
+
+
+    }
     public void showDialog() {
         final List<String> ListItems = new ArrayList<String>();
         ListItems.add("만화");

@@ -7,15 +7,21 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.UserInfo;
+import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -26,22 +32,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class reading extends Fragment {
-
     PieChart pieChart;
-
     ServiceApi service;
-    Map<String, Integer> map = new HashMap<>();
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-  //  private OnFragmentInteractionListener mListener;
-
+    UserInfo userInfo;
+    ArrayList<Integer> al;
+    ArrayList<MyPageResponse> genres;
+    int arr[] = new int[13];
     public reading() {
         // Required empty public constructor
     }
@@ -58,97 +60,134 @@ public class reading extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v= inflater.inflate(R.layout.fragment_reading, container, false);
-        //        service = RetrofitClient.getClient().create(ServiceApi.class);
-//
-//        service.getMypage(userInfo.userId).enqueue(new Callback<ArrayList<MyPageResponse>>() {
-//            @Override
-//            public void onResponse(Call<ArrayList<MyPageResponse>> call, Response<ArrayList<MyPageResponse>> response) {
-//                ArrayList<MyPageResponse> genres = response.body();
-//
-//                map.put("fantasy",genres.get(0).getFantasy());
-//                map.put("mystery",genres.get(0).getMystery());
-//                map.put("horror",genres.get(0).getHorror());
-//                map.put("classical",genres.get(0).getClassical());
-//                map.put("action",genres.get(0).getAction());
-//                map.put("sf",genres.get(0).getSf());
-//                map.put("theatrical",genres.get(0).getTheatrical());
-//                map.put("martialArt",genres.get(0).getMartialArt());
-//                map.put("poem",genres.get(0).getPoem());
-//                map.put("essay",genres.get(0).getEssay());
-//                map.put("novel",genres.get(0).getNovel());
-//                map.put("comics",genres.get(0).getComics());
-//                map.put("others",genres.get(0).getOthers());
-//
-//                map.put("total",genres.get(0).getTotal());
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ArrayList<MyPageResponse>> call, Throwable t) {
-//
-//            }
-//        });
-
         pieChart = v.findViewById(R.id.piechart);
         pieChart.setUsePercentValues(true);
+        ArrayList<PieEntry> values = new ArrayList<>();
+        service = RetrofitClient.getClient().create(ServiceApi.class);
 
-        List<PieEntry> values = new ArrayList<>();
-//        values.add(new PieEntry(map.get("fantasy"), "판타지"));
-//        values.add(new PieEntry(map.get("mystery"), "추리"));
-//        values.add(new PieEntry(map.get("horror"), "호러"));
-//        values.add(new PieEntry(map.get("classical"), "고전"));
-//        values.add(new PieEntry(map.get("sf"), "SF"));
-//        values.add(new PieEntry(map.get("theatrical"), "희곡"));
-//        values.add(new PieEntry(map.get("martialArt"), "무협"));
-//        values.add(new PieEntry(map.get("poem"), "시"));
-//        values.add(new PieEntry(map.get("essay"), "에세이"));
-//        values.add(new PieEntry(map.get("novel"), "소설"));
-//        values.add(new PieEntry(map.get("comics"), "만화"));
-//        values.add(new PieEntry(map.get("others"), "기타"));
+        userInfo = (UserInfo)getArguments().getSerializable("userInfo");
+        service.getMypage(userInfo.userId).enqueue(new Callback<ArrayList<MyPageResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<MyPageResponse>> call, Response<ArrayList<MyPageResponse>> response) {
+                genres = response.body();
 
-        values.add(new PieEntry(1, "판타지"));
-        values.add(new PieEntry(2, "추리"));
-        values.add(new PieEntry(3, "호러"));
-        values.add(new PieEntry(23, "고전"));
-        values.add(new PieEntry(12, "SF"));
-        values.add(new PieEntry(8, "희곡"));
-        values.add(new PieEntry(6, "무협"));
-        values.add(new PieEntry(4, "시"));
-        values.add(new PieEntry(0, "에세이"));
-        values.add(new PieEntry(2, "소설"));
-        values.add(new PieEntry(1, "만화"));
-        values.add(new PieEntry(20, "기타"));
+            }
 
-        Description desc = new Description();
-        desc.setText("");
-        pieChart.setDescription(desc);
-        PieDataSet pieDataSet = new PieDataSet(values, "");
-        // pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+            @Override
+            public void onFailure(Call<ArrayList<MyPageResponse>> call, Throwable t) {
 
-        PieData pieData = new PieData(pieDataSet);
+            }
+        });
 
-        pieData.setValueTextSize(0);
-        pieData.setValueTextColor(Color.WHITE);
 
-        pieChart.setData(pieData);
-        pieDataSet.setSliceSpace(3f);
-        pieDataSet.setSelectionShift(5f);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                arr[0]= genres.get(0).getFantasy();
+                arr[1]= genres.get(0).getHorror();
+                arr[2]= genres.get(0).getClassical();
+                arr[3]= genres.get(0).getAction();
+                arr[4]= genres.get(0).getSf();
+                arr[5]= genres.get(0).getTheatrical();
+                arr[6]= genres.get(0).getMartialArt();
+                arr[7]= genres.get(0).getPoem();
+                arr[8]= genres.get(0).getEssay();
+                arr[9]= genres.get(0).getNovel();
+                arr[10]= genres.get(0).getComics();
+                arr[11]= genres.get(0).getOthers();
+                arr[12]= genres.get(0).getTotal();
 
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        pieChart.setEntryLabelColor(Color.BLACK);
-        pieChart.setEntryLabelTextSize(10f);
-        pieChart.setCenterText(String.valueOf(56) + "권");
-        //pieChart.setCenterText(String.valueOf(map.get("total")) + "권");
-        pieChart.setCenterTextSize(20);
+                for(int i=0; i<12;i++){
+                    if(arr[i]!=0){
+                        switch (i){
+                            case 0:
+                                values.add(new PieEntry(arr[0], "판타지"));
+                                break;
+                            case 1:
+
+                                values.add(new PieEntry(arr[1], "추리"));
+                                break;
+                            case 2:
+
+                                values.add(new PieEntry(arr[2], "호러"));
+                                break;
+                            case 3:
+
+                                values.add(new PieEntry(arr[3], "고전"));
+                                break;
+                            case 4:
+
+                                values.add(new PieEntry(arr[4], "SF"));
+                                break;
+                            case 5:
+
+                                values.add(new PieEntry(arr[5], "희곡"));
+                                break;
+                            case 6:
+
+                                values.add(new PieEntry(arr[6], "무협"));
+                                break;
+                            case 7:
+
+                                values.add(new PieEntry(arr[7], "시"));
+                                break;
+                            case 8:
+
+                                values.add(new PieEntry(arr[8], "에세이"));
+                                break;
+                            case 9:
+
+                                values.add(new PieEntry(arr[9], "소설"));
+                                break;
+                            case 10:
+
+                                values.add(new PieEntry(arr[10], "만화"));
+
+                                break;
+                            case 11:
+                                values.add(new PieEntry(arr[11], "기타"));
+                                break;
+
+
+                        }
+                    }
+                }
+
+                PieDataSet pieDataSet = new PieDataSet(values, "");
+                pieChart.setCenterText(genres.get(0).getTotal()+ "권");
+
+                Description desc = new Description();
+                desc.setText("");
+                pieChart.setDescription(desc);
+               // pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+                pieChart.animateY(2000, Easing.EasingOption.EaseInOutCubic);
+                PieData pieData = new PieData(pieDataSet);
+
+                Legend l = pieChart.getLegend();
+                l.setEnabled(false);
+
+                pieData.setValueTextSize(0);
+                pieData.setValueTextColor(Color.WHITE);
+
+                pieChart.setData(pieData);
+                pieDataSet.setSliceSpace(5f);
+                pieDataSet.setSelectionShift(5f);
+
+                pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                pieChart.setEntryLabelColor(Color.BLACK);
+                pieChart.setEntryLabelTextSize(15f);
+                pieChart.setCenterTextSize(25);
+                pieChart.setHoleRadius(20f);
+            }
+        },100);
+
+
         return v;
     }
 
@@ -180,4 +219,8 @@ public class reading extends Fragment {
 //        // TODO: Update argument type and name
 //        void onFragmentInteraction(Uri uri);
 //    }
+
+    public void getMyData(ArrayList<MyPageResponse> G){
+
+    }
 }
