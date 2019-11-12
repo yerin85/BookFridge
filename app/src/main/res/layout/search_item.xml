@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/search_layer"
+    android:id="@+id/searchItem_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
     android:padding="8dp">
 
     <ImageView
@@ -11,30 +13,29 @@
         android:layout_width="75dp"
         android:layout_height="0dp"
         android:layout_marginStart="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/book_info_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        app:layout_constraintStart_toEndOf="@+id/book_cover"
         app:layout_constraintEnd_toStartOf="@+id/book_buttons_layout"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="parent">
+        app:layout_constraintStart_toEndOf="@+id/book_cover"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/book_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:breakStrategy="high_quality"
             android:text="title"
-            android:textSize="13dp" />
+            android:textSize="13dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
@@ -42,32 +43,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/book_title"
             android:text="author"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/book_title" />
 
         <TextView
             android:id="@+id/book_publisher"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/book_author"
             android:text="publisher"
-            android:textSize="10dp" />
+            android:textSize="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/book_author" />
 
         <TextView
             android:id="@+id/book_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_publisher"
+            android:ellipsize="end"
+            android:maxLines="4"
             android:text="description"
             android:textSize="10dp"
-            android:maxLines="4"
-            android:ellipsize="end"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/book_publisher" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -77,40 +78,33 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
-        app:layout_constraintStart_toEndOf="@+id/book_info_layout"
-        app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/book_info_layout"
+        app:layout_constraintTop_toBottomOf="parent">
 
-        <Button
-            android:id="@+id/book_detail"
-            android:layout_width="60dp"
-            android:layout_height="35dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="상세보기"
-            android:textSize="10dp" />
 
         <Button
             android:id="@+id/add_library"
-            android:layout_width="60dp"
-            android:layout_height="35dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/book_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="60dp"
+            android:minHeight="35dp"
             android:text="+"
-            android:textSize="13dp" />
+            android:textSize="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/wishlist"
-            android:layout_width="60dp"
-            android:layout_height="35dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_library"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="60dp"
+            android:minHeight="35dp"
             android:text="♥"
-            android:textSize="13dp" />
+            android:textSize="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_library" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
