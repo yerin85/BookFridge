@@ -77,18 +77,6 @@ public class reading extends Fragment {
             public void onResponse(Call<ArrayList<MyPageResponse>> call, Response<ArrayList<MyPageResponse>> response) {
                 genres = response.body();
 
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<MyPageResponse>> call, Throwable t) {
-
-            }
-        });
-
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
                 arr[0]= genres.get(0).getFantasy();
                 arr[1]= genres.get(0).getHorror();
                 arr[2]= genres.get(0).getClassical();
@@ -165,7 +153,7 @@ public class reading extends Fragment {
                 Description desc = new Description();
                 desc.setText("");
                 pieChart.setDescription(desc);
-               // pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+                // pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
                 pieChart.animateY(2000, Easing.EasingOption.EaseInOutCubic);
                 PieData pieData = new PieData(pieDataSet);
 
@@ -185,7 +173,13 @@ public class reading extends Fragment {
                 pieChart.setCenterTextSize(25);
                 pieChart.setHoleRadius(20f);
             }
-        },100);
+
+            @Override
+            public void onFailure(Call<ArrayList<MyPageResponse>> call, Throwable t) {
+
+            }
+        });
+
 
 
         return v;

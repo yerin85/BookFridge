@@ -46,6 +46,7 @@ public class Calendar extends Fragment {
     String genre;
     String textArr;
     String temp[];
+    Drawable drawable;
 
     java.util.Calendar calendar = java.util.Calendar.getInstance();
     ArrayList<CalendarDay> dates1 = new ArrayList<>();
@@ -93,6 +94,8 @@ public class Calendar extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_calendar, container, false);
         MaterialCalendarView materialCalendarView = v.findViewById(R.id.calendarView);
+
+        drawable = getActivity().getResources().getDrawable(R.drawable.more);
 
         ServiceApi service = RetrofitClient.getClient().create(ServiceApi.class);
         UserInfo userInfo = (UserInfo) getArguments().getSerializable("userInfo");
@@ -275,13 +278,10 @@ public class Calendar extends Fragment {
     }
 
     public class EventDecorator implements DayViewDecorator {
-
-        private final Drawable drawable;
         private int color;
         private HashSet<CalendarDay> dates;
 
         public EventDecorator(int color, Collection<CalendarDay> dates, Context f) {
-            drawable = f.getResources().getDrawable(R.drawable.more);
             this.color = color;
             this.dates = new HashSet<>(dates);
         }
@@ -293,7 +293,7 @@ public class Calendar extends Fragment {
 
         @Override
         public void decorate(DayViewFacade view) {
-            //view.setSelectionDrawable(drawable);
+            view.setSelectionDrawable(drawable);
             view.addSpan(new DotSpan(5, color)); // 날자밑에 점
         }
     }
