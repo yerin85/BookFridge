@@ -5,13 +5,13 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +31,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.myapplication.data.Functions.dpToPx;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +43,11 @@ public class LibraryMenu extends Fragment {
     RecyclerView recyclerView;
     LibAdapter adapter;
     boolean allowRefresh;
+    DisplayMetrics displayMetrics;
+    float dpHeight;
+    float dpWidth;
+    float libItem_width;
+    float libItem_height;
 
     public LibraryMenu() {
         // Required empty public constructor
@@ -63,15 +70,21 @@ public class LibraryMenu extends Fragment {
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
+        displayMetrics = getActivity().getResources().getDisplayMetrics();
+        dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        libItem_width = dpToPx(getActivity(),(int)((dpWidth - 40) / (float)3));
+        libItem_height = libItem_width * (float) 1.6;
+
         service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
                 ArrayList<LibraryResponse> libItems = response.body();
                 adapter = new LibAdapter(libItems);
-                recyclerView =  getActivity().findViewById(R.id.library_list);
+                recyclerView = getActivity().findViewById(R.id.library_list);
                 recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
                 recyclerView.setAdapter(adapter);
-                recyclerView.addItemDecoration(new GridSpacingItemDecoration(3, getResources().getDimensionPixelSize(R.dimen.libraryItem_width)));
+                recyclerView.addItemDecoration(new GridSpacingItemDecoration(3,(int) libItem_width));
             }
 
             @Override
@@ -116,6 +129,10 @@ public class LibraryMenu extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull LibViewHolder holder, int position) {
+            holder.libLayout.getLayoutParams().width = (int) libItem_width;
+            holder.libLayout.getLayoutParams().height = (int) libItem_height;
+            holder.cover.getLayoutParams().height=(int)(libItem_height*0.84);
+
             LibraryResponse libItem = libItems.get(position);
             holder.title.setText(libItem.getTitle());
             Glide.with(holder.itemView.getContext()).load(libItem.getCover()).into(holder.cover);
