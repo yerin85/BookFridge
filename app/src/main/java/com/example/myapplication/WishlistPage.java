@@ -23,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
+import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.GridSpacingItemDecoration;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.WishlistResponse;
@@ -35,8 +37,11 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.myapplication.data.Functions.dpToPx;
+import static com.example.myapplication.data.Functions.goToBookDetail;
 
 
 /**
@@ -186,6 +191,13 @@ public class WishlistPage extends Fragment {
             WishlistResponse wishItem = wishItems.get(position);
             holder.title.setText(wishItem.getTitle());
             Glide.with(holder.itemView.getContext()).load(wishItem.getCover()).into(holder.cover);
+
+            holder.wishLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToBookDetail(getActivity(),userInfo,wishItem.getIsbn());
+                }
+            });
 
             holder.wishLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

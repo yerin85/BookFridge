@@ -201,48 +201,7 @@ public class BookDetail extends AppCompatActivity {
                                 }
                             });
                         }else{
-                            new AlertDialog.Builder(BookDetail.this)
-                                    .setMessage("이미 라이브러리에 추가된 책입니다\n위시리스트에 추가하시겠습니까?")
-                                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
-                                                @Override
-                                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                                                    BasicResponse result = response.body();
-                                                    if (result.getCode() == 200) {
-                                                        new AlertDialog.Builder(BookDetail.this)
-                                                                .setMessage(result.getMessage())
-                                                                .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(DialogInterface dialog, int which) {
-                                                                        goToWishlist(BookDetail.this,userInfo);
-                                                                    }
-                                                                })
-                                                                .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(DialogInterface dialog, int which) {
-                                                                        dialog.dismiss();
-                                                                    }
-                                                                }).show();
-                                                    } else {
-                                                        Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onFailure(Call<BasicResponse> call, Throwable t) {
-                                                    Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                        }
-                                    })
-                                    .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    }).show();
+                            Toast.makeText(BookDetail.this,"이미 라이브러리에 추가된 책입니다",Toast.LENGTH_SHORT).show();
                         }
                     }
                     @Override
