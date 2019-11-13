@@ -192,15 +192,16 @@
                 app:layout_constraintStart_toStartOf="@+id/rating_text"
                 app:layout_constraintEnd_toEndOf="@+id/rating_text"/>
 
-            <RatingBar
+            <me.zhanghai.android.materialratingbar.MaterialRatingBar
                 android:id="@+id/rating_star"
-                style="@style/Widget.AppCompat.RatingBar.Indicator"
+                style="@style/Widget.MaterialRatingBar.RatingBar"
+                android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:isIndicator="true"
                 android:max="10"
                 android:numStars="5"
-                android:progressTint="#4CCDE6"
+                android:progressTint="#68C5F7"
                 android:stepSize="0.1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/rating_text"
