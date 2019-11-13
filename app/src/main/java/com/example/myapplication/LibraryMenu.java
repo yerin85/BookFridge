@@ -1,20 +1,21 @@
 package com.example.myapplication;
 
 
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import java.lang.Object;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,21 +34,26 @@ import retrofit2.Response;
 
 import static com.example.myapplication.data.Functions.dpToPx;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class LibraryMenu extends Fragment {
     UserInfo userInfo;
+    ArrayList<LibraryResponse> libItems;
+
     ServiceApi service;
     RecyclerView recyclerView;
     LibAdapter adapter;
     boolean allowRefresh;
     DisplayMetrics displayMetrics;
-    float dpHeight;
     float dpWidth;
-    float libItem_width;
-    float libItem_height;
+    float libItemWidth;
+    float libItemHeight;
+    float libCoverHeight;
+    int fontSize=12;
+
+    static int column = 3;
+    ScaleGestureDetector gestureDetector;
 
     public LibraryMenu() {
         // Required empty public constructor
@@ -70,21 +76,14 @@ public class LibraryMenu extends Fragment {
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
-        displayMetrics = getActivity().getResources().getDisplayMetrics();
-        dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        displayMetrics = v.getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        libItem_width = dpToPx(getActivity(),(int)((dpWidth - 40) / (float)3));
-        libItem_height = libItem_width * (float) 1.6;
 
         service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
-                ArrayList<LibraryResponse> libItems = response.body();
-                adapter = new LibAdapter(libItems);
-                recyclerView = getActivity().findViewById(R.id.library_list);
-                recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-                recyclerView.setAdapter(adapter);
-                recyclerView.addItemDecoration(new GridSpacingItemDecoration(3,(int) libItem_width));
+                libItems = response.body();
+                displayItems(libItems);
             }
 
             @Override
@@ -92,9 +91,48 @@ public class LibraryMenu extends Fragment {
 
             }
         });
-
+        gestureDetector = new ScaleGestureDetector(v.getContext(),new ScaleListener());
+        recyclerView = v.findViewById(R.id.library_list);
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
+            }
+        });
         // Inflate the layout for this fragment
         return v;
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener{
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector){
+            if(detector.getScaleFactor()>1f){
+                if(column>2){
+                    column--;
+                    fontSize++;
+                }
+            }
+            else if(detector.getScaleFactor()<1f){
+                if(column<5){
+                    column++;
+                    fontSize--;
+                }
+            }
+            recyclerView.removeAllViews();
+            recyclerView.removeItemDecorationAt(0);
+            displayItems(libItems);
+        }
+    }
+
+    void displayItems(ArrayList<LibraryResponse> libItems){
+        libItemWidth = dpToPx(getActivity(), (int) (dpWidth * 10f/(11f*column+1f)));
+        libItemHeight = libItemWidth *  1.6f;
+        libCoverHeight = libItemHeight * 0.84f;
+        adapter = new LibAdapter(libItems);
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), column));
+        recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(column, (int) libItemWidth));
     }
 
     public class LibAdapter extends RecyclerView.Adapter<LibAdapter.LibViewHolder> {
@@ -129,9 +167,10 @@ public class LibraryMenu extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull LibViewHolder holder, int position) {
-            holder.libLayout.getLayoutParams().width = (int) libItem_width;
-            holder.libLayout.getLayoutParams().height = (int) libItem_height;
-            holder.cover.getLayoutParams().height=(int)(libItem_height*0.84);
+            holder.libLayout.getLayoutParams().width = (int) libItemWidth;
+            holder.libLayout.getLayoutParams().height = (int) libItemHeight;
+            holder.cover.getLayoutParams().height = (int) libCoverHeight;
+            holder.title.setTextSize(fontSize);
 
             LibraryResponse libItem = libItems.get(position);
             holder.title.setText(libItem.getTitle());
@@ -164,9 +203,10 @@ public class LibraryMenu extends Fragment {
             service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
                 @Override
                 public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
-                    ArrayList<LibraryResponse> libItems = response.body();
-                    adapter = new LibAdapter(libItems);
-                    recyclerView.setAdapter(adapter);
+                    libItems = response.body();
+                    recyclerView.removeAllViews();
+                    recyclerView.removeItemDecorationAt(0);
+                    displayItems(libItems);
                 }
 
                 @Override
