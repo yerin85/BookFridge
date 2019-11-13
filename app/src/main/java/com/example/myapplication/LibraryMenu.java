@@ -3,6 +3,7 @@ package com.example.myapplication;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 
 /**
@@ -67,8 +67,8 @@ public class LibraryMenu extends Fragment {
             @Override
             public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
                 ArrayList<LibraryResponse> libItems = response.body();
-                recyclerView = getActivity().findViewById(R.id.library_list);
                 adapter = new LibAdapter(libItems);
+                recyclerView =  getActivity().findViewById(R.id.library_list);
                 recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
                 recyclerView.setAdapter(adapter);
                 recyclerView.addItemDecoration(new GridSpacingItemDecoration(3, getResources().getDimensionPixelSize(R.dimen.libraryItem_width)));
@@ -127,7 +127,7 @@ public class LibraryMenu extends Fragment {
                     Intent intent = new Intent(getActivity(), BookNote.class);
                     LibraryResponse libItem = libItems.get(position);
                     intent.putExtra("libItem", libItem);
-                    intent.putExtra("userInfo",userInfo);
+                    intent.putExtra("userInfo", userInfo);
                     startActivity(intent);
                 }
             });
@@ -138,6 +138,7 @@ public class LibraryMenu extends Fragment {
             return libItems.size();
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -147,11 +148,8 @@ public class LibraryMenu extends Fragment {
                 @Override
                 public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
                     ArrayList<LibraryResponse> libItems = response.body();
-                    recyclerView = (RecyclerView) getActivity().findViewById(R.id.library_list);
                     adapter = new LibAdapter(libItems);
-                    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
                     recyclerView.setAdapter(adapter);
-                    recyclerView.addItemDecoration(new GridSpacingItemDecoration(3, getResources().getDimensionPixelSize(R.dimen.libraryItem_width)));
                 }
 
                 @Override

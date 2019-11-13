@@ -32,40 +32,35 @@ public class Functions {
                 return "mystery";
             } else if (genre.contains("호러")) {
                 return "horror";
-            }else if(genre.contains("고전")){
+            } else if (genre.contains("고전")) {
                 return "classical";
-            }else if(genre.contains("액션")){
+            } else if (genre.contains("액션")) {
                 return "action";
-            }else if(genre.contains("판타지")){
+            } else if (genre.contains("판타지")) {
                 return "fantasy";
-            }
-            else if(genre.contains(">희곡")){
+            } else if (genre.contains(">희곡")) {
                 return "theatrical";
-            }else if(genre.contains(">에세이")){
+            } else if (genre.contains(">에세이")) {
                 return "essay";
-            }
-            else if(genre.contains(">시")){
+            } else if (genre.contains(">시")) {
                 return "poem";
-            }
-            else if(genre.contains("무협")){
+            } else if (genre.contains("무협")) {
                 return "martialArt";
-            }
-            else {
+            } else {
                 return "novel";
             }
-        }
-        else{
+        } else {
             return "others";
         }
     }
 
-    public static String getDateString(){
+    public static String getDateString() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.KOREA);
         String str_date = df.format(new Date());
         return str_date;
     }
 
-    public static void goToBookDetail(Context context, UserInfo userInfo, String isbn){
+    public static void goToBookDetail(Context context, UserInfo userInfo, String isbn) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.aladin.co.kr/ttb/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -73,7 +68,7 @@ public class Functions {
         ServiceApi service = retrofit.create(ServiceApi.class);
 
         service = retrofit.create(ServiceApi.class);
-        service.itemSearch("Keyword",isbn,1,1).enqueue(new Callback<AladinResponse>() {
+        service.itemSearch("Keyword", isbn, 1, 1).enqueue(new Callback<AladinResponse>() {
             @Override
             public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                 AladinResponse responseResult = response.body();
@@ -87,15 +82,23 @@ public class Functions {
 
             @Override
             public void onFailure(Call<AladinResponse> call, Throwable t) {
-                Toast.makeText(context,"Fail", Toast.LENGTH_SHORT).show();                    }
+                Toast.makeText(context, "Fail", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    public static void goToLibrary(Context context, UserInfo userInfo){
+    public static void goToLibrary(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("userInfo",userInfo);
-        intent.putExtra("fragmentNumber",2);
+        intent.putExtra("userInfo", userInfo);
+        intent.putExtra("fragmentNumber", 2);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
+    }
+
+    public static int dpToPx(Context context, int dp) {
+        float density = context.getResources()
+                .getDisplayMetrics()
+                .density;
+        return Math.round((float) dp * density);
     }
 }
