@@ -42,27 +42,19 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/edit_note_date_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/edit_note_book_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/edit_note_book_layout"
-        app:layout_constraintTop_toTopOf="@+id/edit_note_book_layout">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/edit_note_date_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/edit_note_start_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:text="시작한 날짜"
                 android:textAlignment="center"
                 android:textSize="16dp"
@@ -79,7 +71,8 @@
                 android:background="@drawable/round_corners_selecteditembackground"
                 android:clickable="true"
                 android:textAlignment="center"
-                android:textSize="20dp"
+                android:textSize="22dp"
+                android:padding="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/edit_note_start_text" />
@@ -104,7 +97,8 @@
                 android:background="@drawable/round_corners_selecteditembackground"
                 android:clickable="true"
                 android:textAlignment="center"
-                android:textSize="20dp"
+                android:textSize="22dp"
+                android:padding="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/edit_note_end_text" />
@@ -125,7 +119,6 @@
                 style="@style/Widget.MaterialRatingBar.RatingBar"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:isIndicator="false"
                 android:max="10"
                 android:minHeight="32dp"
@@ -139,49 +132,48 @@
                 app:mrb_secondaryProgressTint="#68C5F7" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <EditText
-        android:id="@+id/edit_my_note"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="20dp"
-        android:background="@drawable/round_corners_gray"
-        android:breakStrategy="high_quality"
-        android:cursorVisible="true"
-        android:gravity="top"
-        android:padding="10dp"
-        android:textSize="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/edit_note_buttons_layout"
-        app:layout_constraintTop_toBottomOf="@+id/edit_note_book_layout" />
+        <EditText
+            android:id="@+id/edit_my_note"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/round_corners_gray"
+            android:breakStrategy="high_quality"
+            android:cursorVisible="true"
+            android:gravity="top"
+            android:padding="10dp"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/edit_note_buttons_layout"
+            app:layout_constraintTop_toBottomOf="@+id/edit_note_book_layout" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/edit_note_buttons_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <Button
-            android:id="@+id/edit_note_cancel"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/edit_note_buttons_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="취소"
-            android:textSize="14dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
-            android:id="@+id/edit_note_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="저장"
-            android:textSize="14dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <Button
+                android:id="@+id/edit_note_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="취소"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/edit_note_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="저장"
+                android:textSize="14dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>

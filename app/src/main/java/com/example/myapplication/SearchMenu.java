@@ -40,6 +40,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.example.myapplication.data.Functions.categorizeBooks;
 import static com.example.myapplication.data.Functions.getDateString;
 import static com.example.myapplication.data.Functions.goToLibrary;
+import static com.example.myapplication.data.Functions.goToWishlist;
 
 public class SearchMenu extends AppCompatActivity {
     String query = "";//검색어
@@ -87,7 +88,7 @@ public class SearchMenu extends AppCompatActivity {
             public void onClick(View v) {
                 if (pageNum < totalPageNum) {
                     pageNum++;
-                    bookItemSearch(queryTarget,query,pageNum);
+                    bookItemSearch(queryTarget, query, pageNum);
                 }
             }
         });
@@ -100,7 +101,7 @@ public class SearchMenu extends AppCompatActivity {
                     if (pageNum != 1) {
                         pageNum--;
                     }
-                    bookItemSearch(queryTarget,query,pageNum);
+                    bookItemSearch(queryTarget, query, pageNum);
                 }
             }
         });
@@ -117,8 +118,7 @@ public class SearchMenu extends AppCompatActivity {
             public void onClick(View v) {
                 EditText editText = findViewById(R.id.search_input);
                 query = editText.getText().toString();
-                if(!query.isEmpty()){
-                    System.out.println("abcdefghijk: "+query);
+                if (!query.isEmpty()) {
                     Spinner spinner = findViewById(R.id.search_type);
                     queryTarget = spinner.getSelectedItem().toString();
 
@@ -142,20 +142,20 @@ public class SearchMenu extends AppCompatActivity {
                     pageNum = 1;
 
                     //검색 수행
-                    bookItemSearch(queryTarget,query,pageNum);
+                    bookItemSearch(queryTarget, query, pageNum);
                 }
             }
         });
 
     }
 
-    public void bookItemSearch(String queryTarget,String query,int pageNum){
+    public void bookItemSearch(String queryTarget, String query, int pageNum) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.aladin.co.kr/ttb/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(ServiceApi.class);
-        service.itemSearch(queryTarget,query,pageNum,10).enqueue(new Callback<AladinResponse>() {
+        service.itemSearch(queryTarget, query, pageNum, 10).enqueue(new Callback<AladinResponse>() {
             @Override
             public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                 AladinResponse responseResult = response.body();
@@ -174,7 +174,8 @@ public class SearchMenu extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<AladinResponse> call, Throwable t) {
-                Toast.makeText(SearchMenu.this,"서버 오류입니다", Toast.LENGTH_SHORT).show();                    }
+                Toast.makeText(SearchMenu.this, "서버 오류입니다", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -272,7 +273,7 @@ public class SearchMenu extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //library로 이동
-                                                goToLibrary(SearchMenu.this,userInfo);
+                                                goToLibrary(SearchMenu.this, userInfo);
                                             }
                                         })
                                         .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
@@ -298,39 +299,89 @@ public class SearchMenu extends AppCompatActivity {
             holder.wishButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    BookItem bookItem = bookItems.get(position);
-                    service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                    service.isInLibrary(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<Boolean>() {
                         @Override
-                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            BasicResponse result = response.body();
-                            if (result.getCode() == 200) {
+                        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                            Boolean isInLib = response.body();
+                            if (!isInLib) {
+                                service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                                    @Override
+                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                        BasicResponse result = response.body();
+                                        if (result.getCode() == 200) {
+                                            new AlertDialog.Builder(SearchMenu.this)
+                                                    .setMessage(result.getMessage())
+                                                    .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            goToWishlist(SearchMenu.this, userInfo);
+                                                        }
+                                                    })
+                                                    .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            dialog.dismiss();
+                                                        }
+                                                    }).show();
+                                        } else {
+                                            Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                        Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
                                 new AlertDialog.Builder(SearchMenu.this)
-                                        .setMessage(result.getMessage())
-                                        .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                        .setMessage("이미 라이브러리에 추가된 책입니다\n위시리스트에 추가하시겠습니까?")
+                                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                /*wishlist fragment로 이동시키는 코드
-                                                 *
-                                                 *
-                                                 *
-                                                 *
-                                                 * */
+                                                service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                                                    @Override
+                                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                        BasicResponse result = response.body();
+                                                        if (result.getCode() == 200) {
+                                                            new AlertDialog.Builder(SearchMenu.this)
+                                                                    .setMessage(result.getMessage())
+                                                                    .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            goToWishlist(SearchMenu.this, userInfo);
+                                                                        }
+                                                                    })
+                                                                    .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            dialog.dismiss();
+                                                                        }
+                                                                    }).show();
+                                                        } else {
+                                                            Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                        Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
                                             }
                                         })
-                                        .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
                                             }
                                         }).show();
-                            } else {
-                                Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        public void onFailure(Call<Boolean> call, Throwable t) {
+
                         }
                     });
                 }

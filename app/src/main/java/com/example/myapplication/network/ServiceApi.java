@@ -6,6 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
+import com.example.myapplication.Calendar;
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryData;
@@ -48,6 +49,9 @@ public interface ServiceApi {
 
     @POST("/user/updateLibrary")
     Call<BasicResponse> updateLibrary(@Body LibraryData data);
+
+    @POST("/user/isInLibrary")
+    Call<Boolean> isInLibrary(@Query("userId") String userId, @Query("isbn") String isbn);
 
     //한 유저의 전체 라이브러리
     @POST("/user/getLibrary")

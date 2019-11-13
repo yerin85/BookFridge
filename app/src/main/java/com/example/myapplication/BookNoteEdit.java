@@ -35,7 +35,7 @@ public class BookNoteEdit extends AppCompatActivity {
     TextView title;
     TextView startDate;
     TextView endDate;
-    RatingBar rating;
+    RatingBar ratingBar;
     EditText myNote;
     Button cancelButton;
     Button saveButton;
@@ -55,7 +55,7 @@ public class BookNoteEdit extends AppCompatActivity {
         title = findViewById(R.id.edit_note_title);
         startDate = findViewById(R.id.edit_note_start_date);
         endDate = findViewById(R.id.edit_note_end_date);
-        rating = findViewById(R.id.edit_rating_star);
+        ratingBar = findViewById(R.id.edit_rating_star);
         myNote = findViewById(R.id.edit_my_note);
         cancelButton = findViewById(R.id.edit_note_cancel);
         saveButton = findViewById(R.id.edit_note_save);
@@ -107,21 +107,26 @@ public class BookNoteEdit extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.updateLibrary(new LibraryData(libItem.getUserId(), libItem.getIsbn(), rating.getRating(), myNote.getText().toString(), startDate.getText().toString(), endDate.getText().toString(), "", "", "")).enqueue(new Callback<BasicResponse>() {
-                    @Override
-                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                        BasicResponse result = response.body();
-                        Toast.makeText(BookNoteEdit.this, result.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
-                        if (result.getCode() == 200) {
-                            finish();
+                if(ratingBar.getRating()==0){
+                    Toast.makeText(BookNoteEdit.this,"최소 별점은 0.5 입니다",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    service.updateLibrary(new LibraryData(libItem.getUserId(), libItem.getIsbn(), ratingBar.getRating(), myNote.getText().toString(), startDate.getText().toString(), endDate.getText().toString(), "", "", "")).enqueue(new Callback<BasicResponse>() {
+                        @Override
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse result = response.body();
+                            Toast.makeText(BookNoteEdit.this, result.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+                            if (result.getCode() == 200) {
+                                finish();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<BasicResponse> call, Throwable t) {
-                        Toast.makeText(BookNoteEdit.this, t.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                            Toast.makeText(BookNoteEdit.this, t.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
     }
@@ -131,7 +136,7 @@ public class BookNoteEdit extends AppCompatActivity {
         title.setText(libItem.getTitle());
         startDate.setText(libItem.getStartDate());
         endDate.setText(libItem.getEndDate());
-        rating.setRating(libItem.getRating());
+        ratingBar.setRating(libItem.getRating());
         myNote.setText(libItem.getNote());
     }
 }

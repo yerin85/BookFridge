@@ -94,6 +94,13 @@ public class Functions {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
     }
+    public static void goToWishlist(Context context, UserInfo userInfo) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("userInfo", userInfo);
+        intent.putExtra("fragmentNumber", 5);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
 
     public static int dpToPx(Context context, int dp) {
         float density = context.getResources()

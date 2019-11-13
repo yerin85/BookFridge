@@ -12,6 +12,7 @@
         android:id="@+id/myimage"
         android:layout_width="78dp"
         android:layout_height="78dp"
+        app:civ_border="false"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
 

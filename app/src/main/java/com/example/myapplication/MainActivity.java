@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     UserInfo userInfo;
     ServiceApi service;
     int fragmentNumber;
+    int libFragmentNumber;
 
 
     @Override
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_library:
-                    fragmentTransaction.replace(R.id.frame_layout, LibraryMenu.newInstance(userInfo));
+                    fragmentTransaction.replace(R.id.frame_layout, LibraryMenu.newInstance(userInfo,libFragmentNumber));
                     fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
                     fragmentTransaction.commit();
                     return true;
@@ -186,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 navView.setSelectedItemId(R.id.navigation_home);
                 break;
             case 2:
+                libFragmentNumber=0;
                 navView.setSelectedItemId(R.id.navigation_library);
                 break;
             case 3:
@@ -194,6 +196,9 @@ public class MainActivity extends AppCompatActivity {
             case 4:
                 navView.setSelectedItemId(R.id.navigation_setting);
                 break;
+            case 5:
+                libFragmentNumber=1;
+                navView.setSelectedItemId(R.id.navigation_library);
         }
     }
 
