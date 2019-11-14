@@ -90,7 +90,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_camera_alt_black_24dp"
+        android:src="@drawable/ic_barcode_scan"
+
         android:visibility="invisible"
         app:backgroundTint="#ffffff"
         app:elevation="30dp"
@@ -109,7 +110,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_flip_black_24dp"
+        android:src="@drawable/ic_camera_alt_black_24dp"
         android:visibility="invisible"
         app:backgroundTint="#ffffff"
         app:elevation="30dp"
