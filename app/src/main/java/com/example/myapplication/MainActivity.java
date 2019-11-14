@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("월 독서 목표량 설정");
         final EditText editText = new EditText(MainActivity.this);
-        editText.setText(0);
+        editText.setText("0");
         builder.setView(editText);
 
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {

@@ -28,6 +28,8 @@ import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_DRAGGING;
 public class LibraryMenu extends Fragment {
     UserInfo userInfo;
     int fragmentNum;
+    static int column = 3;
+    static int fontSize = 12;
     ViewPager viewPager;
     LibPagerAdapter pagerAdapter;
     TabLayout tabLayout;

@@ -53,9 +53,6 @@ public class LibraryPage extends Fragment {
     float libItemHeight;
     float libCoverHeight;
 
-    static int fontSize = 12;
-    static int column = 3;
-
     ScaleGestureDetector scaleGestureDetector;
 
     public LibraryPage() {
@@ -113,18 +110,14 @@ public class LibraryPage extends Fragment {
         @Override
         public void onScaleEnd(ScaleGestureDetector detector) {
             if (detector.getScaleFactor() > 1f) {
-                if (column > 2) {
-                    column--;
-                    fontSize++;
-                    WishlistPage.column = column;
-                    WishlistPage.fontSize = fontSize;
+                if (LibraryMenu.column > 2) {
+                    LibraryMenu.column--;
+                    LibraryMenu.fontSize++;
                 }
             } else if (detector.getScaleFactor() < 1f) {
-                if (column < 5) {
-                    column++;
-                    fontSize--;
-                    WishlistPage.column = column;
-                    WishlistPage.fontSize = fontSize;
+                if (LibraryMenu.column < 5) {
+                    LibraryMenu.column++;
+                    LibraryMenu.fontSize--;
                 }
             }
             displayItems();
@@ -132,7 +125,7 @@ public class LibraryPage extends Fragment {
     }
 
     void displayItems() {
-        libItemWidth = dpToPx(getActivity(), (int) (dpWidth * 10f / (11f * column + 1f)));
+        libItemWidth = dpToPx(getActivity(), (int) (dpWidth * 10f / (11f * LibraryMenu.column + 1f)));
         libItemHeight = libItemWidth * 1.6f;
         libCoverHeight = libItemHeight * 0.84f;
         adapter = new LibAdapter(libItems);
@@ -140,9 +133,9 @@ public class LibraryPage extends Fragment {
             recyclerView.removeAllViews();
             recyclerView.removeItemDecorationAt(0);
         }
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), column));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), LibraryMenu.column));
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(column, (int) libItemWidth));
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(LibraryMenu.column, (int) libItemWidth));
     }
 
     public class LibAdapter extends RecyclerView.Adapter<LibAdapter.LibViewHolder> {
@@ -180,7 +173,7 @@ public class LibraryPage extends Fragment {
             holder.libLayout.getLayoutParams().width = (int) libItemWidth;
             holder.libLayout.getLayoutParams().height = (int) libItemHeight;
             holder.cover.getLayoutParams().height = (int) libCoverHeight;
-            holder.title.setTextSize(fontSize);
+            holder.title.setTextSize(LibraryMenu.fontSize);
 
             LibraryResponse libItem = libItems.get(position);
             holder.title.setText(libItem.getTitle());

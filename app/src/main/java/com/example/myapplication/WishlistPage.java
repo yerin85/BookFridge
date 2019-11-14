@@ -27,6 +27,7 @@ import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.GridSpacingItemDecoration;
+import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.WishlistResponse;
 import com.example.myapplication.network.RetrofitClient;
@@ -62,9 +63,6 @@ public class WishlistPage extends Fragment {
     float wishItemWidth;
     float wishItemHeight;
     float wishCoverHeight;
-
-    static int fontSize = 12;
-    static int column = 3;
 
     public WishlistPage() {
         // Required empty public constructor
@@ -120,18 +118,14 @@ public class WishlistPage extends Fragment {
         @Override
         public void onScaleEnd(ScaleGestureDetector detector) {
             if (detector.getScaleFactor() > 1f) {
-                if (column > 2) {
-                    column--;
-                    fontSize++;
-                    LibraryPage.column=column;
-                    LibraryPage.fontSize=fontSize;
+                if (LibraryMenu.column > 2) {
+                    LibraryMenu.column--;
+                    LibraryMenu.fontSize++;
                 }
             } else if (detector.getScaleFactor() < 1f) {
-                if (column < 5) {
-                    column++;
-                    fontSize--;
-                    LibraryPage.column=column;
-                    LibraryPage.fontSize=fontSize;
+                if (LibraryMenu.column < 5) {
+                    LibraryMenu.column++;
+                    LibraryMenu.fontSize--;
                 }
             }
             displayItems();
@@ -139,7 +133,7 @@ public class WishlistPage extends Fragment {
     }
 
     void displayItems() {
-        wishItemWidth = dpToPx(getActivity(), (int) (dpWidth * 10f / (11f * column + 1f)));
+        wishItemWidth = dpToPx(getActivity(), (int) (dpWidth * 10f / (11f * LibraryMenu.column + 1f)));
         wishItemHeight = wishItemWidth * 1.6f;
         wishCoverHeight = wishItemHeight * 0.84f;
         adapter = new WishAdapter(wishItems);
@@ -147,9 +141,9 @@ public class WishlistPage extends Fragment {
             recyclerView.removeAllViews();
             recyclerView.removeItemDecorationAt(0);
         }
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), column));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), LibraryMenu.column));
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(column, (int) wishItemWidth));
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(LibraryMenu.column, (int) wishItemWidth));
     }
 
     public class WishAdapter extends RecyclerView.Adapter<WishAdapter.WishViewHolder> {
@@ -186,7 +180,7 @@ public class WishlistPage extends Fragment {
             holder.wishLayout.getLayoutParams().width = (int) wishItemWidth;
             holder.wishLayout.getLayoutParams().height = (int) wishItemHeight;
             holder.cover.getLayoutParams().height = (int) wishCoverHeight;
-            holder.title.setTextSize(fontSize);
+            holder.title.setTextSize(LibraryMenu.fontSize);
 
             WishlistResponse wishItem = wishItems.get(position);
             holder.title.setText(wishItem.getTitle());
