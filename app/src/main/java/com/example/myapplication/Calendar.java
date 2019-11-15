@@ -293,7 +293,6 @@ public class Calendar extends Fragment {
 
         @Override
         public void decorate(DayViewFacade view) {
-            view.setSelectionDrawable(drawable);
             view.addSpan(new DotSpan(5, color)); // 날자밑에 점
         }
     }

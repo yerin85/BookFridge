@@ -17,7 +17,10 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
+    <!-- KAKAO -->
     <string name="kakao_key">e6cfdb1b3769214381de1c60aa165251</string>
+    <string name="kakao_scheme">kakaoe6cfdb1b3769214381de1c60aa165251</string>
+    <string name="kakaolink_host">kakaolink</string>
 
     <!-- GOOGLE CLOUD VISION . -->
     <string name="action_settings">Settings</string>

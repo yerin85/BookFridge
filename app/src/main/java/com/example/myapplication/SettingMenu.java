@@ -71,6 +71,7 @@ public class SettingMenu extends Fragment {
 
         Button button_genre = v.findViewById(R.id.select_gerne);
         Switch switchButton = v.findViewById(R.id.switch1);
+        Switch switchPush = v.findViewById(R.id.switch2);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
@@ -167,11 +168,24 @@ public class SettingMenu extends Fragment {
             }
         });
 
+        switchPush.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    Toast.makeText(getContext(), "팝업 알림에 동의하셨습니다", Toast.LENGTH_LONG).show();
+
+
+                } else {
+                    Toast.makeText(getContext(), "팝업을 차단합니다", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
-                    Toast.makeText(getContext(), "공개여부에 동의하셨습니다.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "공개여부에 동의하셨습니다", Toast.LENGTH_LONG).show();
                     service.updateUserPrivate(userInfo.userId, "0").enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {

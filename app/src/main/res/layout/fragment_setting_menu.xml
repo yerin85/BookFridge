@@ -8,46 +8,60 @@
 
     <Button
         android:id="@+id/button_logout"
-        android:layout_width="88dp"
-        android:layout_height="53dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="로그아웃"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_exit"
-        app:layout_constraintHorizontal_bias="0.775"
+        app:layout_constraintHorizontal_bias="0.569"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.275" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_exit"
-        android:layout_width="88dp"
-        android:layout_height="52dp"
-        android:layout_marginEnd="88dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
         android:text="탈퇴"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/button_logout" />
 
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="118dp"
-        android:layout_height="7dp"
-        android:text="공개여부"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.945"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.042" />
-
     <Button
         android:id="@+id/select_gerne"
-        android:layout_width="wrap_content"
+        android:layout_width="107dp"
         android:layout_height="wrap_content"
+
+        android:layout_marginEnd="236dp"
+        android:background="#00ff0000"
+        android:gravity="center_vertical"
         android:text="선호장르 변경"
-        app:layout_constraintBottom_toTopOf="@+id/button_logout"
-        app:layout_constraintEnd_toStartOf="@+id/switch1"
-        app:layout_constraintHorizontal_bias="0.612"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/switch1"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.215" />
+        app:layout_constraintVertical_bias="0.868" />
+
+    <Switch
+        android:id="@+id/switch2"
+        android:layout_width="314dp"
+        android:layout_height="31dp"
+        android:layout_marginBottom="308dp"
+        android:showText="true"
+        android:text="팝업 알림"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/switch1" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="313dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="40dp"
+        android:showText="true"
+        android:text="공개여부"
+        app:layout_constraintBottom_toTopOf="@+id/switch2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/select_gerne" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
