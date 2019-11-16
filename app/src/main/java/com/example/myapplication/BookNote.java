@@ -99,6 +99,8 @@ public class BookNote extends AppCompatActivity {
                 templateArgs.put("${title}", libItem.getTitle().split(" - ")[0]);
                 templateArgs.put("${des}",libItem.getNote());
                 templateArgs.put("${bookimg}", libItem.getCover());
+                templateArgs.put("${myimage}", userInfo.imagePath);
+                templateArgs.put("${name}", userInfo.nickname);
 
                 KakaoLinkService.getInstance().sendCustom(getApplicationContext(),"19221",templateArgs, serverCallbackArgs, new ResponseCallback<KakaoLinkResponse>() {
                     @Override
