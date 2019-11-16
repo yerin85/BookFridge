@@ -52,10 +52,10 @@ import static com.example.myapplication.data.Functions.getDateString;
 import static com.example.myapplication.data.Functions.goToBookDetail;
 
 
-public class OcrBookMenu  extends AppCompatActivity {
+public class OcrBookMenu extends AppCompatActivity {
     UserInfo userInfo;
     ServiceApi service;
-    ArrayList<BookItem> bookItems ;
+    ArrayList<BookItem> bookItems;
     ArrayList<BookItem> addBookItems;
     RecyclerView recyclerView;
     LibAdapter adapter;
@@ -76,18 +76,17 @@ public class OcrBookMenu  extends AppCompatActivity {
         bookItems = new ArrayList<BookItem>();
         addBookItems = new ArrayList<BookItem>();
         bookItems = (ArrayList<BookItem>) getIntent().getSerializableExtra("bookItems");
-        userInfo = (UserInfo)getIntent().getSerializableExtra("userInfo");
+        userInfo = (UserInfo) getIntent().getSerializableExtra("userInfo");
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
-        for(BookItem bookItem:bookItems)
-            Log.d("bookitem",bookItem.getTitle());
-        if(bookItems!=null){
+        for (BookItem bookItem : bookItems)
+            Log.d("bookitem", bookItem.getTitle());
+        if (bookItems != null) {
             recyclerView = (RecyclerView) findViewById(R.id.library_list);
             adapter = new LibAdapter(bookItems);
-            recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+            recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
             recyclerView.setAdapter(adapter);
-        }
-        else Toast.makeText(OcrBookMenu.this,"책을 찾지못했습니다.",Toast.LENGTH_SHORT);
+        } else Toast.makeText(OcrBookMenu.this, "책을 찾지못했습니다.", Toast.LENGTH_SHORT);
 
         selectAllButton = findViewById(R.id.button_selectAll);
         confirmButton = findViewById(R.id.button_confirm);
@@ -97,12 +96,11 @@ public class OcrBookMenu  extends AppCompatActivity {
         selectAllButton.setOnClickListener(new CheckBox.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(((CheckBox)v).isChecked()) {
+                if (((CheckBox) v).isChecked()) {
                     addBookItems.clear();
                     addBookItems = bookItems;
                     adapter.selectAll();
-                }
-                else{
+                } else {
                     addBookItems.clear();
                     adapter.unselectAll();
                 }
@@ -112,7 +110,7 @@ public class OcrBookMenu  extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 for (BookItem bookItem : addBookItems) {
-                    service.addLibrary(new LibraryData(userInfo.userId, bookItem.getIsbn(), 0, "", getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                    service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
@@ -135,13 +133,14 @@ public class OcrBookMenu  extends AppCompatActivity {
                                 Toast.makeText(OcrBookMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
+
                         @Override
                         public void onFailure(Call<BasicResponse> call, Throwable t) {
                             Toast.makeText(OcrBookMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
-            finish();
+                finish();
             }
         });
         cancleButton.setOnClickListener(new View.OnClickListener() {
@@ -161,12 +160,14 @@ public class OcrBookMenu  extends AppCompatActivity {
         public LibAdapter(ArrayList<BookItem> libItems) {
             this.libItems = libItems;
         }
+
         public void selectAll() {
             if (!isSelectedAll) {
                 isSelectedAll = true;
                 notifyDataSetChanged();
             }
         }
+
         public void unselectAll() {
             if (isSelectedAll) {
                 isSelectedAll = false;
@@ -175,11 +176,11 @@ public class OcrBookMenu  extends AppCompatActivity {
         }
 
 
-
         public class LibViewHolder extends RecyclerView.ViewHolder {
             CheckBox title;
             ImageView cover;
             LinearLayout libLayout;
+
             public LibViewHolder(View view) {
                 super(view);
                 title = view.findViewById(R.id.library_title);
@@ -189,19 +190,18 @@ public class OcrBookMenu  extends AppCompatActivity {
                 libLayout.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        BookItem bookItem =libItems.get(getAdapterPosition());
-                        goToBookDetail(v.getContext(),userInfo,bookItem.getIsbn());
-                        return  true;
+                        BookItem bookItem = libItems.get(getAdapterPosition());
+                        goToBookDetail(v.getContext(), userInfo, bookItem.getIsbn());
+                        return true;
                     }
                 });
-                libLayout.setOnClickListener(new View.OnClickListener(){
+                libLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v){
-                        if(addBookItems.contains(libItems.get(getAdapterPosition()))) {
+                    public void onClick(View v) {
+                        if (addBookItems.contains(libItems.get(getAdapterPosition()))) {
                             addBookItems.remove(libItems.get(getAdapterPosition()));
                             title.setChecked(false);
-                        }
-                        else{
+                        } else {
                             addBookItems.add(libItems.get(getAdapterPosition()));
                             title.setChecked(true);
                         }
@@ -223,7 +223,7 @@ public class OcrBookMenu  extends AppCompatActivity {
             BookItem libItem = libItems.get(position);
             holder.title.setText(libItem.getTitle());
             Glide.with(holder.itemView.getContext()).load(libItem.getCover()).into(holder.cover);
-            if(!isSelectedAll)
+            if (!isSelectedAll)
                 holder.title.setChecked(false);
             else holder.title.setChecked(true);
         }

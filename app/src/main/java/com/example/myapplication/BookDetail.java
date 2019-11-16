@@ -62,7 +62,7 @@ public class BookDetail extends AppCompatActivity {
 
         Intent intent = getIntent();
         BookItem bookItem = (BookItem) intent.getSerializableExtra("bookItem");
-        userInfo = (UserInfo)intent.getSerializableExtra("userInfo");
+        userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
 
         //도서 상세 정보를 화면에 보여준다
         displayDetails(bookItem);
@@ -74,7 +74,7 @@ public class BookDetail extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         myNote = findViewById(R.id.detail_myNote);
-        averageRating =findViewById(R.id.rating_average);
+        averageRating = findViewById(R.id.rating_average);
         rating = findViewById(R.id.rating_star);
         libButton = findViewById(R.id.detail_add_library);
         wishButton = findViewById(R.id.detail_wishlist);
@@ -82,22 +82,24 @@ public class BookDetail extends AppCompatActivity {
         service.getAvgRating(bookItem.getIsbn()).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                float star = Math.round(Float.parseFloat(response.body()) * 10)/(float)10;
+                float star = Math.round(Float.parseFloat(response.body()) * 10) / (float) 10;
                 rating.setRating(star);
-                averageRating.setText("("+new Float(star).toString()+")");
+                averageRating.setText("(" + new Float(star).toString() + ")");
             }
+
             @Override
             public void onFailure(Call<String> call, Throwable t) {
             }
         });
 
 
-        service.getMyNote(userInfo.userId,bookItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
+        service.getMyNote(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
             @Override
             public void onResponse(Call<LibraryResponse> call, Response<LibraryResponse> response) {
                 LibraryResponse libItem = response.body();
                 myNote.setText(libItem.getNote());
             }
+
             @Override
             public void onFailure(Call<LibraryResponse> call, Throwable t) {
             }
@@ -110,6 +112,7 @@ public class BookDetail extends AppCompatActivity {
                 noteAdapter = new NoteAdapter(noteItems);
                 recyclerView.setAdapter(noteAdapter);
             }
+
             @Override
             public void onFailure(Call<ArrayList<UserNoteResponse>> call, Throwable t) {
             }
@@ -118,7 +121,7 @@ public class BookDetail extends AppCompatActivity {
         libButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.addLibrary(new LibraryData(userInfo.userId, bookItem.getIsbn(), 0, "", getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();
@@ -131,6 +134,7 @@ public class BookDetail extends AppCompatActivity {
                                         Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
+
                                 @Override
                                 public void onFailure(Call<BasicResponse> call, Throwable t) {
                                     Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -142,7 +146,7 @@ public class BookDetail extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //library로 이동
-                                            goToLibrary(BookDetail.this,userInfo);
+                                            goToLibrary(BookDetail.this, userInfo);
                                         }
                                     })
                                     .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
@@ -155,6 +159,7 @@ public class BookDetail extends AppCompatActivity {
                             Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
+
                     @Override
                     public void onFailure(Call<BasicResponse> call, Throwable t) {
                         Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -166,11 +171,11 @@ public class BookDetail extends AppCompatActivity {
         wishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.isInLibrary(userInfo.userId,bookItem.getIsbn()).enqueue(new Callback<Boolean>() {
+                service.isInLibrary(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<Boolean>() {
                     @Override
                     public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                         Boolean isInLib = response.body();
-                        if(!isInLib){
+                        if (!isInLib) {
                             service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                                 @Override
                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -181,7 +186,7 @@ public class BookDetail extends AppCompatActivity {
                                                 .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-                                                        goToWishlist(BookDetail.this,userInfo);
+                                                        goToWishlist(BookDetail.this, userInfo);
                                                     }
                                                 })
                                                 .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
@@ -200,10 +205,11 @@ public class BookDetail extends AppCompatActivity {
                                     Toast.makeText(BookDetail.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        }else{
-                            Toast.makeText(BookDetail.this,"이미 라이브러리에 추가된 책입니다",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(BookDetail.this, "이미 라이브러리에 추가된 책입니다", Toast.LENGTH_SHORT).show();
                         }
                     }
+
                     @Override
                     public void onFailure(Call<Boolean> call, Throwable t) {
 

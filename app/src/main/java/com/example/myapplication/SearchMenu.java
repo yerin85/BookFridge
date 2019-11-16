@@ -247,7 +247,7 @@ public class SearchMenu extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     BookItem bookItem = bookItems.get(position);
-                    service.addLibrary(new LibraryData(userInfo.userId, bookItem.getIsbn(), 0, "", getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
+                    service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
@@ -334,7 +334,7 @@ public class SearchMenu extends AppCompatActivity {
                                     }
                                 });
                             } else {
-                                Toast.makeText(SearchMenu.this,"이미 라이브러리에 추가된 책입니다",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SearchMenu.this, "이미 라이브러리에 추가된 책입니다", Toast.LENGTH_SHORT).show();
                             }
                         }
 

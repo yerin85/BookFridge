@@ -46,7 +46,7 @@ public interface ServiceApi {
     Call<BasicResponse> subUserProfile(@Query("userId") String userId);
 
     @POST("/user/addLibrary")
-    Call<BasicResponse> addLibrary(@Body LibraryData data);
+    Call<BasicResponse> addLibrary(@Query("userId") String userId, @Query("isbn") String isbn, @Query("startDate") String startDate, @Query("endDate") String endDate, @Query("genre") String genre, @Query("title") String title, @Query("cover") String cover);
 
     @POST("/user/updateLibrary")
     Call<BasicResponse> updateLibrary(@Body LibraryData data);
@@ -78,7 +78,7 @@ public interface ServiceApi {
     Call<BasicResponse> createMyPage(@Query("userId") String userId);
 
     @POST("/user/updateUserPrivate")
-    Call<BasicResponse> updateUserPrivate(@Query("userId") String userId,@Query("priv") String priv);
+    Call<BasicResponse> updateUserPrivate(@Query("userId") String userId, @Query("priv") String priv);
 
     @POST("/user/addMypage")
     Call<BasicResponse> addMypage(@Body MyPageData data);
