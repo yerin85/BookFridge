@@ -26,24 +26,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Functions {
 
     public static String categorizeBooks(String genre) {
-        if (genre.contains("만화")||genre.contains("코믹스")) {
+        if (genre.contains("만화") || genre.contains("코믹스")) {
             return "comics";
         } else if (genre.contains("소설")) {
-            if (genre.contains("과학")||genre.contains("SF")) {
+            if (genre.contains("과학") || genre.contains("SF")) {
                 return "sf";
-            } else if (genre.contains("추리")||genre.contains("미스터리")) {
+            } else if (genre.contains("추리") || genre.contains("미스터리")) {
                 return "mystery";
-            } else if (genre.contains("호러")||genre.contains("공포")) {
+            } else if (genre.contains("호러") || genre.contains("공포")) {
                 return "horror";
             } else if (genre.contains("고전")) {
                 return "classical";
-            } else if (genre.contains("액션")||genre.contains("스릴러")) {
+            } else if (genre.contains("액션") || genre.contains("스릴러")) {
                 return "action";
-            } else if (genre.contains("판타지")||genre.contains("환상")) {
+            } else if (genre.contains("판타지") || genre.contains("환상")) {
                 return "fantasy";
-            } else if (genre.contains(">희곡")||(genre.indexOf("희곡") != genre.lastIndexOf("희곡"))) {
+            } else if (genre.contains(">희곡") || (genre.indexOf("희곡") != genre.lastIndexOf("희곡"))) {
                 return "theatrical";
-            } else if (genre.contains(">에세이")||(genre.indexOf("에세이") != genre.lastIndexOf("에세이"))) {
+            } else if (genre.contains(">에세이") || (genre.indexOf("에세이") != genre.lastIndexOf("에세이"))) {
                 return "essay";
             } else if (genre.contains(">시")) {
                 return "poem";
@@ -97,6 +97,7 @@ public class Functions {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
     }
+
     public static void goToWishlist(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("userInfo", userInfo);
@@ -105,22 +106,24 @@ public class Functions {
         context.startActivity(intent);
     }
 
-    public static void goToOthersLibrary(Context context, UserInfo userInfo,UserInfo othersUserInfo){
+    public static void goToOthersLibrary(Context context, UserInfo userInfo, UserInfo othersUserInfo) {
         Intent intent = new Intent(context, OthersLibrary.class);
         intent.putExtra("userInfo", userInfo);
-        intent.putExtra("othersUserInfo",othersUserInfo);
+        intent.putExtra("othersUserInfo", othersUserInfo);
         context.startActivity(intent);
     }
 
-    public static void goToBookNote(Context context, UserInfo userInfo, LibraryResponse libItem){
+    public static void goToBookNote(Context context, UserInfo userInfo, LibraryResponse libItem) {
         Intent intent = new Intent(context, BookNote.class);
-        intent.putExtra("libItem", libItem);
         intent.putExtra("userInfo", userInfo);
+        intent.putExtra("libItem", libItem);
         context.startActivity(intent);
     }
 
-    public static void goToOthersBookNote(Context context, LibraryResponse libItem){
+    public static void goToOthersBookNote(Context context, UserInfo userInfo, UserInfo othersUserInfo, LibraryResponse libItem) {
         Intent intent = new Intent(context, OthersBookNote.class);
+        intent.putExtra("userInfo", userInfo);
+        intent.putExtra("othersUserInfo", othersUserInfo);
         intent.putExtra("libItem", libItem);
         context.startActivity(intent);
     }

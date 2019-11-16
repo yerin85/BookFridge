@@ -24,6 +24,7 @@ import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
@@ -52,12 +53,16 @@ public class ReadPage extends Fragment {
     float itemHeight;
     float itemCoverHeight;
 
+    TabLayout tabLayout;
+    TabLayout.Tab tab;
+    static String genre = "total";
+
 
     public ReadPage() {
         // Required empty public constructor
     }
 
-    public static ReadPage newInstance(UserInfo userInfo,UserInfo othersUserInfo) {
+    public static ReadPage newInstance(UserInfo userInfo, UserInfo othersUserInfo) {
         ReadPage readPage = new ReadPage();
         Bundle bundle = new Bundle();
         bundle.putSerializable("userInfo", userInfo);
@@ -70,6 +75,7 @@ public class ReadPage extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_read_page, container, false);
@@ -77,13 +83,17 @@ public class ReadPage extends Fragment {
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         othersUserInfo = (UserInfo) getArguments().getSerializable("othersUserInfo");
 
+        tabLayout = v.findViewById(R.id.read_tab);
+        addTab();
+        tab = tabLayout.getTabAt(genrePosition());
+        tab.select();
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
         displayMetrics = v.getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
-        service.getReadLibrary(userInfo.userId,othersUserInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
+        service.getReadLibrary(userInfo.userId, othersUserInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
                 libItems = response.body();
@@ -95,6 +105,9 @@ public class ReadPage extends Fragment {
 
             }
         });
+
+        tabLayout.addOnTabSelectedListener(new GenreTabListener());
+
         scaleGestureDetector = new ScaleGestureDetector(v.getContext(), new ScaleListener());
         nestedScrollView = v.findViewById(R.id.readPage_scrollView);
         recyclerView = v.findViewById(R.id.read_list);
@@ -132,8 +145,8 @@ public class ReadPage extends Fragment {
         itemWidth = dpToPx(getActivity(), (int) (dpWidth * 10f / (11f * OthersLibrary.column + 1f)));
         itemHeight = itemWidth * 1.6f;
         itemCoverHeight = itemHeight * 0.84f;
-        adapter = new ReadAdapter(libItems);
-        if(recyclerView.getItemDecorationCount()!=0){
+        adapter = new ReadAdapter(getGenreLib(libItems));
+        if (recyclerView.getItemDecorationCount() != 0) {
             recyclerView.removeAllViews();
             recyclerView.removeItemDecorationAt(0);
         }
@@ -186,7 +199,7 @@ public class ReadPage extends Fragment {
                 @Override
                 public void onClick(View v) {
                     LibraryResponse libItem = libItems.get(position);
-                    goToOthersBookNote(getActivity(),libItem);
+                    goToOthersBookNote(getActivity(), userInfo, othersUserInfo, libItem);
                 }
             });
         }
@@ -195,5 +208,132 @@ public class ReadPage extends Fragment {
         public int getItemCount() {
             return libItems.size();
         }
+    }
+
+
+    public void addTab() {
+        tabLayout.addTab(tabLayout.newTab().setText("ALL"));
+        tabLayout.addTab(tabLayout.newTab().setText("소설"));
+        tabLayout.addTab(tabLayout.newTab().setText("판타지"));
+        tabLayout.addTab(tabLayout.newTab().setText("미스터리"));
+        tabLayout.addTab(tabLayout.newTab().setText("공포"));
+        tabLayout.addTab(tabLayout.newTab().setText("고전"));
+        tabLayout.addTab(tabLayout.newTab().setText("스릴러"));
+        tabLayout.addTab(tabLayout.newTab().setText("SF"));
+        tabLayout.addTab(tabLayout.newTab().setText("희곡"));
+        tabLayout.addTab(tabLayout.newTab().setText("무협"));
+        tabLayout.addTab(tabLayout.newTab().setText("시"));
+        tabLayout.addTab(tabLayout.newTab().setText("에세이"));
+        tabLayout.addTab(tabLayout.newTab().setText("만화"));
+        tabLayout.addTab(tabLayout.newTab().setText("기타"));
+    }
+
+    public int genrePosition() {
+        switch (genre) {
+            case "total":
+                return 0;
+            case "novel":
+                return 1;
+            case "fantasy":
+                return 2;
+            case "mystery":
+                return 3;
+            case "horror":
+                return 4;
+            case "classical":
+                return 5;
+            case "action":
+                return 6;
+            case "sf":
+                return 7;
+            case "theatrical":
+                return 8;
+            case "martialArt":
+                return 9;
+            case "poem":
+                return 10;
+            case "essay":
+                return 11;
+            case "comics":
+                return 12;
+            case "others":
+                return 13;
+            default:
+                return -1;
+        }
+    }
+
+    public class GenreTabListener implements TabLayout.OnTabSelectedListener {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            switch (tabLayout.getSelectedTabPosition()) {
+                case 0:
+                    genre = "total";
+                    break;
+                case 1:
+                    genre = "novel";
+                    break;
+                case 2:
+                    genre = "fantasy";
+                    break;
+                case 3:
+                    genre = "mystery";
+                    break;
+                case 4:
+                    genre = "horror";
+                    break;
+                case 5:
+                    genre = "classical";
+                    break;
+                case 6:
+                    genre = "action";
+                    break;
+                case 7:
+                    genre = "sf";
+                    break;
+                case 8:
+                    genre = "theatrical";
+                    break;
+                case 9:
+                    genre = "martialArt";
+                    break;
+                case 10:
+                    genre = "poem";
+                    break;
+                case 11:
+                    genre = "essay";
+                    break;
+                case 12:
+                    genre = "comics";
+                    break;
+                case 13:
+                    genre = "others";
+                    break;
+            }
+            displayItems();
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+
+        }
+    }
+
+    public ArrayList<LibraryResponse> getGenreLib(ArrayList<LibraryResponse> libItems) {
+        ArrayList<LibraryResponse> genreItems = new ArrayList<>();
+        if (genre.equals("total")) {
+            return libItems;
+        }
+        for (int i = 0; i < libItems.size(); i++) {
+            if (libItems.get(i).getGenre().equals(genre)) {
+                genreItems.add(libItems.get(i));
+            }
+        }
+        return genreItems;
     }
 }

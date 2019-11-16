@@ -135,7 +135,6 @@ public class HomeMenu extends Fragment {
         bestSellerList();
         newList();
 
-
         tabLayout.addOnTabSelectedListener(new Top10TabListener());
 
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
@@ -210,6 +209,7 @@ public class HomeMenu extends Fragment {
 
     public void top10List() {
         tabLayout.addTab(tabLayout.newTab().setText("ALL"));
+        tabLayout.addTab(tabLayout.newTab().setText("소설"));
         tabLayout.addTab(tabLayout.newTab().setText("판타지"));
         tabLayout.addTab(tabLayout.newTab().setText("미스터리"));
         tabLayout.addTab(tabLayout.newTab().setText("공포"));
@@ -246,42 +246,47 @@ public class HomeMenu extends Fragment {
                     genre = "total";
                     break;
                 case 1:
-                    genre = "fantasy";
+                    genre = "novel";
                     break;
                 case 2:
-                    genre = "mystery";
+                    genre = "fantasy";
                     break;
                 case 3:
-                    genre = "horror";
+                    genre = "mystery";
                     break;
                 case 4:
-                    genre = "classical";
+                    genre = "horror";
                     break;
                 case 5:
-                    genre = "action";
+                    genre = "classical";
                     break;
                 case 6:
-                    genre = "sf";
+                    genre = "action";
                     break;
                 case 7:
-                    genre = "theatrical";
+                    genre = "sf";
                     break;
                 case 8:
-                    genre = "martialArt";
+                    genre = "theatrical";
                     break;
                 case 9:
-                    genre = "poem";
+                    genre = "martialArt";
                     break;
                 case 10:
-                    genre = "essay";
+                    genre = "poem";
                     break;
                 case 11:
-                    genre = "comics";
+                    genre = "essay";
                     break;
                 case 12:
+                    genre = "comics";
+                    break;
+                case 13:
                     genre = "others";
                     break;
             }
+            ReadPage.genre = genre;
+            UnreadPage.genre = genre;
             service = RetrofitClient.getClient().create(ServiceApi.class);
             service.getTop10(genre).enqueue(new Callback<ArrayList<Top10Response>>() {
                 @Override
