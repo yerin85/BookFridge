@@ -121,65 +121,67 @@ public class Calendar extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                if(mylibrary!=null){
 
-                for (int i = 0; i < mylibrary.size(); i++) {
-                    temp = mylibrary.get(i).getTitle().split(" - ");
-                    endPrint.add(mylibrary.get(i).getEndDate());
-                    bookTitle.add(temp[0]);
-                    startData = mylibrary.get(i).getStartDate().split("/");
-                    endData = mylibrary.get(i).getEndDate().split("/");
-                    genre = mylibrary.get(i).getGenre();
+                    for (int i = 0; i < mylibrary.size(); i++) {
+                        temp = mylibrary.get(i).getTitle().split(" - ");
+                        endPrint.add(mylibrary.get(i).getEndDate());
+                        bookTitle.add(temp[0]);
+                        startData = mylibrary.get(i).getStartDate().split("/");
+                        endData = mylibrary.get(i).getEndDate().split("/");
+                        genre = mylibrary.get(i).getGenre();
 
-                    int year = Integer.parseInt(startData[0]);
-                    int month = Integer.parseInt(startData[1]);
-                    int dayy = Integer.parseInt(startData[2]);
+                        int year = Integer.parseInt(startData[0]);
+                        int month = Integer.parseInt(startData[1]);
+                        int dayy = Integer.parseInt(startData[2]);
 
-                    CalendarDay day = CalendarDay.from(year, month - 1, dayy);
+                        CalendarDay day = CalendarDay.from(year, month - 1, dayy);
 
-                    total.add(day);
-                    switch (genre) {
-                        case "fantasy":
-                            dates1.add(day);
-                            break;
-                        case "mystery":
-                            dates2.add(day);
-                            break;
-                        case "horror":
-                            dates3.add(day);
-                            break;
-                        case "classical":
-                            dates4.add(day);
-                            break;
-                        case "action":
-                            dates5.add(day);
-                            break;
-                        case "sf":
-                            dates6.add(day);
-                            break;
-                        case "theatrical":
-                            dates7.add(day);
-                            break;
-                        case "martialArt":
-                            dates8.add(day);
-                            break;
-                        case "poem":
-                            dates9.add(day);
-                            break;
-                        case "essay":
-                            dates10.add(day);
-                            break;
-                        case "novel":
-                            dates11.add(day);
-                            break;
-                        case "comics":
-                            dates12.add(day);
-                            break;
-                        case "others":
-                            dates13.add(day);
-                            break;
+                        total.add(day);
+                        switch (genre) {
+                            case "fantasy":
+                                dates1.add(day);
+                                break;
+                            case "mystery":
+                                dates2.add(day);
+                                break;
+                            case "horror":
+                                dates3.add(day);
+                                break;
+                            case "classical":
+                                dates4.add(day);
+                                break;
+                            case "action":
+                                dates5.add(day);
+                                break;
+                            case "sf":
+                                dates6.add(day);
+                                break;
+                            case "theatrical":
+                                dates7.add(day);
+                                break;
+                            case "martialArt":
+                                dates8.add(day);
+                                break;
+                            case "poem":
+                                dates9.add(day);
+                                break;
+                            case "essay":
+                                dates10.add(day);
+                                break;
+                            case "novel":
+                                dates11.add(day);
+                                break;
+                            case "comics":
+                                dates12.add(day);
+                                break;
+                            case "others":
+                                dates13.add(day);
+                                break;
+
+                        }
 
                     }
-
                 }
                 materialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
                     @Override
