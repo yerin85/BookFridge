@@ -34,6 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.example.myapplication.data.Functions.dpToPx;
+import static com.example.myapplication.data.Functions.goToBookNote;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -185,11 +186,8 @@ public class LibraryPage extends Fragment {
                 @Override
                 public void onClick(View v) {
                     allowRefresh = true;
-                    Intent intent = new Intent(getActivity(), BookNote.class);
                     LibraryResponse libItem = libItems.get(position);
-                    intent.putExtra("libItem", libItem);
-                    intent.putExtra("userInfo", userInfo);
-                    startActivity(intent);
+                    goToBookNote(getActivity(),userInfo,libItem);
                 }
             });
         }

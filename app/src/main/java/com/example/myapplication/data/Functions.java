@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.example.myapplication.BookDetail;
+import com.example.myapplication.BookNote;
 import com.example.myapplication.LibraryMenu;
 import com.example.myapplication.MainActivity;
+import com.example.myapplication.OthersBookNote;
+import com.example.myapplication.OthersLibrary;
 import com.example.myapplication.network.ServiceApi;
 
 import java.text.SimpleDateFormat;
@@ -103,9 +106,22 @@ public class Functions {
     }
 
     public static void goToOthersLibrary(Context context, UserInfo userInfo,UserInfo othersUserInfo){
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, OthersLibrary.class);
         intent.putExtra("userInfo", userInfo);
         intent.putExtra("othersUserInfo",othersUserInfo);
+        context.startActivity(intent);
+    }
+
+    public static void goToBookNote(Context context, UserInfo userInfo, LibraryResponse libItem){
+        Intent intent = new Intent(context, BookNote.class);
+        intent.putExtra("libItem", libItem);
+        intent.putExtra("userInfo", userInfo);
+        context.startActivity(intent);
+    }
+
+    public static void goToOthersBookNote(Context context, LibraryResponse libItem){
+        Intent intent = new Intent(context, OthersBookNote.class);
+        intent.putExtra("libItem", libItem);
         context.startActivity(intent);
     }
 

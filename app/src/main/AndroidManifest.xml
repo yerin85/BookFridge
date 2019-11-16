@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".OthersLibrary"></activity>
+        <activity android:name=".OthersBookNote"></activity>
+        <activity android:name=".OthersLibrary" />
         <activity android:name=".BookNoteEdit" />
         <activity android:name=".BookDetail" />
         <activity android:name=".BookNote">

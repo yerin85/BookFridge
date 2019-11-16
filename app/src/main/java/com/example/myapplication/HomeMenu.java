@@ -227,7 +227,6 @@ public class HomeMenu extends Fragment {
             @Override
             public void onResponse(Call<ArrayList<Top10Response>> call, Response<ArrayList<Top10Response>> response) {
                 ArrayList<Top10Response> top10Items = response.body();
-                System.out.println(genre+"  "+top10Items.size());
                 top10Adapter = new Top10Adapter(top10Items);
                 top10View.setLayoutManager(new LinearLayoutManager(getActivity()));
                 top10View.setAdapter(top10Adapter);
@@ -288,7 +287,6 @@ public class HomeMenu extends Fragment {
                 @Override
                 public void onResponse(Call<ArrayList<Top10Response>> call, Response<ArrayList<Top10Response>> response) {
                     ArrayList<Top10Response> top10Items = response.body();
-                    System.out.println(genre+"  "+top10Items.size());
                     top10Adapter = new Top10Adapter(top10Items);
                     top10View.setLayoutManager(new LinearLayoutManager(getActivity()));
                     top10View.setAdapter(top10Adapter);
@@ -328,7 +326,7 @@ public class HomeMenu extends Fragment {
                 super(view);
                 info = view.findViewById(R.id.top10_info);
                 profile = view.findViewById(R.id.top10_profile);
-                top10Layout = view.findViewById(R.id.top10_item);
+                top10Layout = view.findViewById(R.id.top10Item_layout);
             }
         }
 
@@ -405,7 +403,7 @@ public class HomeMenu extends Fragment {
                 super(view);
                 title = view.findViewById(R.id.bestseller_title);
                 cover = view.findViewById(R.id.bestseller_cover);
-                bestsellerLayout = view.findViewById(R.id.bestseller_item);
+                bestsellerLayout = view.findViewById(R.id.bestsellerItem_layout);
             }
         }
 
@@ -495,7 +493,7 @@ public class HomeMenu extends Fragment {
                 author = view.findViewById(R.id.newbooks_author);
                 description = view.findViewById(R.id.newbooks_description);
                 cover = view.findViewById(R.id.newbooks_cover);
-                newbooksLayout = view.findViewById(R.id.newbooks_item);
+                newbooksLayout = view.findViewById(R.id.newbooksItem_layout);
             }
         }
 
