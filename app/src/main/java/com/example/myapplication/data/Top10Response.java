@@ -7,11 +7,14 @@ public class Top10Response {
     @SerializedName("userId")
     private String userId;
 
+    @SerializedName("profile")
+    private String profile;
+
     @SerializedName("nickname")
     private String nickname;
 
-    @SerializedName("total")
-    private String total;
+    @SerializedName("count")
+    private int count;
 
     public String getUserId() {
         return userId;
@@ -21,7 +24,11 @@ public class Top10Response {
         return nickname;
     }
 
-    public String getTotal() {
-        return total;
+    public String getProfile() {
+        return profile;
+    }
+
+    public int getCount() {
+        return count;
     }
 }

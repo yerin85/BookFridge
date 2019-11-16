@@ -107,4 +107,10 @@ public interface ServiceApi {
 
     @POST("/user/getAvgRating")
     Call<String> getAvgRating(@Query("isbn") String isbn);
+
+    @POST("/user/getReadLibrary")
+    Call<ArrayList<LibraryResponse>> getReadLibrary(@Query("userId") String userId,@Query("othersUserId") String othersUserId);
+
+    @POST("/user/getUnreadLibrary")
+    Call<ArrayList<LibraryResponse>> getUnreadLibrary(@Query("userId") String userId,@Query("othersUserId") String othersUserId);
 }

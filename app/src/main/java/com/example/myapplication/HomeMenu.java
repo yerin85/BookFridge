@@ -7,13 +7,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
-import androidx.viewpager.widget.ViewPager;
 
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -29,13 +26,17 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.Functions;
-import com.example.myapplication.data.GridSpacingItemDecoration;
+import com.example.myapplication.data.Top10Response;
 import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserInfo;
+import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 //바코드
+import com.google.android.material.tabs.TabLayout;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.takusemba.multisnaprecyclerview.MultiSnapHelper;
+import com.takusemba.multisnaprecyclerview.SnapGravity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.myapplication.data.Functions.dpToPx;
 import static com.example.myapplication.data.Functions.goToBookDetail;
+import static com.example.myapplication.data.Functions.goToOthersLibrary;
 
 
 /**
@@ -62,18 +64,17 @@ public class HomeMenu extends Fragment {
     ServiceApi service;
     UserInfo userInfo;
 
-    private RecyclerView bestsellerView;
-    private RecyclerView newbooksView;
+    RecyclerView top10View;
+    RecyclerView bestsellerView;
+    RecyclerView newbooksView;
+    Top10Adapter top10Adapter;
     BestsellerAdapter bestsellerAdapter;
     NewbooksAdapter newbooksAdapter;
-    SnapHelper linearSnapHelper = new LinearSnapHelper();
-    SnapHelper pagerSnapHelper = new PagerSnapHelper();
+    MultiSnapHelper linearSnapHelper;
+    SnapHelper pagerSnapHelper;
 
     DisplayMetrics displayMetrics;
     float dpWidth;
-    float dpHeight;
-
-    float viewerHeight;
 
     float bestsellerItemWidth;
     float bestsellerItemHeight;
@@ -81,6 +82,10 @@ public class HomeMenu extends Fragment {
 
     float newbooksCoverWidth;
     float newbooksCoverHeight;
+
+    TabLayout tabLayout;
+
+    String genre;
 
     public HomeMenu() {
         // Required empty public constructor
@@ -107,26 +112,31 @@ public class HomeMenu extends Fragment {
 
         displayMetrics = v.getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        dpHeight = displayMetrics.heightPixels/displayMetrics.density;
 
-        viewerHeight = dpToPx(getActivity(),(int)((dpHeight-132)/3));
+        bestsellerItemWidth = dpToPx(getActivity(), (int) ((dpWidth - 80f) / 4f));
+        bestsellerItemHeight = bestsellerItemWidth * 1.85f;
+        bestsellerCoverHeight = bestsellerItemHeight * 0.72f;
 
-        bestsellerItemWidth = dpToPx(getActivity(), (int) ((dpWidth -100)/3));
-        bestsellerItemHeight = bestsellerItemWidth * 1.78f;
-        bestsellerCoverHeight = bestsellerItemHeight * 0.80f;
+        newbooksCoverWidth = dpToPx(getActivity(), (int) ((dpWidth - 100f) / 3f));
+        newbooksCoverHeight = newbooksCoverWidth * 1.4f;
 
-        newbooksCoverWidth = dpToPx(getActivity(), (int) (dpWidth - 60)/3);
-        newbooksCoverHeight= newbooksCoverWidth * 1.4f;
-
+        top10View = v.findViewById(R.id.top10_list);
+        top10View.setHasFixedSize(true);
         bestsellerView = v.findViewById(R.id.bestseller_list);
         newbooksView = v.findViewById(R.id.newbooks_list);
+        linearSnapHelper = new MultiSnapHelper(SnapGravity.START, 3, 100);
+        pagerSnapHelper = new PagerSnapHelper();
         linearSnapHelper.attachToRecyclerView(bestsellerView);
         pagerSnapHelper.attachToRecyclerView(newbooksView);
-        bestsellerView.setItemAnimator(new DefaultItemAnimator());
-        newbooksView.setItemAnimator(new DefaultItemAnimator());
 
+        tabLayout = v.findViewById(R.id.top10_tab);
+
+        top10List();
         bestSellerList();
         newList();
+
+
+        tabLayout.addOnTabSelectedListener(new Top10TabListener());
 
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
 
@@ -198,6 +208,158 @@ public class HomeMenu extends Fragment {
         return v;
     }
 
+    public void top10List() {
+        tabLayout.addTab(tabLayout.newTab().setText("ALL"));
+        tabLayout.addTab(tabLayout.newTab().setText("판타지"));
+        tabLayout.addTab(tabLayout.newTab().setText("미스터리"));
+        tabLayout.addTab(tabLayout.newTab().setText("공포"));
+        tabLayout.addTab(tabLayout.newTab().setText("고전"));
+        tabLayout.addTab(tabLayout.newTab().setText("스릴러"));
+        tabLayout.addTab(tabLayout.newTab().setText("SF"));
+        tabLayout.addTab(tabLayout.newTab().setText("희곡"));
+        tabLayout.addTab(tabLayout.newTab().setText("무협"));
+        tabLayout.addTab(tabLayout.newTab().setText("시"));
+        tabLayout.addTab(tabLayout.newTab().setText("에세이"));
+        tabLayout.addTab(tabLayout.newTab().setText("만화"));
+        tabLayout.addTab(tabLayout.newTab().setText("기타"));
+        service = RetrofitClient.getClient().create(ServiceApi.class);
+        service.getTop10("total").enqueue(new Callback<ArrayList<Top10Response>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Top10Response>> call, Response<ArrayList<Top10Response>> response) {
+                ArrayList<Top10Response> top10Items = response.body();
+                System.out.println(genre+"  "+top10Items.size());
+                top10Adapter = new Top10Adapter(top10Items);
+                top10View.setLayoutManager(new LinearLayoutManager(getActivity()));
+                top10View.setAdapter(top10Adapter);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Top10Response>> call, Throwable t) {
+            }
+        });
+    }
+
+    public class Top10TabListener implements TabLayout.OnTabSelectedListener{
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            switch (tabLayout.getSelectedTabPosition()) {
+                case 0:
+                    genre = "total";
+                    break;
+                case 1:
+                    genre = "fantasy";
+                    break;
+                case 2:
+                    genre = "mystery";
+                    break;
+                case 3:
+                    genre = "horror";
+                    break;
+                case 4:
+                    genre = "classical";
+                    break;
+                case 5:
+                    genre = "action";
+                    break;
+                case 6:
+                    genre = "sf";
+                    break;
+                case 7:
+                    genre = "theatrical";
+                    break;
+                case 8:
+                    genre = "martialArt";
+                    break;
+                case 9:
+                    genre = "poem";
+                    break;
+                case 10:
+                    genre = "essay";
+                    break;
+                case 11:
+                    genre = "comics";
+                    break;
+                case 12:
+                    genre = "others";
+                    break;
+            }
+            service = RetrofitClient.getClient().create(ServiceApi.class);
+            service.getTop10(genre).enqueue(new Callback<ArrayList<Top10Response>>() {
+                @Override
+                public void onResponse(Call<ArrayList<Top10Response>> call, Response<ArrayList<Top10Response>> response) {
+                    ArrayList<Top10Response> top10Items = response.body();
+                    System.out.println(genre+"  "+top10Items.size());
+                    top10Adapter = new Top10Adapter(top10Items);
+                    top10View.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    top10View.setAdapter(top10Adapter);
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<Top10Response>> call, Throwable t) {
+                }
+            });
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+
+        }
+    }
+
+    public class Top10Adapter extends RecyclerView.Adapter<Top10Adapter.Top10ViewHolder> {
+
+        private ArrayList<Top10Response> top10Items;
+
+        public Top10Adapter(ArrayList<Top10Response> top10Items) {
+            this.top10Items = top10Items;
+        }
+
+        public class Top10ViewHolder extends RecyclerView.ViewHolder {
+            TextView info;
+            ImageView profile;
+            ConstraintLayout top10Layout;
+
+            public Top10ViewHolder(View view) {
+                super(view);
+                info = view.findViewById(R.id.top10_info);
+                profile = view.findViewById(R.id.top10_profile);
+                top10Layout = view.findViewById(R.id.top10_item);
+            }
+        }
+
+        @NonNull
+        @Override
+        public Top10ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.top10_item, viewGroup, false);
+            Top10ViewHolder viewHolder = new Top10ViewHolder((view));
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull Top10ViewHolder holder, int position) {
+            Top10Response top10Item = top10Items.get(position);
+            holder.info.setText((position+1)+"위 "+top10Item.getNickname()+"님, 총 "+top10Item.getCount()+"권");
+            Glide.with(holder.itemView.getContext()).load(top10Item.getProfile()).into(holder.profile);
+
+            holder.top10Layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToOthersLibrary(getActivity(), userInfo,new UserInfo(top10Item.getUserId(),top10Item.getNickname(),top10Item.getProfile()));
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return top10Items.size();
+        }
+    }
+
     public void bestSellerList() {
 
         String categoryId = "0";
@@ -214,7 +376,7 @@ public class HomeMenu extends Fragment {
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
                     bestsellerAdapter = new BestsellerAdapter(bookItems);
-                    bestsellerView.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL,false));
+                    bestsellerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                     bestsellerView.setAdapter(bestsellerAdapter);
                 }
             }
@@ -294,12 +456,11 @@ public class HomeMenu extends Fragment {
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
                     ArrayList<BookItem> newbookItems = newListGenre(bookItems);
-                    newbooksView.setLayoutManager(new GridLayoutManager(getActivity(), 1, GridLayoutManager.HORIZONTAL,false));
-                    if(newbookItems.isEmpty()){
+                    newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                    if (newbookItems.isEmpty()) {
                         newbooksAdapter = new NewbooksAdapter(bookItems);
                         newbooksView.setAdapter(newbooksAdapter);
-                    }
-                    else{
+                    } else {
                         newbooksAdapter = new NewbooksAdapter(newbookItems);
                         newbooksView.setAdapter(newbooksAdapter);
                     }
@@ -332,9 +493,9 @@ public class HomeMenu extends Fragment {
                 super(view);
                 title = view.findViewById(R.id.newbooks_title);
                 author = view.findViewById(R.id.newbooks_author);
-                description= view.findViewById(R.id.newbooks_description);
+                description = view.findViewById(R.id.newbooks_description);
                 cover = view.findViewById(R.id.newbooks_cover);
-                newbooksLayout=view.findViewById(R.id.newbooks_item);
+                newbooksLayout = view.findViewById(R.id.newbooks_item);
             }
         }
 

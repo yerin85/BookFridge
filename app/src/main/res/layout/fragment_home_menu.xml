@@ -14,7 +14,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
         <TextView
             android:id="@+id/top10_text"
             android:layout_width="wrap_content"
@@ -25,20 +24,46 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/top10_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@drawable/round_corners_lightgray"
-            android:layout_marginBottom="10dp"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/top10_tab"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            app:tabIndicatorColor="#68C5F7"
+            app:layout_constraintStart_toEndOf="@+id/top10_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tabTextColor="@android:color/darker_gray"
+            app:tabSelectedTextColor="@android:color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabGravity="center"
+            app:tabMode="scrollable"
+            android:textAlignment="center"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/top10_text"
             app:layout_constraintBottom_toTopOf="@+id/bestseller_text"
-            app:layout_constraintTop_toBottomOf="@+id/top10_text" />
+            android:layout_width="match_parent"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="0dp">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/top10_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/round_corners_lightgray"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/bestseller_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginBottom="2dp"
             android:text="&lt;베스트 셀러&gt;"
             android:textSize="18dp"
             app:layout_constraintBottom_toTopOf="@id/bestseller_list"
@@ -58,6 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginBottom="2dp"
             android:text="&lt;신간 소설&gt;"
             android:textSize="18dp"
             app:layout_constraintBottom_toTopOf="@+id/newbooks_list"
@@ -76,64 +102,64 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:clickable="true"
         app:backgroundTint="#2196F3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
         app:srcCompat="@drawable/ic_add_black_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/ic_local_library_black_24dp"
         android:visibility="invisible"
         app:backgroundTint="#ffffff"
         app:elevation="30dp"
         app:layout_constraintBottom_toTopOf="@+id/fab"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="10dp"
         app:pressedTranslationZ="30dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/ic_search_black_24dp"
         android:visibility="invisible"
         app:backgroundTint="#ffffff"
         app:elevation="30dp"
         app:layout_constraintBottom_toTopOf="@+id/fab1"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="10dp"
         app:pressedTranslationZ="30dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/ic_camera_alt_black_24dp"
         android:visibility="invisible"
         app:backgroundTint="#ffffff"
         app:elevation="30dp"
         app:layout_constraintBottom_toTopOf="@+id/fab2"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="10dp"
         app:pressedTranslationZ="30dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/ic_barcode_scan"
         android:visibility="invisible"
         app:backgroundTint="#ffffff"
         app:elevation="30dp"
         app:layout_constraintBottom_toTopOf="@+id/fab3"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="10dp"
         app:pressedTranslationZ="30dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

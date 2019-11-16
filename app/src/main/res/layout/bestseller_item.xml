@@ -5,7 +5,7 @@
     android:id="@+id/bestseller_item"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:layout_margin="10dp"
+    android:layout_margin="5dp"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true">
 
