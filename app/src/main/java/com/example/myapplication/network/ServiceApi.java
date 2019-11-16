@@ -14,6 +14,7 @@ import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.MyPageResponse;
+import com.example.myapplication.data.Top10Response;
 import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserGenreResponse;
@@ -39,6 +40,9 @@ public interface ServiceApi {
     @POST("/user/updateUserProfile")
     Call<BasicResponse> updateUserProfile(@Query("userId") String userId, @Query("nickname") String nickname, @Query("profile") String profile);
 
+    @POST("/user/getTop10")
+    Call<ArrayList<Top10Response>> getTop10(@Query("genre") String genre);
+
     @POST("/user/existUserProfile")
     Call<BasicResponse> existUserProfile(@Query("userId") String userId);
 
@@ -52,7 +56,7 @@ public interface ServiceApi {
     Call<BasicResponse> updateLibrary(@Body LibraryData data);
 
     @POST("/user/isInLibrary")
-    Call<Boolean> isInLibrary(@Query("userId") String userId, @Query("isbn") String isbn);
+    Call<BasicResponse> isInLibrary(@Query("userId") String userId, @Query("isbn") String isbn);
 
     //한 유저의 전체 라이브러리
     @POST("/user/getLibrary")

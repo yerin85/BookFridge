@@ -211,7 +211,6 @@ public class SearchMenu extends AppCompatActivity {
                 libButton = view.findViewById(R.id.add_library);
                 wishButton = view.findViewById(R.id.wishlist);
                 service = RetrofitClient.getClient().create(ServiceApi.class);
-
             }
         }
 
@@ -301,11 +300,11 @@ public class SearchMenu extends AppCompatActivity {
             holder.wishButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    service.isInLibrary(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<Boolean>() {
+                    service.isInLibrary(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
                         @Override
-                        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                            Boolean isInLib = response.body();
-                            if (!isInLib) {
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                            BasicResponse isInLib = response.body();
+                            if (isInLib.getCode()==0) {
                                 service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -336,12 +335,12 @@ public class SearchMenu extends AppCompatActivity {
                                     }
                                 });
                             } else {
-                                Toast.makeText(SearchMenu.this, "이미 라이브러리에 추가된 책입니다", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SearchMenu.this, isInLib.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<Boolean> call, Throwable t) {
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
 
                         }
                     });
