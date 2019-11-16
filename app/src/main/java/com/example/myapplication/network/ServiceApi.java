@@ -24,10 +24,10 @@ import com.example.myapplication.data.WishlistResponse;
 import java.util.ArrayList;
 
 public interface ServiceApi {
-    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=BestSeller&MaxResults=15&start=1&SearchTarget=Book&output=JS&Version=20131101")
+    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=BestSeller&MaxResults=15&start=1&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
     Call<AladinResponse> bestSellerList(@Query("categoryId") String searchCategoryId);
 
-    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=ItemNewSpecial&MaxResults=100&start=1&SearchTarget=Book&output=JS&Version=20131101")
+    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=ItemNewSpecial&MaxResults=100&start=1&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
     Call<AladinResponse> itemNewList(@Query("categoryId") String searchCategoryId);
 
     @GET("ItemSearch.aspx?ttbkey=ttb0318592203001&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")

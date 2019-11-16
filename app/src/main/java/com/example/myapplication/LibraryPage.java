@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -95,6 +96,7 @@ public class LibraryPage extends Fragment {
         scaleGestureDetector = new ScaleGestureDetector(v.getContext(), new ScaleListener());
         nestedScrollView = v.findViewById(R.id.libraryPage_scrollView);
         recyclerView = v.findViewById(R.id.library_list);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         nestedScrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
