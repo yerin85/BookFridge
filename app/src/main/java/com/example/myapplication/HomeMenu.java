@@ -461,6 +461,7 @@ public class HomeMenu extends Fragment {
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
                     ArrayList<BookItem> genreBookItems = new ArrayList<>();
+                    newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                     service = RetrofitClient.getClient().create(ServiceApi.class);
                     service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
                         boolean match;
@@ -482,14 +483,14 @@ public class HomeMenu extends Fragment {
                                         genreBookItems.add(bookItem);
                                     }
                                 }
-                            newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                             newbooksAdapter = new NewbooksAdapter(genreBookItems);
                             newbooksView.setAdapter(newbooksAdapter);
                         }
 
                         @Override
                         public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
-
+                            newbooksAdapter = new NewbooksAdapter(bookItems);
+                            newbooksView.setAdapter(newbooksAdapter);
                         }
                     });
                 }
