@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -59,6 +60,7 @@ public class OthersBookNote extends AppCompatActivity {
         shareButton=findViewById(R.id.others_note_share);
         detailButton = findViewById(R.id.others_note_detail);
 
+        myNote.setMovementMethod(new ScrollingMovementMethod());
         displayNote(libItem);
 
         detailButton.setOnClickListener(new View.OnClickListener() {

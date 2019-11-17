@@ -1,12 +1,15 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Rating;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -37,6 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.myapplication.data.Functions.dpToPx;
 import static com.example.myapplication.data.Functions.goToBookDetail;
 
 import com.kakao.kakaolink.*;
@@ -49,17 +53,29 @@ public class BookNote extends AppCompatActivity {
     LibraryResponse libItem;
     UserInfo userInfo;
     ServiceApi service;
+    ConstraintLayout bookLayout;
+    ConstraintLayout infoLayout;
     ImageView cover;
     TextView title;
     TextView startDate;
     TextView endDate;
-    RatingBar rating;
+    RatingBar ratingBar;
     TextView myNote;
     Button shareButton;
     Button detailButton;
     Button deleteButton;
     Button editButton;
 
+    DisplayMetrics displayMetrics;
+    float dpWidth;
+    float itemWidth;
+    float itemHeight;
+    float itemCoverHeight;
+    float infoWidth;
+    float elemWidth;
+    float elemHeight;
+    float titleFontSize;
+    float elemFontSize;
 
 
     @Override
@@ -67,18 +83,25 @@ public class BookNote extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_note);
 
+        service = RetrofitClient.getClient().create(ServiceApi.class);
+
+        bookLayout = findViewById(R.id.note_book_layout);
+        infoLayout = findViewById(R.id.note_date_layout);
         cover = findViewById(R.id.note_cover);
         title = findViewById(R.id.note_title);
         startDate = findViewById(R.id.note_start_date);
         endDate = findViewById(R.id.note_end_date);
-        rating = findViewById(R.id.rating_star);
+        ratingBar = findViewById(R.id.rating_star);
         myNote = findViewById(R.id.my_note);
 
-        service = RetrofitClient.getClient().create(ServiceApi.class);
+        displayMetrics = getResources().getDisplayMetrics();
+        dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
-        Intent intent =getIntent();
+        Intent intent = getIntent();
         libItem = (LibraryResponse) intent.getSerializableExtra("libItem");
-        userInfo =(UserInfo) intent.getSerializableExtra("userInfo") ;
+        userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
+
+        myNote.setMovementMethod(new ScrollingMovementMethod());
 
         displayNote(libItem);
 
@@ -87,9 +110,9 @@ public class BookNote extends AppCompatActivity {
         deleteButton = findViewById(R.id.note_delete);
         editButton = findViewById(R.id.note_edit);
 
-        shareButton.setOnClickListener(new View.OnClickListener(){
+        shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
 
                 Map<String, String> serverCallbackArgs = new HashMap<>();
                 serverCallbackArgs.put("user_id", userInfo.userId);
@@ -97,12 +120,12 @@ public class BookNote extends AppCompatActivity {
 
                 Map<String, String> templateArgs = new HashMap<>();
                 templateArgs.put("${title}", libItem.getTitle().split(" - ")[0]);
-                templateArgs.put("${des}",libItem.getNote());
+                templateArgs.put("${des}", libItem.getNote());
                 templateArgs.put("${bookimg}", libItem.getCover());
                 templateArgs.put("${myimage}", userInfo.imagePath);
                 templateArgs.put("${name}", userInfo.nickname);
 
-                KakaoLinkService.getInstance().sendCustom(getApplicationContext(),"19221",templateArgs, serverCallbackArgs, new ResponseCallback<KakaoLinkResponse>() {
+                KakaoLinkService.getInstance().sendCustom(getApplicationContext(), "19221", templateArgs, serverCallbackArgs, new ResponseCallback<KakaoLinkResponse>() {
                     @Override
                     public void onFailure(ErrorResult errorResult) {
                         Logger.e(errorResult.toString());
@@ -119,7 +142,7 @@ public class BookNote extends AppCompatActivity {
         detailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToBookDetail(BookNote.this,userInfo,libItem.getIsbn());
+                goToBookDetail(BookNote.this, userInfo, libItem.getIsbn());
             }
         });
 
@@ -178,28 +201,55 @@ public class BookNote extends AppCompatActivity {
     }
 
     public void displayNote(LibraryResponse libItem) {
+        itemWidth = dpToPx(BookNote.this, (int) ((dpWidth - 100f) * 0.4f));
+        itemHeight = itemWidth * 1.7f;
+        itemCoverHeight = itemWidth * 1.4f;
+        titleFontSize = (dpWidth - 100f) * 0.04f;
+        infoWidth = dpToPx(BookNote.this, (int) ((dpWidth - 100f) * 0.6f));
+        elemHeight = dpToPx(BookNote.this, (int) ((dpWidth - 250f) / 4.5f));
+        elemWidth = elemHeight * 5f;
+        elemFontSize = (dpWidth - 250f) / 7.2f;
+
+        System.out.println("width is " + dpWidth);
+        System.out.println("width is " + itemWidth);
+        System.out.println("font is " + elemFontSize);
+        bookLayout.getLayoutParams().width = (int) itemWidth;
+        bookLayout.getLayoutParams().height = (int) itemHeight;
+        cover.getLayoutParams().height = (int) itemCoverHeight;
+        title.setTextSize(titleFontSize);
+        infoLayout.getLayoutParams().width = (int) infoWidth;
+        infoLayout.getLayoutParams().height = (int) itemHeight;
+        startDate.getLayoutParams().width = (int) elemWidth;
+        startDate.getLayoutParams().height = (int) elemHeight;
+        startDate.setTextSize(elemFontSize);
+        endDate.getLayoutParams().width = (int) elemWidth;
+        endDate.getLayoutParams().height = (int) elemHeight;
+        endDate.setTextSize(elemFontSize);
+        ratingBar.getLayoutParams().width = (int) elemWidth;
+        ratingBar.getLayoutParams().height = (int) elemHeight;
+
         Glide.with(this).load(libItem.getCover()).into(cover);
         title.setText(libItem.getTitle());
         startDate.setText(libItem.getStartDate());
         endDate.setText(libItem.getEndDate());
-        rating.setRating(libItem.getRating());
+        ratingBar.setRating(libItem.getRating());
         myNote.setText(libItem.getNote());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        service.getMyNote(userInfo.userId,libItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
+        service.getMyNote(userInfo.userId, libItem.getIsbn()).enqueue(new Callback<LibraryResponse>() {
             @Override
             public void onResponse(Call<LibraryResponse> call, Response<LibraryResponse> response) {
                 LibraryResponse libraryResponse = response.body();
-                libItem =libraryResponse;
+                libItem = libraryResponse;
                 displayNote(libItem);
             }
 
             @Override
             public void onFailure(Call<LibraryResponse> call, Throwable t) {
-                Toast.makeText(BookNote.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(BookNote.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

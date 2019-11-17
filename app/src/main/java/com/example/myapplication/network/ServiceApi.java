@@ -28,8 +28,8 @@ public interface ServiceApi {
     @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=BestSeller&MaxResults=15&start=1&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
     Call<AladinResponse> bestSellerList(@Query("categoryId") String searchCategoryId);
 
-    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=ItemNewSpecial&MaxResults=100&start=1&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
-    Call<AladinResponse> itemNewList(@Query("categoryId") String searchCategoryId);
+    @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=ItemNewSpecial&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
+    Call<AladinResponse> itemNewList(@Query("categoryId") String searchCategoryId,@Query("MaxResults") int maxResults, @Query("start") int start);
 
     @GET("ItemSearch.aspx?ttbkey=ttb0318592203001&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
     Call<AladinResponse> itemSearch(@Query("QueryType") String queryType, @Query("Query") String query, @Query("start") int pageNum, @Query("MaxResults") int maxResults);

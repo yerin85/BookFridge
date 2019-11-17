@@ -43,7 +43,7 @@ public class Functions {
                 return "fantasy";
             } else if (genre.contains(">희곡") || (genre.indexOf("희곡") != genre.lastIndexOf("희곡"))) {
                 return "theatrical";
-            } else if (genre.contains(">에세이") || (genre.indexOf("에세이") != genre.lastIndexOf("에세이"))) {
+            } else if (genre.contains(">에세이") || genre.contains(" 에세이") || (genre.indexOf("에세이") != genre.lastIndexOf("에세이"))) {
                 return "essay";
             } else if (genre.contains(">시")) {
                 return "poem";
@@ -67,7 +67,7 @@ public class Functions {
                 return "fantasy";
             } else if (genre.contains(">희곡") || (genre.indexOf("희곡") != genre.lastIndexOf("희곡"))) {
                 return "theatrical";
-            } else if (genre.contains(">에세이") || (genre.indexOf("에세이") != genre.lastIndexOf("에세이"))) {
+            } else if (genre.contains(">에세이") || genre.contains(" 에세이") || (genre.indexOf("에세이") != genre.lastIndexOf("에세이"))) {
                 return "essay";
             } else if (genre.contains(">시")) {
                 return "poem";

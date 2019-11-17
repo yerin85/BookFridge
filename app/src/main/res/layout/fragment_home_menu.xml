@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginBottom="2dp"
-            android:text="&lt;신간 소설&gt;"
+            android:text="&lt;신간 도서&gt;"
             android:textSize="18dp"
             app:layout_constraintBottom_toTopOf="@+id/newbooks_list"
             app:layout_constraintStart_toStartOf="parent" />

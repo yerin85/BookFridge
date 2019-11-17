@@ -72,8 +72,6 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 BasicResponse result = response.body();
                 if (result.getCode() == 400) {
-                    showDialog();
-                    showGoalDialog();
                     String userId = String.valueOf(userInfo.userId);
                     String nickname = userInfo.nickname;
                     String imagePath = userInfo.imagePath;
@@ -117,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }
                     });
+                    showDialog();
+                    showGoalDialog();
                 } else {
                     //있는 계정이면 프로필 정보 디비에 업데이트
                     service.updateUserProfile(userInfo.userId, userInfo.nickname, userInfo.imagePath).enqueue(new Callback<BasicResponse>() {

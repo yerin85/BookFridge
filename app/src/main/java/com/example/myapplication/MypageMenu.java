@@ -51,9 +51,11 @@ public class MypageMenu extends Fragment {
     ImageButton button;
     ProgressBar progressBar;
     TextView textProgress;
+
     public MypageMenu() {
         // Required empty public constructor
     }
+
     public static Fragment newInstance(UserInfo userInfo) {
         MypageMenu mypageMenu = new MypageMenu();
         Bundle bundle = new Bundle();
@@ -61,9 +63,10 @@ public class MypageMenu extends Fragment {
         mypageMenu.setArguments(bundle);
         return mypageMenu;
     }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v= inflater.inflate(R.layout.fragment_mypage_menu, container, false);
+        View v = inflater.inflate(R.layout.fragment_mypage_menu, container, false);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
@@ -78,27 +81,28 @@ public class MypageMenu extends Fragment {
         CircleIndicator indicator = v.findViewById(R.id.indicator);
         indicator.setViewPager(viewPager);
 
-        userInfo = (UserInfo)getArguments().getSerializable("userInfo");
-        myname.setText(userInfo.nickname +" 님");
-        if(!userInfo.imagePath.equals(null)){
+        userInfo = (UserInfo) getArguments().getSerializable("userInfo");
+        myname.setText(userInfo.nickname + " 님");
+        if (userInfo.imagePath != null) {
             Glide.with(this).load(userInfo.imagePath).into(myimage);
-       }
+        }
 //        myimage.setBackground(new ShapeDrawable(new OvalShape()));
 //        if(Build.VERSION.SDK_INT >= 21) {
 //            myimage.setClipToOutline(true);
 //        }
 
 
-        service.getMypage(userInfo.userId).enqueue(new Callback<ArrayList<MyPageResponse>> () {
+        service.getMypage(userInfo.userId).enqueue(new Callback<ArrayList<MyPageResponse>>() {
             @Override
-            public void onResponse(Call<ArrayList<MyPageResponse>>  call, Response<ArrayList<MyPageResponse>>  response) {
+            public void onResponse(Call<ArrayList<MyPageResponse>> call, Response<ArrayList<MyPageResponse>> response) {
                 ArrayList<MyPageResponse> myPageResponses = response.body();
                 myPageResponse = myPageResponses.get(0);
                 progressBar.setMax(myPageResponse.getGoal());
                 progressBar.setProgress(myPageResponse.getTotal());
-                textProgress.setText(myPageResponse.getTotal()+"/"+myPageResponse.getGoal());
-                Log.d("getgoal",":"+myPageResponse.getGoal());
+                textProgress.setText(myPageResponse.getTotal() + "/" + myPageResponse.getGoal());
+                Log.d("getgoal", ":" + myPageResponse.getGoal());
             }
+
             @Override
             public void onFailure(Call<ArrayList<MyPageResponse>> call, Throwable t) {
 
@@ -121,7 +125,7 @@ public class MypageMenu extends Fragment {
                         progressBar.setMax(value);
                         progressBar.setProgress(myPageResponse.getTotal());
                         textProgress.refreshDrawableState();
-                        textProgress.setText(myPageResponse.getTotal()+"/"+value);
+                        textProgress.setText(myPageResponse.getTotal() + "/" + value);
                         updateGoal(value);
                         v.invalidate();
                         dialog.dismiss();     //닫기
@@ -140,22 +144,23 @@ public class MypageMenu extends Fragment {
                 builder.show();
 
 
-
             }
         });
 
 
         return v;
     }
-    public void updateGoal(int goal){
+
+    public void updateGoal(int goal) {
         ServiceApi service;
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
-        service.addMypage(new MyPageData(userInfo.userId,"sf",goal)).enqueue(new Callback<BasicResponse>() {
+        service.addMypage(new MyPageData(userInfo.userId, "sf", goal)).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 BasicResponse result = response.body();
             }
+
             @Override
             public void onFailure(Call<BasicResponse> call, Throwable t) {
             }

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -117,13 +118,15 @@ public class HomeMenu extends Fragment {
         bestsellerItemHeight = bestsellerItemWidth * 1.85f;
         bestsellerCoverHeight = bestsellerItemHeight * 0.75f;
 
-        newbooksCoverWidth = dpToPx(getActivity(), (int) ((dpWidth - 100f) / 3f));
+        newbooksCoverWidth = dpToPx(getActivity(), (int) ((dpWidth - 100f) / 3.2f));
         newbooksCoverHeight = newbooksCoverWidth * 1.4f;
 
         top10View = v.findViewById(R.id.top10_list);
         top10View.setHasFixedSize(true);
         bestsellerView = v.findViewById(R.id.bestseller_list);
         newbooksView = v.findViewById(R.id.newbooks_list);
+        newbooksView.getLayoutParams().height = dpToPx(getActivity(), (int) ((dpWidth - 57.14f) / 2.14f));
+        bestsellerView.getLayoutParams().height = dpToPx(getActivity(), (int) ((dpWidth - 58.37f) / 2.16f));
         linearSnapHelper = new MultiSnapHelper(SnapGravity.START, 3, 100);
         pagerSnapHelper = new PagerSnapHelper();
         linearSnapHelper.attachToRecyclerView(bestsellerView);
@@ -131,9 +134,9 @@ public class HomeMenu extends Fragment {
 
         tabLayout = v.findViewById(R.id.top10_tab);
 
+        newList(40, 1);
         top10List();
         bestSellerList();
-        newList();
 
         tabLayout.addOnTabSelectedListener(new Top10TabListener());
 
@@ -238,7 +241,7 @@ public class HomeMenu extends Fragment {
         });
     }
 
-    public class Top10TabListener implements TabLayout.OnTabSelectedListener{
+    public class Top10TabListener implements TabLayout.OnTabSelectedListener {
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
             switch (tabLayout.getSelectedTabPosition()) {
@@ -346,13 +349,13 @@ public class HomeMenu extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull Top10ViewHolder holder, int position) {
             Top10Response top10Item = top10Items.get(position);
-            holder.info.setText((position+1)+"위 "+top10Item.getNickname()+"님, 총 "+top10Item.getCount()+"권");
+            holder.info.setText((position + 1) + "위 " + top10Item.getNickname() + "님, 총 " + top10Item.getCount() + "권");
             Glide.with(holder.itemView.getContext()).load(top10Item.getProfile()).into(holder.profile);
 
             holder.top10Layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    goToOthersLibrary(getActivity(), userInfo,new UserInfo(top10Item.getUserId(),top10Item.getNickname(),top10Item.getProfile()));
+                    goToOthersLibrary(getActivity(), userInfo, new UserInfo(top10Item.getUserId(), top10Item.getNickname(), top10Item.getProfile()));
                 }
             });
         }
@@ -386,7 +389,7 @@ public class HomeMenu extends Fragment {
 
             @Override
             public void onFailure(Call<AladinResponse> call, Throwable t) {
-                Toast.makeText(getActivity(), "Fail", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "신간도서를 불러오는데 실패하였습니다", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -444,29 +447,52 @@ public class HomeMenu extends Fragment {
         }
     }
 
-    public void newList() {
+    public void newList(int maxResults, int start) {
         String categoryId = "0";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.aladin.co.kr/ttb/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         service = retrofit.create(ServiceApi.class);
-        service.itemNewList(categoryId).enqueue(new Callback<AladinResponse>() {
+        service.itemNewList(categoryId, maxResults, start).enqueue(new Callback<AladinResponse>() {
             @Override
             public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                 AladinResponse result = response.body();
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
-                    ArrayList<BookItem> newbookItems = newListGenre(bookItems);
-                    newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-                    if (newbookItems.isEmpty()) {
-                        newbooksAdapter = new NewbooksAdapter(bookItems);
-                        newbooksView.setAdapter(newbooksAdapter);
-                    } else {
-                        newbooksAdapter = new NewbooksAdapter(newbookItems);
-                        newbooksView.setAdapter(newbooksAdapter);
-                    }
+                    ArrayList<BookItem> genreBookItems= new ArrayList<>();
+                    service = RetrofitClient.getClient().create(ServiceApi.class);
+                    service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
+                        boolean match;
+                        @Override
+                        public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
+                            ArrayList<UserGenreResponse> userGenres = response.body();
+                            if (!userGenres.isEmpty()){
+                                for (BookItem bookItem : bookItems) {
+                                    match = false;
+                                    for (UserGenreResponse userGenre : userGenres) {
+                                        if (Functions.categorizeBooks(bookItem.getCategoryName()).equals(userGenre.getGenre())) {
+                                            match=true;
+                                            break;
+                                        }
+                                    }
+                                    if(match){
+                                        genreBookItems.add(0,bookItem);
+                                    }
+                                    else{
+                                        genreBookItems.add(bookItem);
+                                    }
+                                }
+                            }
+                            newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                                newbooksAdapter = new NewbooksAdapter(genreBookItems);
+                                newbooksView.setAdapter(newbooksAdapter);
+                        }
+                        @Override
+                        public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
+
+                        }
+                    });
                 }
             }
 
@@ -490,7 +516,7 @@ public class HomeMenu extends Fragment {
             TextView author;
             TextView description;
             ImageView cover;
-            ConstraintLayout newbooksLayout;
+            ConstraintLayout newBooksLayout;
 
             public NewbooksViewHolder(View view) {
                 super(view);
@@ -498,7 +524,7 @@ public class HomeMenu extends Fragment {
                 author = view.findViewById(R.id.newbooks_author);
                 description = view.findViewById(R.id.newbooks_description);
                 cover = view.findViewById(R.id.newbooks_cover);
-                newbooksLayout = view.findViewById(R.id.newbooksItem_layout);
+                newBooksLayout = view.findViewById(R.id.newbooksItem_layout);
             }
         }
 
@@ -521,7 +547,7 @@ public class HomeMenu extends Fragment {
             holder.description.setText(bookItem.getDescription());
             Glide.with(holder.itemView.getContext()).load(bookItem.getCover()).into(holder.cover);
 
-            holder.newbooksLayout.setOnClickListener(new View.OnClickListener() {
+            holder.newBooksLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     goToBookDetail(getActivity(), userInfo, bookItem.getIsbn());
@@ -558,28 +584,4 @@ public class HomeMenu extends Fragment {
             isFabOpen = true;
         }
     }
-
-    public ArrayList<BookItem> newListGenre(List<BookItem> bookItems) {
-        ArrayList<BookItem> newbookItems = new ArrayList<BookItem>();
-        service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
-            @Override
-            public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
-                ArrayList<UserGenreResponse> userGenres = response.body();
-                if (userGenres.isEmpty()) return;
-                for (UserGenreResponse userGenre : userGenres) {
-                    for (BookItem bookItem : bookItems) {
-                        if (Functions.categorizeBooks(bookItem.getCategoryName()) == userGenre.getGenre())
-                            newbookItems.add(bookItem);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
-
-            }
-        });
-        return newbookItems;
-    }
-
 }
