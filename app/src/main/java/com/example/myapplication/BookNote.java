@@ -206,9 +206,9 @@ public class BookNote extends AppCompatActivity {
         itemCoverHeight = itemWidth * 1.4f;
         titleFontSize = (dpWidth - 100f) * 0.04f;
         infoWidth = dpToPx(BookNote.this, (int) ((dpWidth - 100f) * 0.6f));
-        elemHeight = dpToPx(BookNote.this, (int) ((dpWidth - 250f) / 4.5f));
-        elemWidth = elemHeight * 5f;
-        elemFontSize = (dpWidth - 250f) / 7.2f;
+        elemHeight = dpToPx(BookNote.this, (int) ((dpWidth - 250f) / 4.8f));
+        elemWidth = elemHeight * 4.6f;
+        elemFontSize = (dpWidth - 250f) / 7.8f;
 
         System.out.println("width is " + dpWidth);
         System.out.println("width is " + itemWidth);
