@@ -389,7 +389,7 @@ public class HomeMenu extends Fragment {
 
             @Override
             public void onFailure(Call<AladinResponse> call, Throwable t) {
-                Toast.makeText(getActivity(), "신간도서를 불러오는데 실패하였습니다", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "베스트 셀러를 불러오는데 실패하였습니다", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -461,7 +461,6 @@ public class HomeMenu extends Fragment {
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
                     ArrayList<BookItem> genreBookItems = new ArrayList<>();
-                    newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                     service = RetrofitClient.getClient().create(ServiceApi.class);
                     service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
                         boolean match;
@@ -469,26 +468,28 @@ public class HomeMenu extends Fragment {
                         @Override
                         public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
                             ArrayList<UserGenreResponse> userGenres = response.body();
-                                for (BookItem bookItem : bookItems) {
-                                    match = false;
-                                    for (UserGenreResponse userGenre : userGenres) {
-                                        if (Functions.categorizeBooks(bookItem.getCategoryName()).equals(userGenre.getGenre())) {
-                                            match = true;
-                                            break;
-                                        }
-                                    }
-                                    if (match) {
-                                        genreBookItems.add(0, bookItem);
-                                    } else {
-                                        genreBookItems.add(bookItem);
+                            for (BookItem bookItem : bookItems) {
+                                match = false;
+                                for (UserGenreResponse userGenre : userGenres) {
+                                    if (Functions.categorizeBooks(bookItem.getCategoryName()).equals(userGenre.getGenre())) {
+                                        match = true;
+                                        break;
                                     }
                                 }
+                                if (match) {
+                                    genreBookItems.add(0, bookItem);
+                                } else {
+                                    genreBookItems.add(bookItem);
+                                }
+                            }
+                            newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                             newbooksAdapter = new NewbooksAdapter(genreBookItems);
                             newbooksView.setAdapter(newbooksAdapter);
                         }
 
                         @Override
                         public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
+                            newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                             newbooksAdapter = new NewbooksAdapter(bookItems);
                             newbooksView.setAdapter(newbooksAdapter);
                         }
@@ -498,7 +499,7 @@ public class HomeMenu extends Fragment {
 
             @Override
             public void onFailure(Call<AladinResponse> call, Throwable t) {
-                Toast.makeText(getActivity(), "Fail", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "신간 도서를 불러오는데 실패하였습니다", Toast.LENGTH_SHORT).show();
             }
         });
     }
