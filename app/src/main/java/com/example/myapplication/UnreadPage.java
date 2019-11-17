@@ -82,7 +82,7 @@ public class UnreadPage extends Fragment {
 
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         othersUserInfo = (UserInfo) getArguments().getSerializable("othersUserInfo");
-        
+
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
         displayMetrics = v.getResources().getDisplayMetrics();

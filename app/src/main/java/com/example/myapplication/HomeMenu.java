@@ -115,7 +115,7 @@ public class HomeMenu extends Fragment {
 
         bestsellerItemWidth = dpToPx(getActivity(), (int) ((dpWidth - 80f) / 4f));
         bestsellerItemHeight = bestsellerItemWidth * 1.85f;
-        bestsellerCoverHeight = bestsellerItemHeight * 0.72f;
+        bestsellerCoverHeight = bestsellerItemHeight * 0.75f;
 
         newbooksCoverWidth = dpToPx(getActivity(), (int) ((dpWidth - 100f) / 3f));
         newbooksCoverHeight = newbooksCoverWidth * 1.4f;
