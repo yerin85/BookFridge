@@ -27,6 +27,8 @@ import com.example.myapplication.network.ServiceApi;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,15 +85,15 @@ public class ReadPage extends Fragment {
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         othersUserInfo = (UserInfo) getArguments().getSerializable("othersUserInfo");
 
-        tabLayout = v.findViewById(R.id.read_tab);
-        addTab();
-        tab = tabLayout.getTabAt(genrePosition());
-        tab.select();
-
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
         displayMetrics = v.getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        tabLayout = v.findViewById(R.id.read_tab);
+        addTab();
+        tab = tabLayout.getTabAt(genrePosition());
+        tab.select();
 
         service.getReadLibrary(userInfo.userId, othersUserInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
             @Override
