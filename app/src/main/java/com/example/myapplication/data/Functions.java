@@ -53,7 +53,29 @@ public class Functions {
                 return "novel";
             }
         } else {
-            return "others";
+            if (genre.contains("과학") || genre.contains("SF")) {
+                return "sf";
+            } else if (genre.contains("추리") || genre.contains("미스터리")) {
+                return "mystery";
+            } else if (genre.contains("호러") || genre.contains("공포")) {
+                return "horror";
+            } else if (genre.contains("고전")) {
+                return "classical";
+            } else if (genre.contains("액션") || genre.contains("스릴러")) {
+                return "action";
+            } else if (genre.contains("판타지") || genre.contains("환상")) {
+                return "fantasy";
+            } else if (genre.contains(">희곡") || (genre.indexOf("희곡") != genre.lastIndexOf("희곡"))) {
+                return "theatrical";
+            } else if (genre.contains(">에세이") || (genre.indexOf("에세이") != genre.lastIndexOf("에세이"))) {
+                return "essay";
+            } else if (genre.contains(">시")) {
+                return "poem";
+            } else if (genre.contains("무협")) {
+                return "martialArt";
+            } else {
+                return "others";
+            }
         }
     }
 
