@@ -460,34 +460,33 @@ public class HomeMenu extends Fragment {
                 AladinResponse result = response.body();
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
-                    ArrayList<BookItem> genreBookItems= new ArrayList<>();
+                    ArrayList<BookItem> genreBookItems = new ArrayList<>();
                     service = RetrofitClient.getClient().create(ServiceApi.class);
                     service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
                         boolean match;
+
                         @Override
                         public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
                             ArrayList<UserGenreResponse> userGenres = response.body();
-                            if (!userGenres.isEmpty()){
                                 for (BookItem bookItem : bookItems) {
                                     match = false;
                                     for (UserGenreResponse userGenre : userGenres) {
                                         if (Functions.categorizeBooks(bookItem.getCategoryName()).equals(userGenre.getGenre())) {
-                                            match=true;
+                                            match = true;
                                             break;
                                         }
                                     }
-                                    if(match){
-                                        genreBookItems.add(0,bookItem);
-                                    }
-                                    else{
+                                    if (match) {
+                                        genreBookItems.add(0, bookItem);
+                                    } else {
                                         genreBookItems.add(bookItem);
                                     }
                                 }
-                            }
                             newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-                                newbooksAdapter = new NewbooksAdapter(genreBookItems);
-                                newbooksView.setAdapter(newbooksAdapter);
+                            newbooksAdapter = new NewbooksAdapter(genreBookItems);
+                            newbooksView.setAdapter(newbooksAdapter);
                         }
+
                         @Override
                         public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
 

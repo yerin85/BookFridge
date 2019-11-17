@@ -81,7 +81,30 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
-                            if (result.getCode() != 200) {//오류
+                            if (result.getCode() == 200) {//오류 없음
+                                //myPage table entry 생성
+                                service.createMyPage(userId).enqueue(new Callback<BasicResponse>() {
+                                    @Override
+                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                        BasicResponse result = response.body();
+                                        if (result.getCode() == 200) {//오류 없음
+                                            showDialog();
+                                            showGoalDialog();
+                                        } else {//오류
+                                            Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                            //종료
+                                            finish();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                        Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        //종료
+                                        finish();
+                                    }
+                                });
+                            } else {//오류
                                 Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                 //종료
                                 finish();
@@ -95,28 +118,6 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }
                     });
-
-                    //myPage table entry 생성
-                    service.createMyPage(userId).enqueue(new Callback<BasicResponse>() {
-                        @Override
-                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            BasicResponse result = response.body();
-                            if (result.getCode() != 200) {//오류
-                                Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                                //종료
-                                finish();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                            //종료
-                            finish();
-                        }
-                    });
-                    showDialog();
-                    showGoalDialog();
                 } else {
                     //있는 계정이면 프로필 정보 디비에 업데이트
                     service.updateUserProfile(userInfo.userId, userInfo.nickname, userInfo.imagePath).enqueue(new Callback<BasicResponse>() {
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-       changeFragment(fragmentNumber);
+        changeFragment(fragmentNumber);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_library:
-                    fragmentTransaction.replace(R.id.frame_layout, LibraryMenu.newInstance(userInfo,libFragmentNumber));
+                    fragmentTransaction.replace(R.id.frame_layout, LibraryMenu.newInstance(userInfo, libFragmentNumber));
                     fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
                     fragmentTransaction.commit();
                     return true;
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 navView.setSelectedItemId(R.id.navigation_home);
                 break;
             case 2:
-                libFragmentNumber=0;
+                libFragmentNumber = 0;
                 navView.setSelectedItemId(R.id.navigation_library);
                 break;
             case 3:
@@ -197,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 navView.setSelectedItemId(R.id.navigation_setting);
                 break;
             case 5:
-                libFragmentNumber=1;
+                libFragmentNumber = 1;
                 navView.setSelectedItemId(R.id.navigation_library);
         }
     }
@@ -212,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         goToBookDetail(MainActivity.this, userInfo, result.getContents());
     }
 
-    public void showGoalDialog(){
+    public void showGoalDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("월 독서 목표량 설정");
@@ -225,11 +226,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // Text 값 받아서 로그 남기기
                 int goal = Integer.parseInt(editText.getText().toString());
-                service.addMypage(new MyPageData(userInfo.userId,"sf",goal)).enqueue(new Callback<BasicResponse>() {
+                service.addMypage(new MyPageData(userInfo.userId, "sf", goal)).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse result = response.body();
                     }
+
                     @Override
                     public void onFailure(Call<BasicResponse> call, Throwable t) {
                     }
@@ -250,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
     public void showDialog() {
         final List<String> ListItems = new ArrayList<String>();
         ListItems.add("만화");
