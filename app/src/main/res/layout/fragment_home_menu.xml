@@ -28,34 +28,27 @@
             android:id="@+id/top10_tab"
             android:layout_width="0dp"
             android:layout_height="24dp"
-            app:tabIndicatorColor="#68C5F7"
-            app:layout_constraintStart_toEndOf="@+id/top10_text"
+            android:layout_marginStart="5dp"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
-            app:tabTextColor="@android:color/darker_gray"
-            app:tabSelectedTextColor="@android:color/black"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/top10_text"
+            app:layout_constraintBottom_toTopOf="@+id/top10_list"
+            android:layout_marginBottom="4dp"
             app:tabGravity="center"
+            app:tabIndicatorColor="#68C5F7"
             app:tabMode="scrollable"
-            android:textAlignment="center"/>
+            app:tabSelectedTextColor="@android:color/black"
+            app:tabTextColor="@android:color/darker_gray" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/top10_text"
-            app:layout_constraintBottom_toTopOf="@+id/bestseller_text"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/top10_list"
             android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="10dp"
-            android:layout_height="0dp">
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/top10_list"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/round_corners_lightgray"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:background="@drawable/round_corners_lightgray"
+            app:layout_constraintBottom_toTopOf="@+id/bestseller_text"
+            app:layout_constraintTop_toBottomOf="@+id/top10_text" />
 
 
         <TextView

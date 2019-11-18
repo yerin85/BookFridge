@@ -57,6 +57,7 @@ import static com.example.myapplication.data.Functions.goToOthersLibrary;
  * A simple {@link Fragment} subclass.
  */
 public class HomeMenu extends Fragment {
+    ArrayList<UserGenreResponse> userGenres;
 
     private Animation fab_open, fab_close;
     private FloatingActionButton fab, fab1, fab2, fab3, fab4;
@@ -85,6 +86,7 @@ public class HomeMenu extends Fragment {
     float newbooksCoverHeight;
 
     TabLayout tabLayout;
+    TabLayout.Tab tab;
 
     String genre;
 
@@ -110,6 +112,7 @@ public class HomeMenu extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home_menu, container, false);
+        userInfo = (UserInfo) getArguments().getSerializable("userInfo");
 
         displayMetrics = v.getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
@@ -127,20 +130,31 @@ public class HomeMenu extends Fragment {
         newbooksView = v.findViewById(R.id.newbooks_list);
         newbooksView.getLayoutParams().height = dpToPx(getActivity(), (int) ((dpWidth - 57.14f) / 2.14f));
         bestsellerView.getLayoutParams().height = dpToPx(getActivity(), (int) ((dpWidth - 58.37f) / 2.16f));
-        linearSnapHelper = new MultiSnapHelper(SnapGravity.START, 3, 100);
+        linearSnapHelper = new MultiSnapHelper(SnapGravity.START, 1, 100);
         pagerSnapHelper = new PagerSnapHelper();
         linearSnapHelper.attachToRecyclerView(bestsellerView);
         pagerSnapHelper.attachToRecyclerView(newbooksView);
 
         tabLayout = v.findViewById(R.id.top10_tab);
-
-        newList(40, 1);
         top10List();
-        bestSellerList();
+
+        service = RetrofitClient.getClient().create(ServiceApi.class);
+        service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
+                userGenres = response.body();
+                newList(40, 1);
+                bestSellerList(30, 1);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
+                newList(40, 1);
+                bestSellerList(30, 1);
+            }
+        });
 
         tabLayout.addOnTabSelectedListener(new Top10TabListener());
-
-        userInfo = (UserInfo) getArguments().getSerializable("userInfo");
 
         fab_open = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fab_close);
@@ -366,7 +380,7 @@ public class HomeMenu extends Fragment {
         }
     }
 
-    public void bestSellerList() {
+    public void bestSellerList(int maxResults, int start) {
 
         String categoryId = "0";
         Retrofit retrofit = new Retrofit.Builder()
@@ -375,15 +389,37 @@ public class HomeMenu extends Fragment {
                 .build();
 
         service = retrofit.create(ServiceApi.class);
-        service.bestSellerList(categoryId).enqueue(new Callback<AladinResponse>() {
+        service.bestSellerList(categoryId, maxResults, start).enqueue(new Callback<AladinResponse>() {
             @Override
             public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                 AladinResponse result = response.body();
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
-                    bestsellerAdapter = new BestsellerAdapter(bookItems);
-                    bestsellerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-                    bestsellerView.setAdapter(bestsellerAdapter);
+                    if (userGenres != null) {
+                        boolean match;
+                        ArrayList<BookItem> genreBookItems = new ArrayList<>();
+                        for (BookItem bookItem : bookItems) {
+                            match = false;
+                            for (UserGenreResponse userGenre : userGenres) {
+                                if (Functions.categorizeBooks(bookItem.getCategoryName()).equals(userGenre.getGenre())) {
+                                    match = true;
+                                    break;
+                                }
+                            }
+                            if (match) {
+                                genreBookItems.add(0, bookItem);
+                            } else {
+                                genreBookItems.add(bookItem);
+                            }
+                        }
+                        bestsellerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                        bestsellerAdapter = new BestsellerAdapter(genreBookItems);
+                        bestsellerView.setAdapter(bestsellerAdapter);
+                    } else {
+                        bestsellerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                        bestsellerAdapter = new BestsellerAdapter(bookItems);
+                        bestsellerView.setAdapter(bestsellerAdapter);
+                    }
                 }
             }
 
@@ -460,40 +496,31 @@ public class HomeMenu extends Fragment {
                 AladinResponse result = response.body();
                 if (result != null) {
                     ArrayList<BookItem> bookItems = result.getBookItems();
-                    ArrayList<BookItem> genreBookItems = new ArrayList<>();
-                    service = RetrofitClient.getClient().create(ServiceApi.class);
-                    service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
+                    if (userGenres != null) {
                         boolean match;
-
-                        @Override
-                        public void onResponse(Call<ArrayList<UserGenreResponse>> call, Response<ArrayList<UserGenreResponse>> response) {
-                            ArrayList<UserGenreResponse> userGenres = response.body();
-                            for (BookItem bookItem : bookItems) {
-                                match = false;
-                                for (UserGenreResponse userGenre : userGenres) {
-                                    if (Functions.categorizeBooks(bookItem.getCategoryName()).equals(userGenre.getGenre())) {
-                                        match = true;
-                                        break;
-                                    }
-                                }
-                                if (match) {
-                                    genreBookItems.add(0, bookItem);
-                                } else {
-                                    genreBookItems.add(bookItem);
+                        ArrayList<BookItem> genreBookItems = new ArrayList<>();
+                        for (BookItem bookItem : bookItems) {
+                            match = false;
+                            for (UserGenreResponse userGenre : userGenres) {
+                                if (Functions.categorizeBooks(bookItem.getCategoryName()).equals(userGenre.getGenre())) {
+                                    match = true;
+                                    break;
                                 }
                             }
-                            newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-                            newbooksAdapter = new NewbooksAdapter(genreBookItems);
-                            newbooksView.setAdapter(newbooksAdapter);
+                            if (match) {
+                                genreBookItems.add(0, bookItem);
+                            } else {
+                                genreBookItems.add(bookItem);
+                            }
                         }
-
-                        @Override
-                        public void onFailure(Call<ArrayList<UserGenreResponse>> call, Throwable t) {
-                            newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-                            newbooksAdapter = new NewbooksAdapter(bookItems);
-                            newbooksView.setAdapter(newbooksAdapter);
-                        }
-                    });
+                        newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                        newbooksAdapter = new NewbooksAdapter(genreBookItems);
+                        newbooksView.setAdapter(newbooksAdapter);
+                    } else {
+                        newbooksView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                        newbooksAdapter = new NewbooksAdapter(bookItems);
+                        newbooksView.setAdapter(newbooksAdapter);
+                    }
                 }
             }
 
