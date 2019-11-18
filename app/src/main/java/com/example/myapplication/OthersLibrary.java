@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.myapplication.data.UserInfo;
@@ -18,8 +19,8 @@ public class OthersLibrary extends AppCompatActivity {
     UserInfo userInfo;
     UserInfo othersUserInfo;
 
-    static int column = 3;
-    static int fontSize = 12;
+    static int column ;
+    static int fontSize ;
 
     ViewPager viewPager;
     TabLayout tabLayout;
@@ -34,6 +35,10 @@ public class OthersLibrary extends AppCompatActivity {
         Intent intent = getIntent();
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         othersUserInfo = (UserInfo) intent.getSerializableExtra("othersUserInfo");
+
+        SharedPreferences shared = getSharedPreferences("settings",MODE_PRIVATE);
+        column = shared.getInt("column",3);
+        fontSize = shared.getInt("fontSize",12);
 
         viewPager = findViewById(R.id.otherslibrary_viewPager);
         tabLayout = findViewById(R.id.otherslib_tab);
@@ -108,5 +113,15 @@ public class OthersLibrary extends AppCompatActivity {
                     return null;
             }
         }
+    }
+
+    @Override
+    public void onStop() {
+        SharedPreferences shared = getSharedPreferences("settings",MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+        editor.putInt("column",column);
+        editor.putInt("fontSize",fontSize);
+        editor.commit();
+        super.onStop();
     }
 }

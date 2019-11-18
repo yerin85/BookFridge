@@ -26,12 +26,14 @@ public class BookItem implements Serializable {
     @SerializedName("isbn")
     private String isbn ;
 
+    @SerializedName("isbn13")
+    private String isbn13 ;
+
     @SerializedName("pubDate")
     private String pubDate ;
 
     @SerializedName("categoryName")
     private String categoryName ;
-
 
     public String getTitle() {
         return title;
@@ -51,6 +53,10 @@ public class BookItem implements Serializable {
 
     public String getIsbn() {
         return isbn;
+    }
+
+    public String getIsbn13() {
+        return isbn13;
     }
 
     public String getPublisher() {

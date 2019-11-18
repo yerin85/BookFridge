@@ -3,17 +3,14 @@ package com.example.myapplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
-import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserGenreData;
-import com.example.myapplication.data.UserGenreResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.UserProfileData;
 import com.example.myapplication.network.RetrofitClient;
@@ -36,8 +33,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.myapplication.data.Functions.goToBookDetail;
 
@@ -49,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     ServiceApi service;
     int fragmentNumber;
     int libFragmentNumber;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +65,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 BasicResponse result = response.body();
-                if (result.getCode() == 400) {
+                if (result.getCode() == 400) {//유저가 회원가입을 한것
                     String userId = String.valueOf(userInfo.userId);
                     String nickname = userInfo.nickname;
                     String imagePath = userInfo.imagePath;
-
                     //userProfile 저장
                     service.createUserProfile(new UserProfileData(userId, nickname, imagePath)).enqueue(new Callback<BasicResponse>() {
                         @Override
@@ -90,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
                                         if (result.getCode() == 200) {//오류 없음
                                             showDialog();
                                             showGoalDialog();
+
+                                            //알림 받을건지 설정하자
+                                            SharedPreferences shared = getSharedPreferences("settings",MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = shared.edit();
+                                            editor.putBoolean("notification",false);
+                                            editor.commit();
+
                                         } else {//오류
                                             Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                             //종료

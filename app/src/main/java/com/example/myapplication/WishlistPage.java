@@ -122,7 +122,7 @@ public class WishlistPage extends Fragment {
                     LibraryMenu.column--;
                     LibraryMenu.fontSize++;
                 }
-            } else if (detector.getScaleFactor() < 1f) {
+            } else {
                 if (LibraryMenu.column < 5) {
                     LibraryMenu.column++;
                     LibraryMenu.fontSize--;
@@ -137,7 +137,7 @@ public class WishlistPage extends Fragment {
         wishItemHeight = wishItemWidth * 1.6f;
         wishCoverHeight = wishItemHeight * 0.84f;
         adapter = new WishAdapter(wishItems);
-        if(recyclerView.getItemDecorationCount()!=0){
+        if (recyclerView.getItemDecorationCount() != 0) {
             recyclerView.removeAllViews();
             recyclerView.removeItemDecorationAt(0);
         }
@@ -189,7 +189,7 @@ public class WishlistPage extends Fragment {
             holder.wishLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    goToBookDetail(getActivity(),userInfo,wishItem.getIsbn());
+                    goToBookDetail(getActivity(), userInfo, wishItem.getIsbn());
                 }
             });
 

@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -19,6 +21,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
+import static android.content.Context.MODE_PRIVATE;
 import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_DRAGGING;
 
 
@@ -28,8 +31,8 @@ import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_DRAGGING;
 public class LibraryMenu extends Fragment {
     UserInfo userInfo;
     int fragmentNum;
-    static int column = 3;
-    static int fontSize = 12;
+    static int column;
+    static int fontSize;
     ViewPager viewPager;
     LibPagerAdapter pagerAdapter;
     TabLayout tabLayout;
@@ -53,6 +56,10 @@ public class LibraryMenu extends Fragment {
         View v = inflater.inflate(R.layout.fragment_library_menu, container, false);
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         fragmentNum = getArguments().getInt("fragmentNum");
+
+        SharedPreferences shared = getActivity().getSharedPreferences("settings",MODE_PRIVATE);
+        column = shared.getInt("column",3);
+        fontSize = shared.getInt("fontSize",12);
 
         viewPager = v.findViewById(R.id.library_viewPager);
         tabLayout = v.findViewById(R.id.lib_tab);
@@ -129,6 +136,16 @@ public class LibraryMenu extends Fragment {
                     return null;
             }
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        SharedPreferences shared = getActivity().getSharedPreferences("settings",MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+        editor.putInt("column",column);
+        editor.putInt("fontSize",fontSize);
+        editor.commit();
+        super.onDestroyView();
     }
 
 }

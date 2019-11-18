@@ -133,7 +133,7 @@ public class ReadPage extends Fragment {
                     OthersLibrary.column--;
                     OthersLibrary.fontSize++;
                 }
-            } else if (detector.getScaleFactor() < 1f) {
+            } else {
                 if (OthersLibrary.column < 5) {
                     OthersLibrary.column++;
                     OthersLibrary.fontSize--;
