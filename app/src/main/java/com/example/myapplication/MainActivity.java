@@ -84,10 +84,11 @@ public class MainActivity extends AppCompatActivity {
                                             showDialog();
                                             showGoalDialog();
 
-                                            //알림 받을건지 설정하자
+                                            //알림 받을건지 && 공개여부 설정하자
                                             SharedPreferences shared = getSharedPreferences("settings",MODE_PRIVATE);
                                             SharedPreferences.Editor editor = shared.edit();
-                                            editor.putBoolean("notification",false);
+                                            editor.putBoolean("push",false);
+                                            editor.putBoolean("private",true);
                                             editor.commit();
 
                                         } else {//오류

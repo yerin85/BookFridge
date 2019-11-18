@@ -2,8 +2,10 @@ package com.example.myapplication;
 
 import androidx.fragment.app.Fragment;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -41,6 +43,8 @@ public class SettingMenu extends Fragment {
     UserInfo userInfo;
     ServiceApi service;
 
+    Boolean notification;
+
     public SettingMenu() {
         // Required empty public constructor
     }
@@ -70,10 +74,24 @@ public class SettingMenu extends Fragment {
         Button button_exit = v.findViewById(R.id.button_exit);
 
         Button button_genre = v.findViewById(R.id.select_gerne);
-        Switch switchButton = v.findViewById(R.id.switch1);
+        Switch switchPrivate = v.findViewById(R.id.switch1);
         Switch switchPush = v.findViewById(R.id.switch2);
 
         service = RetrofitClient.getClient().create(ServiceApi.class);
+
+
+        SharedPreferences shared = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        if(shared.getBoolean("push",false)){
+            switchPush.setChecked(true);
+        }else{
+            switchPush.setChecked(false);
+        }
+        if(shared.getBoolean("private",true)){
+            switchPrivate.setChecked(false);
+        }
+        else{
+            switchPrivate.setChecked(true);
+        }
 
         button_genre.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -171,28 +189,33 @@ public class SettingMenu extends Fragment {
         switchPush.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                SharedPreferences.Editor editor = shared.edit();
                 if (isChecked) {
                     Toast.makeText(getContext(), "팝업 알림에 동의하셨습니다", Toast.LENGTH_LONG).show();
-
-
+                    editor.putBoolean("push",true);
                 } else {
                     Toast.makeText(getContext(), "팝업을 차단합니다", Toast.LENGTH_LONG).show();
+                    editor.putBoolean("push",false);
                 }
+                editor.commit();
             }
         });
 
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                SharedPreferences.Editor editor = shared.edit();
                 if (isChecked) {
-                    Toast.makeText(getContext(), "공개여부에 동의하셨습니다", Toast.LENGTH_LONG).show();
                     service.updateUserPrivate(userInfo.userId, "0").enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
                             if (result.getCode() != 200) {
                                 Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
-
+                            }else{
+                                Toast.makeText(getContext(), "공개여부에 동의하셨습니다", Toast.LENGTH_SHORT).show();
+                                editor.putBoolean("private",false);
+                                editor.commit();
                             }
                         }
 
@@ -202,17 +225,19 @@ public class SettingMenu extends Fragment {
                         }
                     });
                 } else {
-                    Toast.makeText(getContext(), "비공개로 전환하였습니다", Toast.LENGTH_LONG).show();
                     service.updateUserPrivate(userInfo.userId, "1").enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
                             if (result.getCode() != 200) {
                                 Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
-
+                            }
+                            else{
+                                Toast.makeText(getContext(), "비공개로 전환하였습니다", Toast.LENGTH_SHORT).show();
+                                editor.putBoolean("private",true);
+                                editor.commit();
                             }
                         }
-
                         @Override
                         public void onFailure(Call<BasicResponse> call, Throwable t) {
                             Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();

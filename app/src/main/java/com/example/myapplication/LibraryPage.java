@@ -1,8 +1,6 @@
 package com.example.myapplication;
 
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -34,7 +32,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.example.myapplication.data.Functions.dpToPx;
 import static com.example.myapplication.data.Functions.goToBookNote;
 
