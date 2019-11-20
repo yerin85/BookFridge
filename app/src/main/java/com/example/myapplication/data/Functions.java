@@ -120,6 +120,14 @@ public class Functions {
         context.startActivity(intent);
     }
 
+    public static void goToHome(Context context, UserInfo userInfo) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("userInfo", userInfo);
+        intent.putExtra("fragmentNumber", 1);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
+
     public static void goToWishlist(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("userInfo", userInfo);

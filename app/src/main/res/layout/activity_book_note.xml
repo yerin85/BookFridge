@@ -12,6 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -47,9 +48,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginRight="20dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/note_book_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/note_book_layout">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:id="@+id/note_start_text"
@@ -123,7 +124,6 @@
             android:progressTint="#68C5F7"
             android:rating="0"
             android:stepSize="0.5"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rating_text" />
@@ -135,6 +135,7 @@
         android:layout_height="0dp"
         android:layout_margin="20dp"
         android:background="@drawable/round_corners_gray"
+        android:fadeScrollbars="false"
         android:padding="10dp"
         android:scrollbars="vertical"
         android:textSize="16dp"

@@ -155,20 +155,19 @@ public class BookNoteEdit extends AppCompatActivity {
 
     public void displayNote(LibraryResponse libItem) {
         itemWidth = dpToPx(BookNoteEdit.this, (int) ((dpWidth - 100f) * 0.4f));
-        itemHeight = itemWidth * 1.7f;
+        itemHeight = itemWidth * 1.8f;
         itemCoverHeight = itemWidth * 1.4f;
         titleFontSize = (dpWidth - 100f) * 0.04f;
         infoWidth = dpToPx(BookNoteEdit.this, (int) ((dpWidth - 100f) * 0.6f));
-        elemHeight = dpToPx(BookNoteEdit.this, (int) ((dpWidth - 250f) / 4.8f));
+        elemHeight = dpToPx(BookNoteEdit.this, (int) ((dpWidth - 240f) / 5f));
         elemWidth = elemHeight * 4.6f;
-        elemFontSize = (dpWidth - 250f) / 7.8f;
+        elemFontSize = (dpWidth - 240f) / 8f;
 
         bookLayout.getLayoutParams().width = (int) itemWidth;
         bookLayout.getLayoutParams().height = (int) itemHeight;
         cover.getLayoutParams().height = (int) itemCoverHeight;
         title.setTextSize(titleFontSize);
         infoLayout.getLayoutParams().width = (int) infoWidth;
-        infoLayout.getLayoutParams().height = (int) itemHeight;
         startDate.getLayoutParams().width = (int) elemWidth;
         startDate.getLayoutParams().height = (int) elemHeight;
         startDate.setTextSize(elemFontSize);
