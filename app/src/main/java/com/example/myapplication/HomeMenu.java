@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -126,6 +127,7 @@ public class HomeMenu extends Fragment {
 
         top10View = v.findViewById(R.id.top10_list);
         top10View.setHasFixedSize(true);
+        top10View.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
         bestsellerView = v.findViewById(R.id.bestseller_list);
         newbooksView = v.findViewById(R.id.newbooks_list);
         newbooksView.getLayoutParams().height = dpToPx(getActivity(), (int) ((dpWidth - 57.14f) / 2.14f));
