@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
@@ -70,10 +71,10 @@ public class SettingMenu extends Fragment {
 
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
 
-        Button button_logout = v.findViewById(R.id.button_logout);
-        Button button_exit = v.findViewById(R.id.button_exit);
+        TextView button_logout = v.findViewById(R.id.text_logout);
+        TextView button_exit = v.findViewById(R.id.text_delete);
 
-        Button button_genre = v.findViewById(R.id.select_gerne);
+        TextView button_genre = v.findViewById(R.id.select_gerne);
         Switch switchPrivate = v.findViewById(R.id.switch1);
         Switch switchPush = v.findViewById(R.id.switch2);
 
