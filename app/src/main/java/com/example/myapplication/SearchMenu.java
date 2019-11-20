@@ -109,7 +109,7 @@ public class SearchMenu extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.search_list);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(SearchMenu.this,DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(SearchMenu.this, DividerItemDecoration.VERTICAL));
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -248,18 +248,48 @@ public class SearchMenu extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     BookItem bookItem = bookItems.get(position);
-                    service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
+                    service.isInWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            BasicResponse result = response.body();
-                            if (result.getCode() == 200) {
-                                service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                            BasicResponse isInWishlist = response.body();
+                            if (isInWishlist.getCode() == 0) {
+                                service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
-                                        if (result.getCode() != 200) {
-                                            Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                        if (result.getCode() == 200) {
+                                            service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                                @Override
+                                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                    BasicResponse result = response.body();
+                                                    if (result.getCode() != 200) {
+                                                        Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
 
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                    Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                            new AlertDialog.Builder(SearchMenu.this)
+                                                    .setMessage(result.getMessage())
+                                                    .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            //library로 이동
+                                                            goToLibrary(SearchMenu.this, userInfo);
+                                                        }
+                                                    })
+                                                    .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            dialog.dismiss();
+                                                        }
+                                                    }).show();
+                                        } else {
+                                            Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
 
@@ -268,29 +298,83 @@ public class SearchMenu extends AppCompatActivity {
                                         Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
+                            } else if (isInWishlist.getCode() == 1) {//이미 위시리스트에 존재함
                                 new AlertDialog.Builder(SearchMenu.this)
-                                        .setMessage(result.getMessage())
-                                        .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                        .setMessage(isInWishlist.getMessage())
+                                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {//라이브러리에 추가하고 위시리스트에서 삭제
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                //library로 이동
-                                                goToLibrary(SearchMenu.this, userInfo);
+                                                service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
+                                                    @Override
+                                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                        BasicResponse result = response.body();
+                                                        if (result.getCode() == 200) {
+                                                            service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                                                @Override
+                                                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                                    BasicResponse result = response.body();
+                                                                    if (result.getCode() != 200) {
+                                                                        Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                                    Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                            service.subWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+                                                                @Override
+                                                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                                    BasicResponse result = response.body();
+                                                                    if (result.getCode() != 200)
+                                                                        Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                }
+
+                                                                @Override
+                                                                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                                    Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                            new AlertDialog.Builder(SearchMenu.this)
+                                                                    .setMessage(result.getMessage())
+                                                                    .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            //library로 이동
+                                                                            goToLibrary(SearchMenu.this, userInfo);
+                                                                        }
+                                                                    })
+                                                                    .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            dialog.dismiss();
+                                                                        }
+                                                                    }).show();
+                                                        } else {
+                                                            Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                        Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
                                             }
                                         })
-                                        .setNegativeButton("계속하기", new DialogInterface.OnClickListener() {
+                                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
                                             }
                                         }).show();
-                            } else {
-                                Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<BasicResponse> call, Throwable t) {
-                            Toast.makeText(SearchMenu.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
                         }
                     });
                 }
@@ -304,7 +388,7 @@ public class SearchMenu extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse isInLib = response.body();
-                            if (isInLib.getCode()==0) {
+                            if (isInLib.getCode() == 0) {
                                 service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {

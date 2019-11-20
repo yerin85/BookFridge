@@ -85,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
                                             showGoalDialog();
 
                                             //알림 받을건지 && 공개여부 설정하자
-                                            SharedPreferences shared = getSharedPreferences("settings",MODE_PRIVATE);
+                                            SharedPreferences shared = getSharedPreferences("settings", MODE_PRIVATE);
                                             SharedPreferences.Editor editor = shared.edit();
-                                            editor.putBoolean("push",false);
-                                            editor.putBoolean("private",true);
+                                            editor.putBoolean("push", false);
+                                            editor.putBoolean("private", true);
                                             editor.commit();
 
                                         } else {//오류
@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_library:
                     fragmentTransaction.replace(R.id.frame_layout, LibraryMenu.newInstance(userInfo, libFragmentNumber));
+                    libFragmentNumber = 0;
                     fragmentManager.beginTransaction().replace(R.id.frame_layout, new LibraryMenu());
                     fragmentTransaction.commit();
                     return true;

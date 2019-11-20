@@ -51,6 +51,7 @@ import static com.example.myapplication.data.Functions.goToBookDetail;
 public class WishlistPage extends Fragment {
     UserInfo userInfo;
     ArrayList<WishlistResponse> wishItems;
+    static boolean allowRefresh;
 
     ServiceApi service;
     NestedScrollView nestedScrollView;
@@ -80,6 +81,7 @@ public class WishlistPage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_wishlist_page, container, false);
+        allowRefresh = false;
 
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
 
@@ -189,6 +191,8 @@ public class WishlistPage extends Fragment {
             holder.wishLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    allowRefresh = true;
+                    LibraryPage.allowRefresh = true;
                     goToBookDetail(getActivity(), userInfo, wishItem.getIsbn());
                 }
             });
@@ -245,6 +249,25 @@ public class WishlistPage extends Fragment {
         @Override
         public int getItemCount() {
             return wishItems.size();
+        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (allowRefresh) {
+            allowRefresh = false;
+            service.getWishlist(userInfo.userId).enqueue(new Callback<ArrayList<WishlistResponse>>() {
+                @Override
+                public void onResponse(Call<ArrayList<WishlistResponse>> call, Response<ArrayList<WishlistResponse>> response) {
+                    wishItems = response.body();
+                    displayItems();
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<WishlistResponse>> call, Throwable t) {
+
+                }
+            });
         }
     }
 }

@@ -58,6 +58,9 @@ public interface ServiceApi {
     @POST("/user/isInLibrary")
     Call<BasicResponse> isInLibrary(@Query("userId") String userId, @Query("isbn") String isbn);
 
+    @POST("/user/isInWishlist")
+    Call<BasicResponse> isInWishlist(@Query("userId") String userId, @Query("isbn") String isbn);
+
     //한 유저의 전체 라이브러리
     @POST("/user/getLibrary")
     Call<ArrayList<LibraryResponse>> getLibrary(@Query("userId") String userId);
