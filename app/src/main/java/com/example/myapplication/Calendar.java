@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -101,6 +102,8 @@ public class Calendar extends Fragment {
         UserInfo userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         TextView textView = v.findViewById(R.id.date);
 
+        textView.setMovementMethod(new ScrollingMovementMethod());
+
         materialCalendarView.addDecorators(
                 new SundayDecorator(),
                 new SaturdayDecorator());
@@ -121,7 +124,7 @@ public class Calendar extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(mylibrary!=null){
+                if (mylibrary != null) {
 
                     for (int i = 0; i < mylibrary.size(); i++) {
                         temp = mylibrary.get(i).getTitle().split(" - ");
@@ -190,12 +193,12 @@ public class Calendar extends Fragment {
                         int count = 1;
                         for (int i = 0; i < total.size(); i++) {
                             if (total.get(i).getYear() == date.getYear() && total.get(i).getMonth() == date.getMonth() && total.get(i).getDay() == date.getDay()) {
-                                textArr += count + ": " + bookTitle.get(i) + "  [ ~" + endPrint.get(i) + " ]\n";
+                                textArr += "\n" + count + ": " + bookTitle.get(i) + "  [ ~" + endPrint.get(i);
                                 count++;
                             }
                         }
+                        textArr = textArr.substring(1);
                         textView.setText(textArr);
-
                     }
                 });
 
