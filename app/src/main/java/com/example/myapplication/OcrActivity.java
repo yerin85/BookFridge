@@ -1,11 +1,12 @@
 package com.example.myapplication;
 
-import com.bumptech.glide.Glide;
-import com.example.myapplication.GlobalApplication;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,20 +15,16 @@ import android.os.Handler;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+
+import android.app.AlertDialog;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +32,6 @@ import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.ServiceApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -56,11 +52,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
-import java.util.TreeSet;
 
+import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,21 +77,22 @@ public class OcrActivity extends AppCompatActivity {
     private static final int GALLERY_IMAGE_REQUEST = 1;
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
-    private static Context mContext;
-    private TextView mImageDetails;
-    private ImageView mMainImage;
+    private static Activity mContext;
+    private ImageView selectImageButton;
+    private ImageView selectedImage;
+    static AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ocr);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        mContext =this;
+        mContext = OcrActivity.this;
         userInfo = (UserInfo) getIntent().getSerializableExtra("userInfo");
         bookItems = new ArrayList<BookItem>();
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
+        alertDialog = new SpotsDialog.Builder().setContext(this).setTheme(R.style.spotsDialog_custom).build();
+        selectImageButton = findViewById(R.id.selectImage_button);
+        selectedImage = findViewById(R.id.selected_image);
+        selectImageButton.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(OcrActivity.this);
             builder
                     .setMessage(R.string.dialog_select_prompt)
@@ -105,11 +100,6 @@ public class OcrActivity extends AppCompatActivity {
                     .setNegativeButton(R.string.dialog_select_camera, (dialog, which) -> startCamera());
             builder.create().show();
         });
-
-
-        mImageDetails = findViewById(R.id.image_details);
-        mMainImage = findViewById(R.id.main_image);
-
     }
 
     public void startGalleryChooser() {
@@ -182,7 +172,8 @@ public class OcrActivity extends AppCompatActivity {
                                 MAX_DIMENSION);
 
                 callCloudVision(bitmap);
-                mMainImage.setImageBitmap(bitmap);
+                selectImageButton.setVisibility(View.GONE);
+                selectedImage.setImageBitmap(bitmap);
 
             } catch (IOException e) {
                 Log.d(TAG, "Image picking failed because " + e.getMessage());
@@ -289,28 +280,28 @@ public class OcrActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             OcrActivity activity = mActivityWeakReference.get();
             if (activity != null && !activity.isFinishing()) {
-                TextView imageDetail = activity.findViewById(R.id.image_details);
-                imageDetail.setText(result);
-                storeMessage =result;
+                storeMessage = result;
             }
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    alertDialog.dismiss();
                     Intent intent = new Intent(mContext, OcrBookMenu.class);
                     intent.putExtra("bookItems", bookItems);
-                    intent.putExtra("userInfo",userInfo);
-                    Log.d("test","test"+bookItems.size());
+                    intent.putExtra("userInfo", userInfo);
+                    Log.d("test", "test" + bookItems.size());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     mContext.startActivity(intent);
-
+                    mContext.finish();
                 }
-            },5000);
+            }, 5000);
         }
     }
 
     private void callCloudVision(final Bitmap bitmap) {
         // Switch text to loading
-        mImageDetails.setText(R.string.loading_message);
-
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
         // Do the real work in an async task, because we need to use the network anyway
         try {
             AsyncTask<Object, Void, String> labelDetectionTask = new LableDetectionTask(this, prepareAnnotationRequest(bitmap));
@@ -346,9 +337,9 @@ public class OcrActivity extends AppCompatActivity {
         List<EntityAnnotation> labels = response.getResponses().get(0).getTextAnnotations();
         if (labels != null) {
             message = labels.get(0).getDescription();
-            for(EntityAnnotation label:labels){
-                Log.d("Text",label.getDescription());
-                Log.d("Verticle","wow"+label.getBoundingPoly());
+            for (EntityAnnotation label : labels) {
+                Log.d("Text", label.getDescription());
+                Log.d("Verticle", "wow" + label.getBoundingPoly());
             }
             OcrItemSearch(message);
         } else {
@@ -357,7 +348,7 @@ public class OcrActivity extends AppCompatActivity {
         return message;
     }
 
-    private static void OcrItemSearch(String storeMessage){
+    private static void OcrItemSearch(String storeMessage) {
         String[] books = storeMessage.split("\n");
         ServiceApi service;
         String searchbook;
@@ -366,25 +357,26 @@ public class OcrActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(ServiceApi.class);
-        for(String book:books) {
-            searchbook=book;
-            if(book.contains("나는 길들지")) searchbook = "나는 길들지 않는다";
-            if(book.contains("습관의힘")) searchbook = "습관의 힘";
-            if(book.contains("one click"))searchbook = "원클릭 아마존";
-            if(book.contains("ZERO to One"))searchbook = "Zero to One";
-            service.itemSearch("Keyword",searchbook, 1,2).enqueue(new Callback<AladinResponse>() {
+        for (String book : books) {
+            searchbook = book;
+            if (book.contains("나는 길들지")) searchbook = "나는 길들지 않는다";
+            if (book.contains("습관의힘")) searchbook = "습관의 힘";
+            if (book.contains("one click")) searchbook = "원클릭 아마존";
+            if (book.contains("ZERO to One")) searchbook = "Zero to One";
+            service.itemSearch("Keyword", searchbook, 1, 2).enqueue(new Callback<AladinResponse>() {
                 @Override
                 public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
                     AladinResponse responseResult = response.body();
-                    if(responseResult.getBookItems().isEmpty())
-                        Log.d("booksAladinNo",book);
-                    else{
-                        for(BookItem bookItem: responseResult.getBookItems()) {
+                    if (responseResult.getBookItems().isEmpty())
+                        Log.d("booksAladinNo", book);
+                    else {
+                        for (BookItem bookItem : responseResult.getBookItems()) {
                             bookItems.add(bookItem);
-                            Log.d("bqq",book);
+                            Log.d("bqq", book);
                         }
                     }
                 }
+
                 @Override
                 public void onFailure(Call<AladinResponse> call, Throwable t) {
                     Toast.makeText(mContext, "Fail", Toast.LENGTH_SHORT).show();
@@ -393,36 +385,41 @@ public class OcrActivity extends AppCompatActivity {
         }
     }
 
-    class BookDefrag{
+    class BookDefrag {
 
     }
 
-    class BookFragment implements  Comparable<BookFragment>{
+    class BookFragment implements Comparable<BookFragment> {
         private int startX;
         private int endX;
-        private int leftX,rightX;
+        private int leftX, rightX;
         private List<EntityAnnotation> labels;
-        public BookFragment(){
+
+        public BookFragment() {
             startX = 0;
             endX = 0;
         }
-        public void compare(EntityAnnotation label){
+
+        public void compare(EntityAnnotation label) {
             leftX = label.getBoundingPoly().getVertices().get(0).getX();
             rightX = label.getBoundingPoly().getVertices().get(1).getY();
-            if(startX>leftX && startX<rightX){
+            if (startX > leftX && startX < rightX) {
                 labels.add(label);
                 startX = leftX;
-            } else if(endX>leftX &&endX<rightX){
+            } else if (endX > leftX && endX < rightX) {
             }
 
         }
-        public void add(EntityAnnotation label){
-            if(startX>label.getBoundingPoly().getVertices().get(0).getX()) startX=label.getBoundingPoly().getVertices().get(0).getX();
+
+        public void add(EntityAnnotation label) {
+            if (startX > label.getBoundingPoly().getVertices().get(0).getX())
+                startX = label.getBoundingPoly().getVertices().get(0).getX();
         }
+
         @Override
-        public int compareTo(BookFragment o){
-            if(startX<o.getStartX()) return -1;
-            else if(startX==o.getStartX());
+        public int compareTo(BookFragment o) {
+            if (startX < o.getStartX()) return -1;
+            else if (startX == o.getStartX()) ;
             return 1;
         }
 
