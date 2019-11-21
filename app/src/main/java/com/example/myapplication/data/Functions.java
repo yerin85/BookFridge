@@ -85,6 +85,12 @@ public class Functions {
         return str_date;
     }
 
+    public static String getMonthString() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM", Locale.KOREA);
+        String str_date = df.format(new Date());
+        return str_date;
+    }
+
     public static void goToBookDetail(Context context, UserInfo userInfo, String isbn) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.aladin.co.kr/ttb/api/")

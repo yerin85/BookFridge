@@ -7,12 +7,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
 import com.example.myapplication.MainActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 
@@ -149,10 +151,11 @@ public class NumberPickerDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final NumberPicker numberPicker = new NumberPicker(getActivity());
+        final NumberPicker numberPicker = new NumberPicker(new ContextThemeWrapper(getActivity(), R.style.MyNumberPickerTheme));
 
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(100);
+        numberPicker.setWrapSelectorWheel(false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("월 독서 목표량을 설정해주세요");

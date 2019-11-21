@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
+import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
@@ -39,6 +42,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.myapplication.data.Functions.getMonthString;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -50,7 +55,7 @@ public class MypageMenu extends Fragment {
     ViewPager viewPager;
     FragmentStatePagerAdapter adapterViewPager;
     ImageButton button;
-    ProgressBar progressBar;
+    com.daimajia.numberprogressbar.NumberProgressBar progressBar;
     TextView textProgress;
 
     public MypageMenu() {
@@ -87,16 +92,37 @@ public class MypageMenu extends Fragment {
         if (userInfo.imagePath != null) {
             Glide.with(this).load(userInfo.imagePath).into(myimage);
         }
-        
+
         service.getMypage(userInfo.userId).enqueue(new Callback<ArrayList<MyPageResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<MyPageResponse>> call, Response<ArrayList<MyPageResponse>> response) {
                 ArrayList<MyPageResponse> myPageResponses = response.body();
-                myPageResponse = myPageResponses.get(0);
-                progressBar.setMax(myPageResponse.getGoal());
-                progressBar.setProgress(myPageResponse.getTotal());
-                textProgress.setText(myPageResponse.getTotal() + "/" + myPageResponse.getGoal());
-                Log.d("getgoal", ":" + myPageResponse.getGoal());
+                if(myPageResponses!=null){
+                    service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
+                        @Override
+                        public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
+                            ArrayList<LibraryResponse> libItems = response.body();
+                            if(libItems!=null){
+                                int total=0;
+                                String month = getMonthString();
+                                for(LibraryResponse libItem : libItems){
+                                    if(libItem.getEndDate().contains(month)){
+                                        total++;
+                                    }
+                                }
+                                myPageResponse = myPageResponses.get(0);
+                                progressBar.setMax(myPageResponse.getGoal());
+                                progressBar.setProgress(total);
+                                textProgress.setText("목표까지 " + (int)(myPageResponse.getGoal()-total)+ "권 남았어요!");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ArrayList<LibraryResponse>> call, Throwable t) {
+
+                        }
+                    });
+                }
             }
 
             @Override
@@ -108,10 +134,11 @@ public class MypageMenu extends Fragment {
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final NumberPicker numberPicker = new NumberPicker(getActivity());
+                final NumberPicker numberPicker = new NumberPicker(new ContextThemeWrapper(getActivity(), R.style.MyNumberPickerTheme));
 
                 numberPicker.setMinValue(0);
                 numberPicker.setMaxValue(100);
+                numberPicker.setWrapSelectorWheel(false);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("월 독서 목표량을 설정해주세요");

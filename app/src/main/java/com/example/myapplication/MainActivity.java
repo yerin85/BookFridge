@@ -131,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
-                Toast.makeText(getApplicationContext(), userInfo.nickname + "님 안녕하세요", Toast.LENGTH_SHORT).show();
             }
 
             @Override

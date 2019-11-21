@@ -91,6 +91,8 @@ public class LoginActivity extends AppCompatActivity {
                     String userId = String.valueOf(result.getId());
                     String nickname = result.getNickname();
                     String imagePath = result.getProfileImagePath();
+
+                    Toast.makeText(getApplicationContext(), nickname + "님 안녕하세요", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     UserInfo userInfo = new UserInfo(userId, nickname, imagePath);
                     intent.putExtra("userInfo", userInfo);
