@@ -23,7 +23,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
-import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
@@ -155,7 +154,7 @@ public class MypageMenu extends Fragment {
         ServiceApi service;
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
-        service.addMypage(new MyPageData(userInfo.userId, "sf", goal)).enqueue(new Callback<BasicResponse>() {
+        service.addGoal(userInfo.userId, goal).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 BasicResponse result = response.body();

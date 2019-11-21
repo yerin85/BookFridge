@@ -258,7 +258,7 @@ public class SearchMenu extends AppCompatActivity {
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
                                         if (result.getCode() == 200) {
-                                            service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                            service.addMypage(userInfo.userId, categorizeBooks(bookItem.getCategoryName())).enqueue(new Callback<BasicResponse>() {
                                                 @Override
                                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                     BasicResponse result = response.body();
@@ -309,7 +309,7 @@ public class SearchMenu extends AppCompatActivity {
                                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                         BasicResponse result = response.body();
                                                         if (result.getCode() == 200) {
-                                                            service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                                            service.addMypage(userInfo.userId, categorizeBooks(bookItem.getCategoryName())).enqueue(new Callback<BasicResponse>() {
                                                                 @Override
                                                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                                     BasicResponse result = response.body();

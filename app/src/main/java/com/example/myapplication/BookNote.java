@@ -6,7 +6,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Rating;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
@@ -20,21 +19,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryResponse;
-import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
-import com.kakao.message.template.LinkObject;
-import com.kakao.message.template.TemplateParams;
-import com.kakao.message.template.TextTemplate;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
-import com.kakao.usermgmt.response.model.User;
-
-import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,7 +34,6 @@ import retrofit2.Response;
 import static com.example.myapplication.data.Functions.dpToPx;
 import static com.example.myapplication.data.Functions.goToBookDetail;
 
-import com.kakao.kakaolink.*;
 import com.kakao.util.helper.log.Logger;
 
 import java.util.HashMap;
@@ -166,7 +156,7 @@ public class BookNote extends AppCompatActivity {
                                         Toast.makeText(BookNote.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                                service.subMypage(new MyPageData(libItem.getUserId(), libItem.getGenre())).enqueue(new Callback<BasicResponse>() {
+                                service.subMypage(libItem.getUserId(), libItem.getGenre()).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();

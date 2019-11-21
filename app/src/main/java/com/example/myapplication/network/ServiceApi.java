@@ -6,13 +6,10 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-import com.example.myapplication.Calendar;
 import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
-import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
-import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.MyPageResponse;
 import com.example.myapplication.data.Top10Response;
 import com.example.myapplication.data.UserNoteResponse;
@@ -88,10 +85,13 @@ public interface ServiceApi {
     Call<BasicResponse> updateUserPrivate(@Query("userId") String userId, @Query("priv") String priv);
 
     @POST("/user/addMypage")
-    Call<BasicResponse> addMypage(@Body MyPageData data);
+    Call<BasicResponse> addMypage(@Query("userId") String userId, @Query("genre") String genre);
+
+    @POST("/user/addGoal")
+    Call<BasicResponse> addGoal(@Query("userId") String userId, @Query("goal") int goal);
 
     @POST("/user/subMypage")
-    Call<BasicResponse> subMypage(@Body MyPageData data);
+    Call<BasicResponse> subMypage(@Query("userId") String userId, @Query("genre") String genre);
 
     @POST("/user/getMypage")
     Call<ArrayList<MyPageResponse>> getMypage(@Query("userId") String userId);

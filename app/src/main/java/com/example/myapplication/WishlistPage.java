@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.DisplayMetrics;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -29,8 +29,6 @@ import com.example.myapplication.data.AladinResponse;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.GridSpacingItemDecoration;
-import com.example.myapplication.data.LibraryResponse;
-import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.WishlistResponse;
 import com.example.myapplication.network.RetrofitClient;
@@ -206,7 +204,7 @@ public class WishlistPage extends Fragment {
             holder.wishLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+                    PopupMenu popupMenu = new PopupMenu(new ContextThemeWrapper(getActivity(), R.style.PopupMenuStyle), v);
                     getActivity().getMenuInflater().inflate(R.menu.popup_wishlist, popupMenu.getMenu());
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
@@ -236,7 +234,7 @@ public class WishlistPage extends Fragment {
                                                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                                         BasicResponse result = response.body();
                                                                         if (result.getCode() == 200) {
-                                                                            service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                                                            service.addMypage(userInfo.userId, categorizeBooks(bookItem.getCategoryName())).enqueue(new Callback<BasicResponse>() {
                                                                                 @Override
                                                                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                                                     BasicResponse result = response.body();

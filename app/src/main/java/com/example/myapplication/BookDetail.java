@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Rating;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,9 +25,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
-import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
-import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.WishlistData;
@@ -135,7 +133,7 @@ public class BookDetail extends AppCompatActivity {
                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                     BasicResponse result = response.body();
                                     if (result.getCode() == 200) {
-                                        service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                        service.addMypage(userInfo.userId, categorizeBooks(bookItem.getCategoryName())).enqueue(new Callback<BasicResponse>() {
                                             @Override
                                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                 BasicResponse result = response.body();
@@ -186,7 +184,7 @@ public class BookDetail extends AppCompatActivity {
                                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                     BasicResponse result = response.body();
                                                     if (result.getCode() == 200) {
-                                                        service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                                        service.addMypage(userInfo.userId, categorizeBooks(bookItem.getCategoryName())).enqueue(new Callback<BasicResponse>() {
                                                             @Override
                                                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                                 BasicResponse result = response.body();
@@ -350,7 +348,7 @@ public class BookDetail extends AppCompatActivity {
             holder.profileLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
+                    PopupMenu popupMenu = new PopupMenu(new ContextThemeWrapper(BookDetail.this, R.style.PopupMenuStyle), v);
                     getMenuInflater().inflate(R.menu.popup_comments, popupMenu.getMenu());
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override

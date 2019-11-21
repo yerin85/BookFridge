@@ -1,15 +1,16 @@
 package com.example.myapplication;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.example.myapplication.data.BasicResponse;
-import com.example.myapplication.data.MyPageData;
+import com.example.myapplication.data.NumberPickerDialog;
 import com.example.myapplication.data.UserGenreData;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.UserProfileData;
@@ -24,6 +25,7 @@ import androidx.annotation.NonNull;
 
 import android.view.MenuItem;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -54,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         fragmentNumber = intent.getIntExtra("fragmentNumber", 1);
 
-        service = RetrofitClient.getClient().create(ServiceApi.class);
 
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -81,15 +82,9 @@ public class MainActivity extends AppCompatActivity {
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
                                         if (result.getCode() == 200) {//오류 없음
-                                            showDialog();
-                                            showGoalDialog();
 
-                                            //알림 받을건지 && 공개여부 설정하자
-                                            SharedPreferences shared = getSharedPreferences("settings", MODE_PRIVATE);
-                                            SharedPreferences.Editor editor = shared.edit();
-                                            editor.putBoolean("push", false);
-                                            editor.putBoolean("private", true);
-                                            editor.commit();
+                                            //유저 기본 설정
+                                            showDialog();
 
                                         } else {//오류
                                             Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
@@ -136,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
+                Toast.makeText(getApplicationContext(), userInfo.nickname + "님 안녕하세요", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -215,46 +211,6 @@ public class MainActivity extends AppCompatActivity {
         goToBookDetail(MainActivity.this, userInfo, result.getContents());
     }
 
-    public void showGoalDialog() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("월 독서 목표량 설정");
-        final EditText editText = new EditText(MainActivity.this);
-        editText.setText("0");
-        builder.setView(editText);
-
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Text 값 받아서 로그 남기기
-                int goal = Integer.parseInt(editText.getText().toString());
-                service.addMypage(new MyPageData(userInfo.userId, "sf", goal)).enqueue(new Callback<BasicResponse>() {
-                    @Override
-                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                        BasicResponse result = response.body();
-                    }
-
-                    @Override
-                    public void onFailure(Call<BasicResponse> call, Throwable t) {
-                    }
-                });
-                dialog.dismiss();     //닫기
-                // Event
-            }
-        });
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();     //닫기
-                // Event
-            }
-        });
-
-        builder.show();
-
-
-    }
-
     public void showDialog() {
         final List<String> ListItems = new ArrayList<String>();
         ListItems.add("만화");
@@ -294,6 +250,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                NumberPickerDialog numberPickerDialog = new NumberPickerDialog(MainActivity.this, userInfo.userId);
+                numberPickerDialog.show(getSupportFragmentManager(), "number picker");
+            }
+        });
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                NumberPickerDialog numberPickerDialog = new NumberPickerDialog(MainActivity.this, userInfo.userId);
+                numberPickerDialog.show(getSupportFragmentManager(), "number picker");
+            }
+        });
+
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -302,7 +273,9 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
-                            Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                            if(result.getCode()!=200){
+                                Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override
@@ -313,9 +286,12 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
-        });
+        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).show();
 
-        builder.show();
     }
 
 }
