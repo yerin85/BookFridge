@@ -3,6 +3,8 @@ package com.example.myapplication.data;
 import com.google.gson.annotations.SerializedName;
 
 public class UserNoteResponse {
+    @SerializedName("userId")
+    String userId;
 
     @SerializedName("profile")
     String profile;
@@ -12,6 +14,10 @@ public class UserNoteResponse {
 
     @SerializedName("note")
     String note;
+
+    public String getUserId() {
+        return userId;
+    }
 
     public String getProfile() {
         return profile;

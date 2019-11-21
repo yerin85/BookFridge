@@ -197,23 +197,27 @@ public class LibraryPage extends Fragment {
         }
     }
 
+    public void refreshLibItems(){
+        service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
+                libItems = response.body();
+                displayItems();
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<LibraryResponse>> call, Throwable t) {
+
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (allowRefresh) {
             allowRefresh = false;
-            service.getLibrary(userInfo.userId).enqueue(new Callback<ArrayList<LibraryResponse>>() {
-                @Override
-                public void onResponse(Call<ArrayList<LibraryResponse>> call, Response<ArrayList<LibraryResponse>> response) {
-                    libItems = response.body();
-                    displayItems();
-                }
-
-                @Override
-                public void onFailure(Call<ArrayList<LibraryResponse>> call, Throwable t) {
-
-                }
-            });
+            refreshLibItems();
         }
     }
 }

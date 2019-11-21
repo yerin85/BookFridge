@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,10 +12,12 @@ import android.content.Intent;
 import android.media.Rating;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +43,7 @@ import retrofit2.Response;
 import static com.example.myapplication.data.Functions.categorizeBooks;
 import static com.example.myapplication.data.Functions.getDateString;
 import static com.example.myapplication.data.Functions.goToLibrary;
+import static com.example.myapplication.data.Functions.goToOthersLibrary;
 import static com.example.myapplication.data.Functions.goToWishlist;
 
 public class BookDetail extends AppCompatActivity {
@@ -317,12 +321,14 @@ public class BookDetail extends AppCompatActivity {
             ImageView profile;
             TextView nickname;
             TextView note;
+            ConstraintLayout profileLayout;
 
             public NoteViewHolder(View view) {
                 super(view);
                 profile = view.findViewById(R.id.user_profile);
                 nickname = view.findViewById(R.id.user_nickname);
                 note = view.findViewById(R.id.user_note);
+                profileLayout = view.findViewById(R.id.userProfile_layout);
             }
         }
 
@@ -340,6 +346,29 @@ public class BookDetail extends AppCompatActivity {
             Glide.with(holder.itemView.getContext()).load(noteItem.getProfile()).into(holder.profile);
             holder.nickname.setText(noteItem.getNickname());
             holder.note.setText(noteItem.getNote());
+
+            holder.profileLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
+                    getMenuInflater().inflate(R.menu.popup_comments, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.menu_item_lib:
+                                    goToOthersLibrary(BookDetail.this,userInfo,new UserInfo(noteItem.getUserId(),noteItem.getNickname(),noteItem.getProfile()));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    popupMenu.show();
+                    return false;
+                }
+            });
         }
 
         @Override

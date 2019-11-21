@@ -57,9 +57,9 @@ public class LibraryMenu extends Fragment {
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
         fragmentNum = getArguments().getInt("fragmentNum");
 
-        SharedPreferences shared = getActivity().getSharedPreferences("settings",MODE_PRIVATE);
-        column = shared.getInt("column",3);
-        fontSize = shared.getInt("fontSize",12);
+        SharedPreferences shared = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
+        column = shared.getInt("column", 3);
+        fontSize = shared.getInt("fontSize", 12);
 
         viewPager = v.findViewById(R.id.library_viewPager);
         tabLayout = v.findViewById(R.id.lib_tab);
@@ -85,6 +85,11 @@ public class LibraryMenu extends Fragment {
                     if (viewPager.getCurrentItem() == 0) {
                         ((WishlistPage) pagerAdapter.getItem(1)).displayItems();
                     } else {
+                        if (LibraryPage.allowRefresh) {
+                            LibraryPage.allowRefresh=false;
+                            ((LibraryPage) pagerAdapter.getItem(0)).refreshLibItems();
+
+                        }
                         ((LibraryPage) pagerAdapter.getItem(0)).displayItems();
                     }
                 }
@@ -140,10 +145,10 @@ public class LibraryMenu extends Fragment {
 
     @Override
     public void onDestroyView() {
-        SharedPreferences shared = getActivity().getSharedPreferences("settings",MODE_PRIVATE);
+        SharedPreferences shared = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
-        editor.putInt("column",column);
-        editor.putInt("fontSize",fontSize);
+        editor.putInt("column", column);
+        editor.putInt("fontSize", fontSize);
         editor.commit();
         super.onDestroyView();
     }

@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.BookItem;
 import com.example.myapplication.data.GridSpacingItemDecoration;
 import com.example.myapplication.data.LibraryResponse;
+import com.example.myapplication.data.MyPageData;
 import com.example.myapplication.data.UserInfo;
 import com.example.myapplication.data.WishlistResponse;
 import com.example.myapplication.network.RetrofitClient;
@@ -41,7 +44,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.myapplication.data.Functions.categorizeBooks;
 import static com.example.myapplication.data.Functions.dpToPx;
+import static com.example.myapplication.data.Functions.getDateString;
 import static com.example.myapplication.data.Functions.goToBookDetail;
 
 
@@ -51,6 +56,7 @@ import static com.example.myapplication.data.Functions.goToBookDetail;
 public class WishlistPage extends Fragment {
     UserInfo userInfo;
     ArrayList<WishlistResponse> wishItems;
+    BookItem bookItem;
     static boolean allowRefresh;
 
     ServiceApi service;
@@ -200,47 +206,142 @@ public class WishlistPage extends Fragment {
             holder.wishLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    Intent intent = new Intent(getActivity(), BookNote.class);
-                    WishlistResponse wishItem = wishItems.get(position);
-                    new AlertDialog.Builder(getActivity())
-                            .setMessage("위시리스트에서 삭제하시겠습니까?")
-                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    service.subWishlist(userInfo.userId, wishItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
-                                        @Override
-                                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                                            BasicResponse result = response.body();
-                                            Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
-                                            if (result.getCode() == 200) {
-                                                service.getWishlist(userInfo.userId).enqueue(new Callback<ArrayList<WishlistResponse>>() {
-                                                    @Override
-                                                    public void onResponse(Call<ArrayList<WishlistResponse>> call, Response<ArrayList<WishlistResponse>> response) {
-                                                        wishItems = response.body();
-                                                        displayItems();
-                                                    }
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+                    getActivity().getMenuInflater().inflate(R.menu.popup_wishlist, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            WishlistResponse wishItem = wishItems.get(position);
+                            switch (item.getItemId()) {
+                                case R.id.menu_item_add:
+                                    new AlertDialog.Builder(getActivity())
+                                            .setMessage("라이브러리로 옮기시겠습니까?")
+                                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {//라이브러리에 추가하고 위시리스트에서 삭제
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Retrofit retrofit = new Retrofit.Builder()
+                                                            .baseUrl("http://www.aladin.co.kr/ttb/api/")
+                                                            .addConverterFactory(GsonConverterFactory.create())
+                                                            .build();
+                                                    ServiceApi serviceAladin = retrofit.create(ServiceApi.class);
+                                                    serviceAladin = retrofit.create(ServiceApi.class);
+                                                    serviceAladin.itemSearch("Keyword", wishItem.getIsbn(), 1, 1).enqueue(new Callback<AladinResponse>() {
+                                                        @Override
+                                                        public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                                                            AladinResponse responseResult = response.body();
+                                                            bookItem = responseResult.getBookItems().get(0);
+                                                            if(bookItem!=null){
+                                                                service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
+                                                                    @Override
+                                                                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                                        BasicResponse result = response.body();
+                                                                        if (result.getCode() == 200) {
+                                                                            service.addMypage(new MyPageData(userInfo.userId, categorizeBooks(bookItem.getCategoryName()))).enqueue(new Callback<BasicResponse>() {
+                                                                                @Override
+                                                                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                                                    BasicResponse result = response.body();
+                                                                                    if (result.getCode() != 200) {
+                                                                                        Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                    }
+                                                                                }
 
-                                                    @Override
-                                                    public void onFailure(Call<ArrayList<WishlistResponse>> call, Throwable t) {
-                                                    }
-                                                });
-                                            }
-                                        }
+                                                                                @Override
+                                                                                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+                                                                            service.subWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+                                                                                @Override
+                                                                                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                                                    BasicResponse result = response.body();
+                                                                                    if (result.getCode() != 200)
+                                                                                        Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }
 
-                                        @Override
-                                        public void onFailure(Call<BasicResponse> call, Throwable t) {
-                                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                }
-                            })
-                            .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).show();
+                                                                                @Override
+                                                                                public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                                                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+                                                                            Toast.makeText(getActivity(),"라이브러리로 이동되었습니다",Toast.LENGTH_SHORT).show();
+                                                                            refreshWishItems();
+                                                                            LibraryPage.allowRefresh = true;
+                                                                        } else {
+                                                                            Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    }
 
+                                                                    @Override
+                                                                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Call<AladinResponse> call, Throwable t) {
+                                                            Toast.makeText(getActivity(), "Fail", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                            .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            }).show();
+                                    break;
+                                case R.id.menu_item_delete:
+                                    new AlertDialog.Builder(getActivity())
+                                            .setMessage("위시리스트에서 삭제하시겠습니까?")
+                                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    service.subWishlist(userInfo.userId, wishItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+                                                        @Override
+                                                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                                            BasicResponse result = response.body();
+                                                            Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            if (result.getCode() == 200) {
+                                                                service.getWishlist(userInfo.userId).enqueue(new Callback<ArrayList<WishlistResponse>>() {
+                                                                    @Override
+                                                                    public void onResponse(Call<ArrayList<WishlistResponse>> call, Response<ArrayList<WishlistResponse>> response) {
+                                                                        wishItems = response.body();
+                                                                        displayItems();
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onFailure(Call<ArrayList<WishlistResponse>> call, Throwable t) {
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                            .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            }).show();
+
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    popupMenu.show();
                     return true;
                 }
             });
@@ -251,23 +352,28 @@ public class WishlistPage extends Fragment {
             return wishItems.size();
         }
     }
+
+    public void refreshWishItems(){
+        service.getWishlist(userInfo.userId).enqueue(new Callback<ArrayList<WishlistResponse>>() {
+            @Override
+            public void onResponse(Call<ArrayList<WishlistResponse>> call, Response<ArrayList<WishlistResponse>> response) {
+                wishItems = response.body();
+                displayItems();
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<WishlistResponse>> call, Throwable t) {
+
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (allowRefresh) {
             allowRefresh = false;
-            service.getWishlist(userInfo.userId).enqueue(new Callback<ArrayList<WishlistResponse>>() {
-                @Override
-                public void onResponse(Call<ArrayList<WishlistResponse>> call, Response<ArrayList<WishlistResponse>> response) {
-                    wishItems = response.body();
-                    displayItems();
-                }
-
-                @Override
-                public void onFailure(Call<ArrayList<WishlistResponse>> call, Throwable t) {
-
-                }
-            });
+            refreshWishItems();
         }
     }
 }

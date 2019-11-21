@@ -8,15 +8,18 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/userProfile_layout"
-        android:layout_width="60dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:clickable="true"
+        android:background="@drawable/round_corners_selecteditembackground_transparent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/user_profile"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:scaleType="centerCrop"
             app:civ_border="false"
             app:layout_constraintEnd_toEndOf="parent"
@@ -25,12 +28,14 @@
 
         <TextView
             android:id="@+id/user_nickname"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:textAlignment="center"
             android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/user_profile" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -39,6 +44,7 @@
         android:id="@+id/user_note"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
         android:background="@drawable/round_corners_gray"
         android:padding="6dp"
