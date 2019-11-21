@@ -14,8 +14,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -85,12 +87,7 @@ public class MypageMenu extends Fragment {
         if (userInfo.imagePath != null) {
             Glide.with(this).load(userInfo.imagePath).into(myimage);
         }
-//        myimage.setBackground(new ShapeDrawable(new OvalShape()));
-//        if(Build.VERSION.SDK_INT >= 21) {
-//            myimage.setClipToOutline(true);
-//        }
-
-
+        
         service.getMypage(userInfo.userId).enqueue(new Callback<ArrayList<MyPageResponse>>() {
             @Override
             public void onResponse(Call<ArrayList<MyPageResponse>> call, Response<ArrayList<MyPageResponse>> response) {
@@ -107,42 +104,56 @@ public class MypageMenu extends Fragment {
 
             }
         });
+
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final NumberPicker numberPicker = new NumberPicker(getActivity());
+
+                numberPicker.setMinValue(0);
+                numberPicker.setMaxValue(100);
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("목표량 변경");
-                final EditText editText = new EditText(getContext());
-                builder.setView(editText);
+                builder.setTitle("월 독서 목표량을 설정해주세요");
 
                 builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Text 값 받아서 로그 남기기
-                        int value = Integer.parseInt(editText.getText().toString());
-                        progressBar.refreshDrawableState();
-                        progressBar.setMax(value);
-                        progressBar.setProgress(myPageResponse.getTotal());
-                        textProgress.refreshDrawableState();
-                        textProgress.setText(myPageResponse.getTotal() + "/" + value);
-                        updateGoal(value);
-                        v.invalidate();
-                        dialog.dismiss();     //닫기
-                        // Event
+                        int goal = numberPicker.getValue();
+                        ServiceApi service = RetrofitClient.getClient().create(ServiceApi.class);
+                        service.addGoal(userInfo.userId,goal).enqueue(new Callback<BasicResponse>() {
+                            @Override
+                            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                BasicResponse result = response.body();
+                                if (result.getCode() != 200) {
+                                    Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    progressBar.refreshDrawableState();
+                                    progressBar.setMax(goal);
+                                    progressBar.setProgress(myPageResponse.getTotal());
+                                    textProgress.refreshDrawableState();
+                                    textProgress.setText(myPageResponse.getTotal() + "/" + goal);
+                                    updateGoal(goal);
+                                    v.invalidate();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
 
                 builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();     //닫기
-                        // Event
                     }
                 });
-
+                builder.setView(numberPicker);
                 builder.show();
-
-
             }
         });
 
