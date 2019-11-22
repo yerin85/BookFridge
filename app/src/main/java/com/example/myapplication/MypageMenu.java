@@ -112,8 +112,15 @@ public class MypageMenu extends Fragment {
                                 }
                                 myPageResponse = myPageResponses.get(0);
                                 progressBar.setMax(myPageResponse.getGoal());
-                                progressBar.setProgress(total);
-                                textProgress.setText("목표까지 " + (int)(myPageResponse.getGoal()-total)+ "권 남았어요!");
+
+                                if(total>=myPageResponse.getGoal()){
+                                    textProgress.setText("목표를 달성했습니다!!");
+                                    progressBar.setProgress(myPageResponse.getGoal());
+                                }else{
+                                    textProgress.setText("목표까지 " + (int)(myPageResponse.getGoal()-total)+ "권 남았어요!");
+                                    progressBar.setProgress(total);
+                                }
+
                             }
                         }
 
@@ -160,7 +167,13 @@ public class MypageMenu extends Fragment {
                                     progressBar.setMax(goal);
                                     progressBar.setProgress(myPageResponse.getTotal());
                                     textProgress.refreshDrawableState();
-                                    textProgress.setText(myPageResponse.getTotal() + "/" + goal);
+
+                                    if(myPageResponse.getTotal()>=goal){
+                                        textProgress.setText("목표를 달성했습니다!!");
+                                    }else{
+                                        textProgress.setText("목표까지 " + (int)(goal - myPageResponse.getTotal())+ "권 남았어요!");
+
+                                    }
                                     updateGoal(goal);
                                     v.invalidate();
                                 }
