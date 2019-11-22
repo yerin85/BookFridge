@@ -82,10 +82,8 @@ public class MainActivity extends AppCompatActivity {
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
                                         if (result.getCode() == 200) {//오류 없음
-
                                             //유저 기본 설정
                                             showDialog();
-
                                         } else {//오류
                                             Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                             //종료

@@ -45,6 +45,7 @@ import static com.example.myapplication.data.Functions.goToOthersLibrary;
 import static com.example.myapplication.data.Functions.goToWishlist;
 
 public class BookDetail extends AppCompatActivity {
+    Button stockButton;
     Button libButton;
     Button wishButton;
     UserInfo userInfo;
@@ -78,6 +79,7 @@ public class BookDetail extends AppCompatActivity {
         myNote = findViewById(R.id.detail_myNote);
         averageRating = findViewById(R.id.rating_average);
         rating = findViewById(R.id.rating_star);
+        stockButton = findViewById(R.id.stock_location);
         libButton = findViewById(R.id.detail_add_library);
         wishButton = findViewById(R.id.detail_wishlist);
 
@@ -117,6 +119,15 @@ public class BookDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ArrayList<UserNoteResponse>> call, Throwable t) {
+            }
+        });
+
+        stockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(BookDetail.this, MapActivity.class);
+                intent.putExtra("isbn13", bookItem.getIsbn13());
+                startActivity(intent);
             }
         });
 

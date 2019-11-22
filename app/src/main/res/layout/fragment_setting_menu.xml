@@ -18,7 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="BookFridge"
+            app:titleMarginStart="20dp"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -45,7 +47,7 @@
         android:paddingStart="40dp"
         android:paddingEnd="20dp"
         android:showText="true"
-        android:switchMinWidth="60dp"
+        android:switchMinWidth="50dp"
         android:text="나의 노트 공개 허용"
         android:textColor="#464646"
         android:textOff=""
@@ -63,7 +65,7 @@
         android:paddingStart="40dp"
         android:paddingEnd="20dp"
         android:showText="true"
-        android:switchMinWidth="60dp"
+        android:switchMinWidth="50dp"
         android:text="푸시 알림 허용"
         android:textColor="#464646"
         android:textOff=""

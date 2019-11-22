@@ -6,16 +6,15 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!-- No Title Bar-->
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+
         <item name="android:numberPickerStyle">@style/MyNumberPickerTheme</item>
     </style>
     <!-- GOOGLE CLOUD VISION-->
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <!-- Popup Menu style-->
     <style name="PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
         <item name="android:textSize">14dp</item>
