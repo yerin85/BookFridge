@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(DialogInterface dialog, int i) {
                 for (int j = 0; j < SelectedItems.size(); j++) {
                     service.addUserGenre(new UserGenreData(userInfo.userId, GenreList.get(SelectedItems.get(j)))).enqueue(new Callback<BasicResponse>() {
                         @Override
@@ -282,10 +282,12 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                 }
+                dialog.dismiss();
             }
         }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
         }).show();
 

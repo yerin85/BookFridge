@@ -35,7 +35,7 @@ public class NumberPickerDialog extends DialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialog){
+    public void onCancel(DialogInterface dialog) {
 
         SharedPreferences shared = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
@@ -52,12 +52,14 @@ public class NumberPickerDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         editor.putBoolean("push", true);
                         editor.commit();
+                        dialog.dismiss();
                     }
                 }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         editor.putBoolean("push", false);
                         editor.commit();
+                        dialog.dismiss();
                     }
                 }).show();
             }
@@ -68,31 +70,33 @@ public class NumberPickerDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 editor.putBoolean("private", false);
                 ServiceApi service = RetrofitClient.getClient().create(ServiceApi.class);
-                service.updateUserPrivate(userId,"0").enqueue(new Callback<BasicResponse>() {
+                service.updateUserPrivate(userId, "0").enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                        if(response.body().getCode()!=200){
-                            Toast.makeText(getActivity(),response.body().getMessage(),Toast.LENGTH_SHORT).show();
+                        if (response.body().getCode() != 200) {
+                            Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<BasicResponse> call, Throwable t) {
-                        Toast.makeText(getActivity(),t.getMessage(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                dialog.dismiss();
             }
         }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 editor.putBoolean("private", true);
+                dialog.dismiss();
             }
         }).show();
         //알림 받을건지 && 공개여부 설정하자
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog){
+    public void onDismiss(DialogInterface dialog) {
 
         SharedPreferences shared = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
@@ -109,12 +113,14 @@ public class NumberPickerDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         editor.putBoolean("push", true);
                         editor.commit();
+                        dialog.dismiss();
                     }
                 }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         editor.putBoolean("push", false);
                         editor.commit();
+                        dialog.dismiss();
                     }
                 }).show();
             }
@@ -125,24 +131,26 @@ public class NumberPickerDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 editor.putBoolean("private", false);
                 ServiceApi service = RetrofitClient.getClient().create(ServiceApi.class);
-                service.updateUserPrivate(userId,"0").enqueue(new Callback<BasicResponse>() {
+                service.updateUserPrivate(userId, "0").enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                        if(response.body().getCode()!=200){
-                            Toast.makeText(getActivity(),response.body().getMessage(),Toast.LENGTH_SHORT).show();
+                        if (response.body().getCode() != 200) {
+                            Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<BasicResponse> call, Throwable t) {
-                        Toast.makeText(getActivity(),t.getMessage(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                dialog.dismiss();
             }
         }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 editor.putBoolean("private", true);
+                dialog.dismiss();
             }
         }).show();
         //알림 받을건지 && 공개여부 설정하자
@@ -178,12 +186,14 @@ public class NumberPickerDialog extends DialogFragment {
                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                dialog.dismiss();
             }
         });
 
         builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
         });
 
