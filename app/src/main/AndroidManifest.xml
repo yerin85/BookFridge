@@ -18,33 +18,36 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MapActivity"></activity>
-        <activity android:name=".OcrActivity" />
-        <activity android:name=".OthersBookNote" />
-        <activity android:name=".OthersLibrary" />
-        <activity android:name=".BookNoteEdit" />
-        <activity android:name=".BookDetail" />
-        <activity android:name=".BookNote">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="@string/kakaolink_host"
-                    android:scheme="@string/kakao_scheme" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".OcrBookMenu" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_key" />
 
-        <activity android:name=".SearchMenu" />
+        <activity android:name=".MapActivity">
+        </activity>
+        <activity android:name=".OcrActivity" />
+        <activity android:name=".OthersBookNote" >
+
+        </activity>
+        <activity android:name=".OthersLibrary" />
+        <activity android:name=".BookNoteEdit" />
+        <activity android:name=".BookDetail" >
+
+
+        </activity>
+
+        <activity android:name=".BookNote">
+
+        </activity>
+        <activity android:name=".OcrBookMenu" />
+
+
+        <activity android:name=".SearchMenu" >
+        </activity>
         <activity
-            android:name=".MainActivity"/>
+            android:name=".MainActivity">
+
+        </activity>
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
@@ -53,6 +56,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="@string/kakaolink_host"
+                    android:scheme="@string/kakao_scheme" />
+            </intent-filter>
+
         </activity>
 
         <provider
