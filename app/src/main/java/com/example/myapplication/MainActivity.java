@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
         final List<Integer> SelectedItems = new ArrayList();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
         builder.setTitle("좋아하는 장르를 선택해주세요");
         builder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
@@ -247,31 +248,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                NumberPickerDialog numberPickerDialog = new NumberPickerDialog(MainActivity.this, userInfo.userId);
-                numberPickerDialog.show(getSupportFragmentManager(), "number picker");
-            }
-        });
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                NumberPickerDialog numberPickerDialog = new NumberPickerDialog(MainActivity.this, userInfo.userId);
-                numberPickerDialog.show(getSupportFragmentManager(), "number picker");
-            }
-        });
-
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(DialogInterface dialog, int i) {
+                NumberPickerDialog numberPickerDialog = new NumberPickerDialog(MainActivity.this, userInfo.userId);
+                numberPickerDialog.setCancelable(false);
+                numberPickerDialog.show(getSupportFragmentManager(), "number picker");
                 for (int j = 0; j < SelectedItems.size(); j++) {
                     service.addUserGenre(new UserGenreData(userInfo.userId, GenreList.get(SelectedItems.get(j)))).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse result = response.body();
-                            if(result.getCode()!=200){
+                            if (result.getCode() != 200) {
                                 Toast.makeText(MainActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                            } else {
                             }
                         }
 
@@ -282,10 +272,6 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                 }
-            }
-        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
             }
         }).show();
 

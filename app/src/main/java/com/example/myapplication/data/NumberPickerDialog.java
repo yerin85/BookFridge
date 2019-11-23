@@ -35,129 +35,15 @@ public class NumberPickerDialog extends DialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialog){
-
-        SharedPreferences shared = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
-        SharedPreferences.Editor editor = shared.edit();
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-        AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-        builder1.setCancelable(false);
-        builder2.setCancelable(false);
-
-        builder1.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                builder2.setMessage("푸시 알람을 받으시겠습니까?").setPositiveButton("네", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editor.putBoolean("push", true);
-                        editor.commit();
-                    }
-                }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editor.putBoolean("push", false);
-                        editor.commit();
-                    }
-                }).show();
-            }
-        });
-
-        builder1.setMessage("나의 노트 공개를 허용하시겠습니까?").setPositiveButton("네", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                editor.putBoolean("private", false);
-                ServiceApi service = RetrofitClient.getClient().create(ServiceApi.class);
-                service.updateUserPrivate(userId,"0").enqueue(new Callback<BasicResponse>() {
-                    @Override
-                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                        if(response.body().getCode()!=200){
-                            Toast.makeText(getActivity(),response.body().getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<BasicResponse> call, Throwable t) {
-                        Toast.makeText(getActivity(),t.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                editor.putBoolean("private", true);
-            }
-        }).show();
-        //알림 받을건지 && 공개여부 설정하자
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog){
-
-        SharedPreferences shared = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
-        SharedPreferences.Editor editor = shared.edit();
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-        AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-        builder1.setCancelable(false);
-        builder2.setCancelable(false);
-
-        builder1.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                builder2.setMessage("푸시 알람을 받으시겠습니까?").setPositiveButton("네", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editor.putBoolean("push", true);
-                        editor.commit();
-                    }
-                }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editor.putBoolean("push", false);
-                        editor.commit();
-                    }
-                }).show();
-            }
-        });
-
-        builder1.setMessage("나의 노트 공개를 허용하시겠습니까?").setPositiveButton("네", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                editor.putBoolean("private", false);
-                ServiceApi service = RetrofitClient.getClient().create(ServiceApi.class);
-                service.updateUserPrivate(userId,"0").enqueue(new Callback<BasicResponse>() {
-                    @Override
-                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                        if(response.body().getCode()!=200){
-                            Toast.makeText(getActivity(),response.body().getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<BasicResponse> call, Throwable t) {
-                        Toast.makeText(getActivity(),t.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                editor.putBoolean("private", true);
-            }
-        }).show();
-        //알림 받을건지 && 공개여부 설정하자
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final NumberPicker numberPicker = new NumberPicker(new ContextThemeWrapper(getActivity(), R.style.MyNumberPickerTheme));
+        final NumberPicker numberPicker = new NumberPicker(new ContextThemeWrapper(context, R.style.MyNumberPickerTheme));
 
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(100);
         numberPicker.setWrapSelectorWheel(false);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("월 독서 목표량을 설정해주세요");
 
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -178,17 +64,67 @@ public class NumberPickerDialog extends DialogFragment {
                         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                settingDialog();
             }
         });
-
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
         builder.setView(numberPicker);
         return builder.create();
     }
 
+    void settingDialog(){
+        SharedPreferences shared = context.getSharedPreferences("settings", MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+        new AlertDialog.Builder(getActivity()).setCancelable(false).setMessage("나의 노트 공개를 허용하시겠습니까?").setPositiveButton("네", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                editor.putBoolean("private", false);
+                ServiceApi service = RetrofitClient.getClient().create(ServiceApi.class);
+                service.updateUserPrivate(userId, "0").enqueue(new Callback<BasicResponse>() {
+                    @Override
+                    public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                        if (response.body().getCode() != 200) {
+                            Toast.makeText(context, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        }else{
+                            new AlertDialog.Builder(context).setCancelable(false).setMessage("푸시 알람을 받으시겠습니까?").setPositiveButton("네", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    editor.putBoolean("push", true);
+                                    editor.commit();
+                                }
+                            }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    editor.putBoolean("push", false);
+                                    editor.commit();
+                                }
+                            }).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BasicResponse> call, Throwable t) {
+                        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                editor.putBoolean("private", true);
+                new AlertDialog.Builder(context).setCancelable(false).setMessage("푸시 알람을 받으시겠습니까?").setPositiveButton("네", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editor.putBoolean("push", true);
+                        editor.commit();
+                    }
+                }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editor.putBoolean("push", false);
+                        editor.commit();
+                    }
+                }).show();
+            }
+        }).show();
+    }
 }
