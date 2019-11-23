@@ -70,6 +70,7 @@
                     android:id="@+id/prev_button"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:background="#00ff0000"
                     android:text="◀"
                     android:textSize="12dp" />
 
@@ -98,6 +99,7 @@
                     android:id="@+id/next_button"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:background="#00ff0000"
                     android:text="▶"
                     android:textSize="12dp" />
 
