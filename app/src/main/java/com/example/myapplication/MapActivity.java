@@ -40,7 +40,7 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
     ViewGroup mapViewContainer;
 
     MapView mapView;
-    MapPOIItem marker;
+    MapPOIItem currentMarker;
     MapPoint mapPoint;
     LocationManager locationManager;
 
@@ -72,6 +72,7 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         mapView = new MapView(this);
         mapViewContainer = findViewById(R.id.map_view);
         mapView.setCurrentLocationEventListener(this);
+        currentMarker = new MapPOIItem();
 
         if (checkLocationServicesStatus()) {//gps 허용아면
             checkPermission();
@@ -85,12 +86,12 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
     public void onLocationChanged(Location location) {
         mapPoint = MapPoint.mapPointWithGeoCoord(location.getLatitude(), location.getLongitude());
         mapView.setMapCenterPoint(mapPoint, true);
-        marker = new MapPOIItem();
-        marker.setItemName("현재 위치");
-        marker.setMapPoint(mapPoint);
-        marker.setMarkerType(MapPOIItem.MarkerType.YellowPin);
-        mapView.addPOIItem(marker);
-        mapView.selectPOIItem(marker,true);
+        mapView.removePOIItem(currentMarker);
+        currentMarker.setItemName("현재 위치");
+        currentMarker.setMapPoint(mapPoint);
+        currentMarker.setMarkerType(MapPOIItem.MarkerType.YellowPin);
+        mapView.addPOIItem(currentMarker);
+        mapView.selectPOIItem(currentMarker,true);
     }
 
     @Override
