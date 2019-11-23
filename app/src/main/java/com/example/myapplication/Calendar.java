@@ -197,8 +197,10 @@ public class Calendar extends Fragment {
                                 count++;
                             }
                         }
-                        textArr = textArr.substring(1);
-                        textView.setText(textArr);
+                        if(textArr.length()!=0){
+                            textArr = textArr.substring(1);
+                            textView.setText(textArr);
+                        }
                     }
                 });
 
