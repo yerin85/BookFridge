@@ -49,6 +49,14 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
     String ypItemId;
     String ypUrl;
 
+    /*
+    * void fitMapViewAreaToShowMapPoints(MapPoint[])
+public void fitMapViewAreaToShowMapPoints(MapPoint[] mapPoints)
+지정한 지도 좌표들이 모두 화면에 나타나도록 지도화면 중심과 확대/축소 레벨을 자동조절한다.
+
+Parameters
+mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
