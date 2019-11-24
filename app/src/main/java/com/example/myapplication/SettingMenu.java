@@ -192,10 +192,10 @@ public class SettingMenu extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 SharedPreferences.Editor editor = shared.edit();
                 if (isChecked) {
-                    Toast.makeText(getContext(), "팝업 알림에 동의하셨습니다", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "푸시 알림에 동의하셨습니다", Toast.LENGTH_LONG).show();
                     editor.putBoolean("push",true);
                 } else {
-                    Toast.makeText(getContext(), "팝업을 차단합니다", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "푸시 알림을 차단합니다", Toast.LENGTH_LONG).show();
                     editor.putBoolean("push",false);
                 }
                 editor.commit();
@@ -214,7 +214,7 @@ public class SettingMenu extends Fragment {
                             if (result.getCode() != 200) {
                                 Toast.makeText(getActivity(), result.getMessage(), Toast.LENGTH_SHORT).show();
                             }else{
-                                Toast.makeText(getContext(), "공개여부에 동의하셨습니다", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "공개로 전환하였습니다", Toast.LENGTH_SHORT).show();
                                 editor.putBoolean("private",false);
                                 editor.commit();
                             }
