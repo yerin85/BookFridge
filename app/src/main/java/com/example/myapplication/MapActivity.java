@@ -29,6 +29,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity implements MapView.CurrentLocationEventListener, LocationListener {
     String isbn13;
@@ -42,12 +43,29 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
     MapView mapView;
     MapPOIItem currentMarker;
     MapPoint mapPoint;
+    MapPOIItem marker;
     LocationManager locationManager;
 
     String kyoboUrl;
     String ypSearchUrl;
     String ypItemId;
     String ypUrl;
+
+        public class info{
+        String name; //매장명
+        double lati; //위도
+        double longi; //경도
+
+        info(){}
+        info(String name, double lati, double longi){
+            this.name = name;
+            this.lati = lati;
+            this.longi = longi;
+        }
+    }
+
+    ArrayList<info> kyobodatas= new ArrayList<>();
+    ArrayList<info> youngpungdatas= new ArrayList<>();
 
     /*
     * void fitMapViewAreaToShowMapPoints(MapPoint[])
@@ -74,6 +92,9 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         mapView.setCurrentLocationEventListener(this);
         currentMarker = new MapPOIItem();
 
+        Kyobo(); //교보문고 매장정보저장
+        Youngpung(); //영풍문고 매장정보저장
+
         if (checkLocationServicesStatus()) {//gps 허용아면
             checkPermission();
         } else {
@@ -92,6 +113,26 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         currentMarker.setMarkerType(MapPOIItem.MarkerType.YellowPin);
         mapView.addPOIItem(currentMarker);
         mapView.selectPOIItem(currentMarker,true);
+
+        for(int i =0; i<kyobodatas.size();i++){
+            mapPoint = MapPoint.mapPointWithGeoCoord(kyobodatas.get(i).lati, kyobodatas.get(i).longi);
+            marker = new MapPOIItem();
+            marker.setItemName(kyobodatas.get(i).name);
+            marker.setMarkerType(MapPOIItem.MarkerType.BluePin);
+            marker.setMapPoint(mapPoint);
+            mapView.addPOIItem(marker);
+            mapView.selectPOIItem(marker,true);
+        }
+
+        for(int i =0;i<youngpungdatas.size();i++){
+            mapPoint = MapPoint.mapPointWithGeoCoord(youngpungdatas.get(i).lati, youngpungdatas.get(i).longi);
+            marker = new MapPOIItem();
+            marker.setItemName(youngpungdatas.get(i).name);
+            marker.setMarkerType(MapPOIItem.MarkerType.YellowPin);
+            marker.setMapPoint(mapPoint);
+            mapView.addPOIItem(marker);
+            mapView.selectPOIItem(marker,true);
+        }
     }
 
     @Override
@@ -244,4 +285,104 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         return Math.sqrt(Math.pow(latitude2-latitude1,2)+Math.pow(longitude2-longitude1,2));
     }
 
+
+    public void Kyobo(){
+        kyobodatas.add(new info("광화문", 37.570966, 126.977764));
+        kyobodatas.add(new info("가든파이브", 37.477224, 127.124707));
+        kyobodatas.add(new info("강남",37.503708, 127.024130));
+        kyobodatas.add(new info("동대문", 37.568297, 127.007697));
+        kyobodatas.add(new info("디큐브",37.508690, 126.889474 ));
+        kyobodatas.add(new info("목동",37.528236, 126.874982));
+        kyobodatas.add(new info("서울대",37.459353, 126.950556));
+        kyobodatas.add(new info("수유", 37.638258, 127.026464));
+        kyobodatas.add(new info("영등포",37.517063, 126.902752));
+        kyobodatas.add(new info("은평",37.637047, 126.918337 ));
+        kyobodatas.add(new info("이화여대",37.561393, 126.946774 ));
+        kyobodatas.add(new info("잠실",37.514251, 127.101272));
+        kyobodatas.add(new info("천호",37.540486, 127.124961 ));
+        kyobodatas.add(new info("청량리", 37.580705, 127.047652));
+        kyobodatas.add(new info("합정",37.550056, 126.911926));
+//        kyobodatas.add(new info("가천대",));
+//        kyobodatas.add(new info("광교점",));
+//        kyobodatas.add(new info("광교월드스퀘어",));
+//        kyobodatas.add(new info("부천",));
+//        kyobodatas.add(new info("분당점",));
+//        kyobodatas.add(new info("성균관대",));
+//        kyobodatas.add(new info("송도",));
+//        kyobodatas.add(new info("인천",));
+//        kyobodatas.add(new info("일산",));
+//        kyobodatas.add(new info("판교",));
+//        kyobodatas.add(new info("평촌",));
+//
+//        kyobodatas.add(new info("경성대ㆍ부경대",));
+//        kyobodatas.add(new info("광주상무",));
+//        kyobodatas.add(new info("대구",));
+//        kyobodatas.add(new info("대전",));
+//        kyobodatas.add(new info("반월당",));
+//        kyobodatas.add(new info("부산",));
+//        kyobodatas.add(new info("세종",));
+//        kyobodatas.add(new info("센텀시티",));
+//        kyobodatas.add(new info("울산",));
+//        kyobodatas.add(new info("전북대",));
+//        kyobodatas.add(new info("전주",));
+//        kyobodatas.add(new info("창원",));
+//        kyobodatas.add(new info("천안",));
+//        kyobodatas.add(new info("칠곡",));
+//        kyobodatas.add(new info("포항공대점",));
+//        kyobodatas.add(new info("해운대",));
+
+
+    }
+
+    public void Youngpung(){
+
+        youngpungdatas.add(new info("홍대입구", 37.556988, 126.923409));
+        youngpungdatas.add(new info("종로본점",37.569679, 126.981991));
+//        youngpungdatas.add(new info("종로본점",));
+
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+//        youngpungdatas.add(new info("종로본점",));
+
+    }
 }
