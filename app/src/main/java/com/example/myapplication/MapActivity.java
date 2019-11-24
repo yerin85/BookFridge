@@ -65,7 +65,9 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
     }
 
     ArrayList<info> kyobodatas= new ArrayList<>();
+    ArrayList<String> kyoboCount = new ArrayList<>();
     ArrayList<info> youngpungdatas= new ArrayList<>();
+    ArrayList<String> youngpungCount = new ArrayList<>();
 
     /*
     * void fitMapViewAreaToShowMapPoints(MapPoint[])
@@ -109,7 +111,11 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         for(int i =0; i<kyobodatas.size();i++){
             mapPoint = MapPoint.mapPointWithGeoCoord(kyobodatas.get(i).lati, kyobodatas.get(i).longi);
             marker = new MapPOIItem();
-            marker.setItemName(kyobodatas.get(i).name);
+            if(kyoboCount.size() != 0){
+                marker.setItemName(kyobodatas.get(i).name +" " + kyoboCount.get(i)+"권");
+            }else{
+                marker.setItemName(kyobodatas.get(i).name + ": 해당 책을 판매하지않습니다.");
+            }
             marker.setMarkerType(MapPOIItem.MarkerType.BluePin);
             marker.setMapPoint(mapPoint);
             mapView.addPOIItem(marker);
@@ -119,7 +125,12 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         for(int i =0;i<youngpungdatas.size();i++){
             mapPoint = MapPoint.mapPointWithGeoCoord(youngpungdatas.get(i).lati, youngpungdatas.get(i).longi);
             marker = new MapPOIItem();
-            marker.setItemName(youngpungdatas.get(i).name);
+            if(youngpungCount.size() != 0){
+                marker.setItemName(youngpungdatas.get(i).name +" " + youngpungCount.get(i)+"권");
+            }else{
+                marker.setItemName(youngpungdatas.get(i).name+ ": 해당 책을 판매하지않습니다.");
+
+            }
             marker.setMarkerType(MapPOIItem.MarkerType.YellowPin);
             marker.setMapPoint(mapPoint);
             mapView.addPOIItem(marker);
@@ -165,6 +176,7 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
                     for (Element l : e.getElementsByTag("td")) {
                         //l.text()가 순서대로 광화문~해운대까지 재고 수량
                         temp.append(l.text() + " ");
+                        kyoboCount.add(l.text());
                     }
                     System.out.println("교보문고 재고: " + temp.toString());
                     temp.delete(0, temp.length());
@@ -180,6 +192,7 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
                 elements = doc.select("table.tb_store");
                 for (Element e : elements.get(0).getElementsByTag("span")) {
                     temp.append(e.text() + " ");
+                    youngpungCount.add(e.text());
                 }
                 System.out.println("영풍문고 재고: " + temp.toString());
 
