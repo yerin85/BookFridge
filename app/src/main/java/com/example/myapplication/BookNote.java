@@ -73,6 +73,10 @@ public class BookNote extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_note);
 
+        Intent intent = getIntent();
+        libItem = (LibraryResponse) intent.getSerializableExtra("libItem");
+        userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
+
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
         bookLayout = findViewById(R.id.note_book_layout);
@@ -86,10 +90,6 @@ public class BookNote extends AppCompatActivity {
 
         displayMetrics = getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-
-        Intent intent = getIntent();
-        libItem = (LibraryResponse) intent.getSerializableExtra("libItem");
-        userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
 
         myNote.setMovementMethod(new ScrollingMovementMethod());
 
@@ -200,9 +200,6 @@ public class BookNote extends AppCompatActivity {
         elemWidth = elemHeight * 4.6f;
         elemFontSize = (dpWidth - 240f) / 8f;
 
-        System.out.println("width is " + dpWidth);
-        System.out.println("width is " + itemWidth);
-        System.out.println("font is " + elemFontSize);
         bookLayout.getLayoutParams().width = (int) itemWidth;
         bookLayout.getLayoutParams().height = (int) itemHeight;
         cover.getLayoutParams().height = (int) itemCoverHeight;
