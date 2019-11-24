@@ -193,7 +193,7 @@ public class Calendar extends Fragment {
                         int count = 1;
                         for (int i = 0; i < total.size(); i++) {
                             if (total.get(i).getYear() == date.getYear() && total.get(i).getMonth() == date.getMonth() && total.get(i).getDay() == date.getDay()) {
-                                textArr += "\n" + count + ": " + bookTitle.get(i) + "  [ ~" + endPrint.get(i);
+                                textArr += "\n" + count + ": " + bookTitle.get(i) + "  [ ~" + endPrint.get(i) +"]";
                                 count++;
                             }
                         }
