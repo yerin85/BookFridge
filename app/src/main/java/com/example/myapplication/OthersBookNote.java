@@ -1,10 +1,12 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +25,7 @@ import com.kakao.util.helper.log.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.myapplication.data.Functions.dpToPx;
 import static com.example.myapplication.data.Functions.goToBookDetail;
 
 
@@ -31,14 +34,27 @@ public class OthersBookNote extends AppCompatActivity {
     UserInfo othersUserInfo;
     LibraryResponse libItem;
 
+    ConstraintLayout bookLayout;
+    ConstraintLayout infoLayout;
     ImageView cover;
     TextView title;
     TextView startDate;
     TextView endDate;
-    RatingBar rating;
+    RatingBar ratingBar;
     TextView myNote;
     Button shareButton;
     Button detailButton;
+
+    DisplayMetrics displayMetrics;
+    float dpWidth;
+    float itemWidth;
+    float itemHeight;
+    float itemCoverHeight;
+    float infoWidth;
+    float elemWidth;
+    float elemHeight;
+    float titleFontSize;
+    float elemFontSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +66,19 @@ public class OthersBookNote extends AppCompatActivity {
         othersUserInfo =(UserInfo) intent.getSerializableExtra("othersUserInfo") ;
         libItem = (LibraryResponse) intent.getSerializableExtra("libItem");
 
-
-        cover = findViewById(R.id.othersnote_cover);
-        title = findViewById(R.id.othersnote_title);
-        startDate = findViewById(R.id.othersnote_start_date);
-        endDate = findViewById(R.id.othersnote_end_date);
-        rating = findViewById(R.id.othersrating_star);
+        bookLayout = findViewById(R.id.others_note_book_layout);
+        infoLayout = findViewById(R.id.others_note_date_layout);
+        cover = findViewById(R.id.others_note_cover);
+        title = findViewById(R.id.others_note_title);
+        startDate = findViewById(R.id.others_note_start_date);
+        endDate = findViewById(R.id.others_note_end_date);
+        ratingBar = findViewById(R.id.others_rating_star);
         myNote = findViewById(R.id.others_note);
         shareButton=findViewById(R.id.others_note_share);
         detailButton = findViewById(R.id.others_note_detail);
+
+        displayMetrics = getResources().getDisplayMetrics();
+        dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
         myNote.setMovementMethod(new ScrollingMovementMethod());
         displayNote(libItem);
@@ -101,11 +121,34 @@ public class OthersBookNote extends AppCompatActivity {
     }
 
     public void displayNote(LibraryResponse libItem) {
+        itemWidth = dpToPx(OthersBookNote.this, (int) ((dpWidth - 100f) * 0.4f));
+        itemHeight = itemWidth * 1.8f;
+        itemCoverHeight = itemWidth * 1.4f;
+        titleFontSize = (dpWidth - 100f) * 0.04f;
+        infoWidth = dpToPx(OthersBookNote.this, (int) ((dpWidth - 100f) * 0.6f));
+        elemHeight = dpToPx(OthersBookNote.this, (int) ((dpWidth - 240f) / 5f));
+        elemWidth = elemHeight * 4.6f;
+        elemFontSize = (dpWidth - 240f) / 8f;
+
+        bookLayout.getLayoutParams().width = (int) itemWidth;
+        bookLayout.getLayoutParams().height = (int) itemHeight;
+        cover.getLayoutParams().height = (int) itemCoverHeight;
+        title.setTextSize(titleFontSize);
+        infoLayout.getLayoutParams().width = (int) infoWidth;
+        startDate.getLayoutParams().width = (int) elemWidth;
+        startDate.getLayoutParams().height = (int) elemHeight;
+        startDate.setTextSize(elemFontSize);
+        endDate.getLayoutParams().width = (int) elemWidth;
+        endDate.getLayoutParams().height = (int) elemHeight;
+        endDate.setTextSize(elemFontSize);
+        ratingBar.getLayoutParams().width = (int) elemWidth;
+        ratingBar.getLayoutParams().height = (int) elemHeight;
+
         Glide.with(this).load(libItem.getCover()).into(cover);
         title.setText(libItem.getTitle());
         startDate.setText(libItem.getStartDate());
         endDate.setText(libItem.getEndDate());
-        rating.setRating(libItem.getRating());
+        ratingBar.setRating(libItem.getRating());
         myNote.setText(libItem.getNote());
     }
 }
