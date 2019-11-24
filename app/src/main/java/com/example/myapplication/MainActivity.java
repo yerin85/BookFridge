@@ -204,8 +204,9 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // QR코드/바코드를 스캔한 결과 값을 가져옵니다.
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-        goToBookDetail(MainActivity.this, userInfo, result.getContents());
+        if(result.getContents()!=null){
+            goToBookDetail(MainActivity.this, userInfo, result.getContents());
+        }
     }
 
     public void showDialog() {
