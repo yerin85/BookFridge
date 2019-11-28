@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.data.*;
 import com.example.myapplication.network.*;
+import com.like.LikeButton;
 
 import java.util.ArrayList;
 
@@ -197,8 +198,8 @@ public class SearchMenu extends AppCompatActivity {
             ImageView cover;
             TextView publisher;
             ConstraintLayout searchItemLayout;
-            Button libButton;
-            Button wishButton;
+            LikeButton libButton;
+            LikeButton wishButton;
 
             public SearchViewHolder(View view) {
                 super(view);
@@ -231,7 +232,6 @@ public class SearchMenu extends AppCompatActivity {
             Glide.with(holder.itemView.getContext()).load(bookItem.getCover()).into(holder.cover);
             holder.publisher.setText(bookItem.getPublisher());
 
-
             holder.searchItemLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -243,11 +243,42 @@ public class SearchMenu extends AppCompatActivity {
                 }
             });
 
+            service.isInLibrary(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+                @Override
+                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                    BasicResponse isInLibrary = response.body();
+                    if (isInLibrary.getCode() == 1) {
+                        holder.libButton.setLiked(true);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<BasicResponse> call, Throwable t) {
+
+                }
+            });
+
+            service.isInWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+                @Override
+                public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                    BasicResponse isInWishlist = response.body();
+                    if (isInWishlist.getCode() == 1) {
+                        holder.libButton.setLiked(true);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<BasicResponse> call, Throwable t) {
+
+                }
+            });
+
             //라이브러리에 추가
             holder.libButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     BookItem bookItem = bookItems.get(position);
+                    holder.libButton.setLiked(true);
                     service.isInWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -308,6 +339,8 @@ public class SearchMenu extends AppCompatActivity {
                                                     @Override
                                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                         BasicResponse result = response.body();
+                                                        holder.libButton.setLiked(true);
+                                                        holder.wishButton.setLiked(false);
                                                         if (result.getCode() == 200) {
                                                             service.addMypage(userInfo.userId, categorizeBooks(bookItem.getCategoryName())).enqueue(new Callback<BasicResponse>() {
                                                                 @Override
@@ -366,6 +399,8 @@ public class SearchMenu extends AppCompatActivity {
                                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
+                                                holder.wishButton.setLiked(true);
+                                                holder.libButton.setLiked(false);
                                                 dialog.dismiss();
                                             }
                                         }).show();
@@ -394,6 +429,7 @@ public class SearchMenu extends AppCompatActivity {
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                         BasicResponse result = response.body();
                                         if (result.getCode() == 200) {
+                                            holder.wishButton.setLiked(true);
                                             new AlertDialog.Builder(SearchMenu.this)
                                                     .setMessage(result.getMessage())
                                                     .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
@@ -409,6 +445,7 @@ public class SearchMenu extends AppCompatActivity {
                                                         }
                                                     }).show();
                                         } else {
+                                            holder.wishButton.setLiked(false);
                                             Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }

@@ -31,6 +31,9 @@ import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.WishlistData;
 import com.example.myapplication.network.RetrofitClient;
 import com.example.myapplication.network.ServiceApi;
+import com.like.LikeButton;
+import com.like.OnAnimationEndListener;
+import com.like.OnLikeListener;
 
 import java.util.ArrayList;
 
@@ -45,9 +48,10 @@ import static com.example.myapplication.data.Functions.goToOthersLibrary;
 import static com.example.myapplication.data.Functions.goToWishlist;
 
 public class BookDetail extends AppCompatActivity {
+
     Button stockButton;
-    Button libButton;
-    Button wishButton;
+    LikeButton libButton;
+    LikeButton wishButton;
     UserInfo userInfo;
     ServiceApi service;
     RecyclerView recyclerView;
@@ -122,6 +126,38 @@ public class BookDetail extends AppCompatActivity {
             }
         });
 
+
+        service.isInWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+            @Override
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                BasicResponse isInWishlist = response.body();
+                if (isInWishlist.getCode() == 1) {
+                    wishButton.setLiked(true);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
+
+            }
+        });
+
+        service.isInLibrary(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
+            @Override
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                BasicResponse isInLibrary = response.body();
+                if (isInLibrary.getCode() == 1) {
+                    libButton.setLiked(true);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
+
+            }
+        });
+
+
         stockButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,6 +170,7 @@ public class BookDetail extends AppCompatActivity {
         libButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                libButton.setLiked(true);
                 service.isInWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
                     @Override
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -185,6 +222,7 @@ public class BookDetail extends AppCompatActivity {
                                 }
                             });
                         } else if (isInWishlist.getCode() == 1) {//이미 위시리스트에 존재함
+                            wishButton.setLiked(false);
                             new AlertDialog.Builder(BookDetail.this)
                                     .setMessage(isInWishlist.getMessage())
                                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {//라이브러리에 추가하고 위시리스트에서 삭제
@@ -215,6 +253,7 @@ public class BookDetail extends AppCompatActivity {
                                                                 BasicResponse result = response.body();
                                                                 if (result.getCode() != 200)
                                                                     Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                    wishButton.setLiked(false);
                                                             }
 
                                                             @Override
@@ -252,6 +291,8 @@ public class BookDetail extends AppCompatActivity {
                                     .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
+                                            wishButton.setLiked(true);
+                                            libButton.setLiked(false);
                                             dialog.dismiss();
                                         }
                                     }).show();
@@ -274,11 +315,13 @@ public class BookDetail extends AppCompatActivity {
                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                         BasicResponse isInLib = response.body();
                         if (isInLib.getCode() == 0) {
+                            wishButton.setLiked(true);
                             service.addWishlist(new WishlistData(userInfo.userId, bookItem.getIsbn(), bookItem.getTitle(), bookItem.getCover())).enqueue(new Callback<BasicResponse>() {
                                 @Override
                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                     BasicResponse result = response.body();
                                     if (result.getCode() == 200) {
+                                        wishButton.setLiked(true);
                                         new AlertDialog.Builder(BookDetail.this)
                                                 .setMessage(result.getMessage())
                                                 .setPositiveButton("확인하기", new DialogInterface.OnClickListener() {
@@ -294,6 +337,7 @@ public class BookDetail extends AppCompatActivity {
                                                     }
                                                 }).show();
                                     } else {
+                                        wishButton.setLiked(false);
                                         Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }

@@ -79,4 +79,5 @@ dependencies {
     implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
     implementation files('src\\main\\jniLibs\\libDaumMapAndroid.jar')
     implementation files('libs\\jsoup-1.12.1.jar')
+    implementation 'com.github.jd-alexander:LikeButton:0.2.3'
 }
