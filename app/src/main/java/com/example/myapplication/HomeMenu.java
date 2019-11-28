@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -63,6 +66,10 @@ public class HomeMenu extends Fragment {
     private Animation fab_open, fab_close;
     private FloatingActionButton fab, fab1, fab2, fab3, fab4;
     private Boolean isFabOpen = false;
+
+    View dimmer;
+
+    TextView fab1_menu, fab2_menu, fab3_menu, fab4_menu;
 
     ServiceApi service;
     UserInfo userInfo;
@@ -113,6 +120,7 @@ public class HomeMenu extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home_menu, container, false);
+
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
 
         displayMetrics = v.getResources().getDisplayMetrics();
@@ -140,6 +148,10 @@ public class HomeMenu extends Fragment {
         tabLayout = v.findViewById(R.id.top10_tab);
         top10List();
 
+        dimmer = v.findViewById(R.id.background_dimmer);
+        dimmer.bringToFront();
+        dimmer.setVisibility(v.GONE);
+
         service = RetrofitClient.getClient().create(ServiceApi.class);
         service.getUserGenre(userInfo.userId).enqueue(new Callback<ArrayList<UserGenreResponse>>() {
             @Override
@@ -166,7 +178,6 @@ public class HomeMenu extends Fragment {
         fab2 = v.findViewById(R.id.fab2);
         fab3 = v.findViewById(R.id.fab3);
         fab4 = v.findViewById(R.id.fab4);
-
 
         fab2.setOnClickListener(new View.OnClickListener() {
 
@@ -200,6 +211,7 @@ public class HomeMenu extends Fragment {
         });
 
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 int id = view.getId();
@@ -593,6 +605,8 @@ public class HomeMenu extends Fragment {
 
     public void anim() {
         if (isFabOpen) {
+            dimmer.setVisibility(View.GONE);
+
             fab1.startAnimation(fab_close);
             fab2.startAnimation(fab_close);
             fab3.startAnimation(fab_close);
@@ -603,6 +617,8 @@ public class HomeMenu extends Fragment {
             fab4.setClickable(false);
             isFabOpen = false;
         } else {
+            dimmer.setVisibility(View.VISIBLE);
+
             fab1.startAnimation(fab_open);
             fab2.startAnimation(fab_open);
             fab3.startAnimation(fab_open);

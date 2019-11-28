@@ -7,6 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".HomeMenu">
 
+    <View
+        android:id="@+id/background_dimmer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#A9000000"
+        android:visibility="gone" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -29,11 +36,11 @@
             android:layout_width="0dp"
             android:layout_height="24dp"
             android:layout_marginStart="5dp"
+            android:layout_marginBottom="4dp"
             android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/top10_list"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/top10_text"
-            app:layout_constraintBottom_toTopOf="@+id/top10_list"
-            android:layout_marginBottom="4dp"
             app:tabGravity="center"
             app:tabIndicatorColor="#68C5F7"
             app:tabMode="scrollable"
@@ -87,9 +94,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/round_corners_lightgray"
-            app:layout_constraintBottom_toBottomOf="parent"></androidx.recyclerview.widget.RecyclerView>
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="10dp"></androidx.recyclerview.widget.RecyclerView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -154,6 +164,7 @@
         app:layout_constraintBottom_toTopOf="@+id/fab3"
         app:layout_constraintEnd_toEndOf="parent"
         app:pressedTranslationZ="30dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
