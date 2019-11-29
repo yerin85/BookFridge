@@ -30,6 +30,7 @@ import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -145,12 +146,29 @@ public class reading extends Fragment {
                                 values.add(new PieEntry(arr[11], "기타"));
                                 break;
 
-
                         }
                     }
                 }
 
                 PieDataSet pieDataSet = new PieDataSet(values, "");
+                int colors[] = {
+                        Color.rgb(255,0,0),
+                        Color.rgb(255,115,0),
+                        Color.rgb(255,175,0),
+                        Color.rgb(255,236,0),
+                        Color.rgb(213,243,11),
+                        Color.rgb(27,170,47),
+                        Color.rgb(38,215,174),
+                        Color.rgb(95,183,212),
+                        Color.rgb(151,217,255),
+                        Color.rgb(0,126,214),
+                        Color.rgb(156,70,208)
+
+                };
+                ArrayList<Integer> myColor = new ArrayList<>();
+                for(int c: colors) myColor.add(c);
+                pieDataSet.setColors(myColor);
+
                 pieChart.setCenterText(genres.get(0).getTotal()+ "권");
                 IValueFormatter formatter = new IValueFormatter() {
                     @Override
@@ -170,23 +188,21 @@ public class reading extends Fragment {
 
                 Legend l = pieChart.getLegend();
                 l.setEnabled(false);
+                pieData.setHighlightEnabled(true);
 
                 pieData.setValueTextSize(20f);
 
                 pieData.setValueTextColor(Color.WHITE);
 
-
                 pieChart.setData(pieData);
-                pieDataSet.setSliceSpace(3f);
-                pieDataSet.setSelectionShift(4f);
+                pieDataSet.setSliceSpace(2f);
+                pieDataSet.setSelectionShift(10f);
 
-                pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
                 pieDataSet.setDrawIcons(true);
                 pieChart.setEntryLabelColor(Color.BLACK);
-                pieChart.setEntryLabelTextSize(20f);
+                pieChart.setEntryLabelTextSize(18f);
                 pieChart.setCenterTextSize(30);
                 pieChart.setHoleRadius(40f);
-
                 pieChart.setTransparentCircleRadius(45f);
             }
 
