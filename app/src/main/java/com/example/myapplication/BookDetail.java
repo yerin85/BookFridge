@@ -222,7 +222,6 @@ public class BookDetail extends AppCompatActivity {
                                 }
                             });
                         } else if (isInWishlist.getCode() == 1) {//이미 위시리스트에 존재함
-                            wishButton.setLiked(false);
                             new AlertDialog.Builder(BookDetail.this)
                                     .setMessage(isInWishlist.getMessage())
                                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {//라이브러리에 추가하고 위시리스트에서 삭제
@@ -233,6 +232,8 @@ public class BookDetail extends AppCompatActivity {
                                                 public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                                     BasicResponse result = response.body();
                                                     if (result.getCode() == 200) {
+                                                        wishButton.setLiked(false);
+                                                        libButton.setLiked(true);
                                                         service.addMypage(userInfo.userId, categorizeBooks(bookItem.getCategoryName())).enqueue(new Callback<BasicResponse>() {
                                                             @Override
                                                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -253,7 +254,7 @@ public class BookDetail extends AppCompatActivity {
                                                                 BasicResponse result = response.body();
                                                                 if (result.getCode() != 200)
                                                                     Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                    wishButton.setLiked(false);
+                                                                wishButton.setLiked(false);
                                                             }
 
                                                             @Override
@@ -291,8 +292,6 @@ public class BookDetail extends AppCompatActivity {
                                     .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            wishButton.setLiked(true);
-                                            libButton.setLiked(false);
                                             dialog.dismiss();
                                         }
                                     }).show();
@@ -337,7 +336,6 @@ public class BookDetail extends AppCompatActivity {
                                                     }
                                                 }).show();
                                     } else {
-                                        wishButton.setLiked(false);
                                         Toast.makeText(BookDetail.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }

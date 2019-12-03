@@ -129,8 +129,9 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.like.LikeButton
-                app:icon_type="heart"
-                app:icon_size="10dp"
+                app:unlike_drawable="@drawable/ic_favorite_off"
+                app:like_drawable="@drawable/ic_favorite_black_on"
+                app:icon_size="20dp"
                 android:id="@+id/detail_wishlist"
                 android:layout_width="80dp"
                 android:layout_height="40dp"

@@ -278,12 +278,12 @@ public class SearchMenu extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     BookItem bookItem = bookItems.get(position);
-                    holder.libButton.setLiked(true);
                     service.isInWishlist(userInfo.userId, bookItem.getIsbn()).enqueue(new Callback<BasicResponse>() {
                         @Override
                         public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             BasicResponse isInWishlist = response.body();
                             if (isInWishlist.getCode() == 0) {
+                                holder.libButton.setLiked(true);
                                 service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
                                     @Override
                                     public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -399,8 +399,6 @@ public class SearchMenu extends AppCompatActivity {
                                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                holder.wishButton.setLiked(true);
-                                                holder.libButton.setLiked(false);
                                                 dialog.dismiss();
                                             }
                                         }).show();
@@ -445,7 +443,6 @@ public class SearchMenu extends AppCompatActivity {
                                                         }
                                                     }).show();
                                         } else {
-                                            holder.wishButton.setLiked(false);
                                             Toast.makeText(SearchMenu.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
