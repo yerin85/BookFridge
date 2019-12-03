@@ -113,6 +113,7 @@ public class OcrBookMenu extends AppCompatActivity {
                 for (int i = 0; i < adapter.isCheckedList.size(); i++) {
                     if (adapter.isCheckedList.get(i)) {
                         BookItem bookItem = adapter.libItems.get(i);
+                        System.out.println("교보"+bookItem.getTitle());
                         service.addLibrary(userInfo.userId, bookItem.getIsbn(), getDateString(), getDateString(), categorizeBooks(bookItem.getCategoryName()), bookItem.getTitle(), bookItem.getCover()).enqueue(new Callback<BasicResponse>() {
                             @Override
                             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -158,6 +159,7 @@ public class OcrBookMenu extends AppCompatActivity {
                         });
                     }
                 }
+                goToLibrary(OcrBookMenu.this,userInfo);
             }
         });
 

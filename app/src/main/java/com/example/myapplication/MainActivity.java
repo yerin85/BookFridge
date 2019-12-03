@@ -1,7 +1,10 @@
 package com.example.myapplication;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,8 +32,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     ServiceApi service;
     int fragmentNumber;
     int libFragmentNumber;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +62,13 @@ public class MainActivity extends AppCompatActivity {
         userInfo = (UserInfo) intent.getSerializableExtra("userInfo");
         fragmentNumber = intent.getIntExtra("fragmentNumber", 1);
 
-
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         service = RetrofitClient.getClient().create(ServiceApi.class);
 
+        SharedPreferences shared = getSharedPreferences("settings", MODE_PRIVATE);
+        if(shared.getBoolean("push",false))
+            setAlarm();
 
         service.existUserProfile(userInfo.userId).enqueue(new Callback<BasicResponse>() {
             @Override
@@ -146,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             fragmentManager = getSupportFragmentManager();
-
             fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
@@ -208,7 +215,28 @@ public class MainActivity extends AppCompatActivity {
             goToBookDetail(MainActivity.this, userInfo, result.getContents());
         }
     }
+    public void setAlarm(){
 
+        AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(MainActivity.this, BroadCast.class);
+        intent.putExtra("nickname",userInfo.nickname);
+        intent.putExtra("userId",userInfo.userId);
+        PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        //알람시간 calendar에 set해주기
+
+        calendar.set(calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE), 0 );
+        calendar.add(Calendar.DATE,1);
+        //       calendar.add(Calendar.MINUTE,1);
+        Date currentDateTime = calendar.getTime();
+        String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분  ss초", Locale.getDefault()).format(currentDateTime);
+        System.out.println("캘린더"+date_text);
+        //알람 예약
+//        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_FIFTEEN_MINUTES/15, sender);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY*7, sender);
+
+    }
     public void showDialog() {
         final List<String> ListItems = new ArrayList<String>();
         ListItems.add("만화");

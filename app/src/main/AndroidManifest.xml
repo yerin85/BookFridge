@@ -8,7 +8,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     <application
         android:name=".GlobalApplication"
         android:allowBackup="true"
@@ -68,6 +70,9 @@
             </intent-filter>
 
         </activity>
+        <receiver android:name=".BroadCast">
+
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"

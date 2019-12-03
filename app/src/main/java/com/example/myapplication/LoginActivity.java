@@ -31,11 +31,13 @@ public class LoginActivity extends AppCompatActivity {
     private Button btn_custom_login;
     private SessionCallback sessionCallback;
     ServiceApi service;
+    int fragmentNumber;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //getHashKey();
+        fragmentNumber = getIntent().getIntExtra("fragmentNumber", 1);
         setContentView(R.layout.activity_login);
         sessionCallback = new SessionCallback();
         Session session = Session.getCurrentSession();
@@ -96,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     UserInfo userInfo = new UserInfo(userId, nickname, imagePath);
                     intent.putExtra("userInfo", userInfo);
+                    intent.putExtra("fragmentNumber",fragmentNumber);
                     startActivity(intent);
                     finish();
                 }

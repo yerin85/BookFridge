@@ -3,6 +3,7 @@ package com.example.myapplication.network;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -11,6 +12,7 @@ import com.example.myapplication.data.BasicResponse;
 import com.example.myapplication.data.LibraryData;
 import com.example.myapplication.data.LibraryResponse;
 import com.example.myapplication.data.MyPageResponse;
+import com.example.myapplication.data.NaverResponse;
 import com.example.myapplication.data.Top10Response;
 import com.example.myapplication.data.UserNoteResponse;
 import com.example.myapplication.data.UserGenreData;
@@ -22,6 +24,9 @@ import com.example.myapplication.data.WishlistResponse;
 import java.util.ArrayList;
 
 public interface ServiceApi {
+    @GET("errata.json")
+    Call<NaverResponse> searchErrata(@Header("X-Naver-Client-Id") String clientId, @Header("X-Naver-Client-Secret") String clientSecret, @Query("query") String query);
+
     @GET("ItemList.aspx?ttbkey=ttb0318592203001&QueryType=BestSeller&Cover=Big&SearchTarget=Book&output=JS&Version=20131101")
     Call<AladinResponse> bestSellerList(@Query("categoryId") String searchCategoryId,@Query("MaxResults") int maxResults, @Query("start") int start);
 
