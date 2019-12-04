@@ -2,8 +2,12 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -11,13 +15,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.like.LikeButton;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -30,6 +44,9 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 
 public class MapActivity extends AppCompatActivity implements MapView.CurrentLocationEventListener, LocationListener {
     String isbn13;
@@ -51,31 +68,55 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
     String ypItemId;
     String ypUrl;
 
-    public class info{
+    RecyclerView recyclerView;
+    LocationAdapter locationAdapter;
+    LikeButton currentButton;
+    Drawable drawable;
+    public class Info {
         String name; //매장명
         double lati; //위도
         double longi; //경도
-
-        info(){}
-        info(String name, double lati, double longi){
+        boolean kyobo; //교보:1,영풍 0
+        Info(String name, double lati, double longi){   //영풍기본셋
             this.name = name;
             this.lati = lati;
             this.longi = longi;
+            this.kyobo = false;
+        }
+
+        Info(String name, double lati, double longi,boolean kyobo){
+            this.name = name;
+            this.lati = lati;
+            this.longi = longi;
+            this.kyobo = kyobo;
+        }
+        double calcDistance(double latitude, double longitude){
+            return Math.sqrt(Math.pow(latitude-lati,2)+Math.pow(longitude-longi,2));
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getLati() {
+            return lati;
+        }
+
+        public double getLongi() {
+            return longi;
+        }
+
+        public boolean isKyobo() {
+            return kyobo;
         }
     }
 
-    ArrayList<info> kyobodatas= new ArrayList<>();
+    ArrayList<Info> kyobodatas= new ArrayList<>();
     ArrayList<String> kyoboCount = new ArrayList<>();
-    ArrayList<info> youngpungdatas= new ArrayList<>();
+    ArrayList<Info> youngpungdatas= new ArrayList<>();
     ArrayList<String> youngpungCount = new ArrayList<>();
+    ArrayList<Info> sortDates = new ArrayList<>();
 
-    /*
-    * void fitMapViewAreaToShowMapPoints(MapPoint[])
-public void fitMapViewAreaToShowMapPoints(MapPoint[] mapPoints)
-지정한 지도 좌표들이 모두 화면에 나타나도록 지도화면 중심과 확대/축소 레벨을 자동조절한다.
-
-Parameters
-mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +133,15 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         mapView = new MapView(this);
         mapViewContainer = findViewById(R.id.map_view);
         mapView.setCurrentLocationEventListener(this);
+        mapView.setMapViewEventListener(mapViewEventListener);  //지도 이동,확대,축소 or 사용자 클릭,드래그등 이벤트 감지
         currentMarker = new MapPOIItem();
 
+        recyclerView = findViewById(R.id.location_list); //거리순 리스트뷰
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+
+        currentButton = findViewById(R.id.button_current);
+        currentButton.setLiked(false);
         Kyobo(); //교보문고 매장정보저장
         Youngpung(); //영풍문고 매장정보저장
 
@@ -102,6 +150,7 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         } else {
             locationServiceSetting();
         }
+
         mapViewContainer.addView(mapView);
     }
 
@@ -145,6 +194,33 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
         currentMarker.setMarkerType(MapPOIItem.MarkerType.RedPin);
         mapView.addPOIItem(currentMarker);
         mapView.selectPOIItem(currentMarker,true);
+
+        /*
+        거리순 찾기-슬라이딩 패널
+         */
+        sortDates.addAll(kyobodatas);
+        sortDates.addAll(youngpungdatas);
+        Collections.sort(sortDates, new Comparator<Info>() {
+            @Override
+            public int compare(Info o1, Info o2) {
+                double leftResult = o1.calcDistance(location.getLatitude(),location.getLongitude());
+                double rightResult = o2.calcDistance(location.getLatitude(),location.getLongitude());
+                return leftResult >rightResult ? 1 : leftResult < rightResult ? -1 : 0 ;
+            }
+        });
+
+        locationAdapter = new LocationAdapter(sortDates);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(locationAdapter);
+
+        currentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapView.setMapCenterPoint(currentMarker.getMapPoint(), true);
+                currentButton.setLiked(true);
+            }
+        });
+
     }
 
     @Override
@@ -295,108 +371,219 @@ mapPoints – 화면에 모두 보여주고자 하는 지도 좌표 리스트*/
 
     }
 
-    double calcDistance(double latitude1, double longitude1,double latitude2, double longitude2){
-        return Math.sqrt(Math.pow(latitude2-latitude1,2)+Math.pow(longitude2-longitude1,2));
+
+    public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
+
+        private ArrayList<Info> infos;
+
+        public LocationAdapter(ArrayList<Info> i) { this.infos = i; }
+
+        public class LocationViewHolder extends RecyclerView.ViewHolder {
+            TextView info;
+            ImageView logo;
+            ImageButton kakaoButton;
+            ConstraintLayout locationLayout;
+
+            public LocationViewHolder(View view) {
+                super(view);
+                info = view.findViewById(R.id.location_info);
+                logo = view.findViewById(R.id.location_logo);
+                kakaoButton = view.findViewById(R.id.button_Kakao);
+                locationLayout = view.findViewById(R.id.location_layout);
+            }
+        }
+
+        @NonNull
+        @Override
+        public LocationViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.location_item, viewGroup, false);
+            LocationViewHolder viewHolder = new LocationViewHolder((view));
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
+            Info info = infos.get(position);
+            holder.info.setText((position + 1) + ". " + info.getName());
+
+            if(info.isKyobo())
+                drawable =getResources().getDrawable(R.drawable.kyobo);
+            else drawable = getResources().getDrawable(R.drawable.ypbooks);
+
+            Glide.with(holder.itemView.getContext()).load(drawable).into(holder.logo);
+            holder.locationLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mapPoint = MapPoint.mapPointWithGeoCoord(info.getLati(), info.getLongi());
+                    mapView.setMapCenterPoint(mapPoint, true);
+                    currentButton.setLiked(false);
+                }
+            });
+            holder.kakaoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = "daummaps://route?sp="+currentMarker.getMapPoint().getMapPointGeoCoord().latitude+","+
+                            currentMarker.getMapPoint().getMapPointGeoCoord().longitude+"&ep="+info.getLati()+","+info.getLongi()+"&by=PUBLICTRANSIT";
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return infos.size();
+        }
     }
 
 
-    public void Kyobo(){
-        kyobodatas.add(new info("광화문", 37.570966, 126.977764));
-        kyobodatas.add(new info("가든파이브", 37.477224, 127.124707));
-        kyobodatas.add(new info("강남",37.503708, 127.024130));
-        kyobodatas.add(new info("동대문", 37.568297, 127.007697));
-        kyobodatas.add(new info("디큐브",37.508690, 126.889474 ));
-        kyobodatas.add(new info("목동",37.528236, 126.874982));
-        kyobodatas.add(new info("서울대",37.459353, 126.950556));
-        kyobodatas.add(new info("수유", 37.638258, 127.026464));
-        kyobodatas.add(new info("영등포",37.517063, 126.902752));
-        kyobodatas.add(new info("은평",37.637047, 126.918337 ));
-        kyobodatas.add(new info("이화여대",37.561393, 126.946774 ));
-        kyobodatas.add(new info("잠실",37.514251, 127.101272));
-        kyobodatas.add(new info("천호",37.540486, 127.124961 ));
-        kyobodatas.add(new info("청량리", 37.580705, 127.047652));
-        kyobodatas.add(new info("합정",37.550056, 126.911926));
-        kyobodatas.add(new info("가천대",37.449507, 127.127715));
-        kyobodatas.add(new info("광교점",37.287488, 127.058179));
-        kyobodatas.add(new info("광교월드스퀘어",37.292577, 127.048151));
-        kyobodatas.add(new info("부천",37.484107, 126.782724));
-        kyobodatas.add(new info("분당점",37.383449, 127.122618));
-        kyobodatas.add(new info("성균관대",37.294057, 126.972508));
-        kyobodatas.add(new info("송도",37.381513, 126.657908));
-        kyobodatas.add(new info("인천",37.446157, 126.700996));
-        kyobodatas.add(new info("일산",37.642948, 126.789933));
-        kyobodatas.add(new info("판교",37.392710, 127.111994));
-        kyobodatas.add(new info("평촌",37.390057, 126.949925));
+    MapView.MapViewEventListener mapViewEventListener = new MapView.MapViewEventListener() {
+        @Override
+        public void onMapViewInitialized(MapView mapView) {
 
-        kyobodatas.add(new info("경성대ㆍ부경대",35.137676, 129.101711));
-        kyobodatas.add(new info("광주상무",35.152176, 126.848947));
-        kyobodatas.add(new info("대구",35.870549, 128.594609));
-        kyobodatas.add(new info("대전",36.352722, 127.379860));
-        kyobodatas.add(new info("반월당",35.866326, 128.590731));
-        kyobodatas.add(new info("부산",35.151895, 129.059608));
-        kyobodatas.add(new info("세종",36.496371, 127.263087));
-        kyobodatas.add(new info("센텀시티",35.169845, 129.131099));
-        kyobodatas.add(new info("울산",35.541277, 129.338702));
-        kyobodatas.add(new info("전북대",35.845790, 127.128100));
-        kyobodatas.add(new info("전주",35.819476, 127.145167));
-        kyobodatas.add(new info("창원",35.223499, 128.680727));
-        kyobodatas.add(new info("천안",36.819233, 127.155275));
-        kyobodatas.add(new info("칠곡",35.943972, 128.562366));
-        kyobodatas.add(new info("포항공대점",36.012868, 129.320553));
-        kyobodatas.add(new info("해운대",35.169914, 129.176013));
+        }
+
+        @Override
+        public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
+
+        }
+
+        @Override
+        public void onMapViewZoomLevelChanged(MapView mapView, int i) {
+
+        }
+
+        @Override
+        public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint) {
+            if(currentButton.isLiked())
+                currentButton.setLiked(false);
+        }
+
+        @Override
+        public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint) {
+
+        }
+
+        @Override
+        public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint) {
+
+        }
+
+        @Override
+        public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint) {
+            if(currentButton.isLiked())
+                currentButton.setLiked(false);
+        }
+
+        @Override
+        public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint) {
+
+        }
+
+        @Override
+        public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
+
+        }
+    };
+
+    public void Kyobo(){
+        kyobodatas.add(new Info("광화문", 37.570966, 126.977764,true));
+        kyobodatas.add(new Info("가든파이브", 37.477224, 127.124707,true));
+        kyobodatas.add(new Info("강남",37.503708, 127.024130,true));
+        kyobodatas.add(new Info("동대문", 37.568297, 127.007697,true));
+        kyobodatas.add(new Info("디큐브",37.508690, 126.889474 ,true));
+        kyobodatas.add(new Info("목동",37.528236, 126.874982,true));
+        kyobodatas.add(new Info("서울대",37.459353, 126.950556,true));
+        kyobodatas.add(new Info("수유", 37.638258, 127.026464,true));
+        kyobodatas.add(new Info("영등포",37.517063, 126.902752,true));
+        kyobodatas.add(new Info("은평",37.637047, 126.918337 ,true));
+        kyobodatas.add(new Info("이화여대",37.561393, 126.946774 ,true));
+        kyobodatas.add(new Info("잠실",37.514251, 127.101272,true));
+        kyobodatas.add(new Info("천호",37.540486, 127.124961 ,true));
+        kyobodatas.add(new Info("청량리", 37.580705, 127.047652,true));
+        kyobodatas.add(new Info("합정",37.550056, 126.911926,true));
+        kyobodatas.add(new Info("가천대",37.449507, 127.127715,true));
+        kyobodatas.add(new Info("광교점",37.287488, 127.058179,true));
+        kyobodatas.add(new Info("광교월드스퀘어",37.292577, 127.048151,true));
+        kyobodatas.add(new Info("부천",37.484107, 126.782724,true));
+        kyobodatas.add(new Info("분당점",37.383449, 127.122618,true));
+        kyobodatas.add(new Info("성균관대",37.294057, 126.972508,true));
+        kyobodatas.add(new Info("송도",37.381513, 126.657908,true));
+        kyobodatas.add(new Info("인천",37.446157, 126.700996,true));
+        kyobodatas.add(new Info("일산",37.642948, 126.789933,true));
+        kyobodatas.add(new Info("판교",37.392710, 127.111994,true));
+        kyobodatas.add(new Info("평촌",37.390057, 126.949925,true));
+
+        kyobodatas.add(new Info("경성대ㆍ부경대",35.137676, 129.101711,true));
+        kyobodatas.add(new Info("광주상무",35.152176, 126.848947,true));
+        kyobodatas.add(new Info("대구",35.870549, 128.594609,true));
+        kyobodatas.add(new Info("대전",36.352722, 127.379860,true));
+        kyobodatas.add(new Info("반월당",35.866326, 128.590731,true));
+        kyobodatas.add(new Info("부산",35.151895, 129.059608,true));
+        kyobodatas.add(new Info("세종",36.496371, 127.263087,true));
+        kyobodatas.add(new Info("센텀시티",35.169845, 129.131099,true));
+        kyobodatas.add(new Info("울산",35.541277, 129.338702,true));
+        kyobodatas.add(new Info("전북대",35.845790, 127.128100,true));
+        kyobodatas.add(new Info("전주",35.819476, 127.145167,true));
+        kyobodatas.add(new Info("창원",35.223499, 128.680727,true));
+        kyobodatas.add(new Info("천안",36.819233, 127.155275,true));
+        kyobodatas.add(new Info("칠곡",35.943972, 128.562366,true));
+        kyobodatas.add(new Info("포항공대점",36.012868, 129.320553,true));
+        kyobodatas.add(new Info("해운대",35.169914, 129.176013,true));
 
 
     }
 
     public void Youngpung(){
 
-        youngpungdatas.add(new info("가산마리오",37.478601, 126.885153 ));
-        youngpungdatas.add(new info("강남역",37.499177, 127.027529));
-        youngpungdatas.add(new info("강남포스코",37.505871, 127.055804));
+        youngpungdatas.add(new Info("가산마리오",37.478601, 126.885153 ));
+        youngpungdatas.add(new Info("강남역",37.499177, 127.027529));
+        youngpungdatas.add(new Info("강남포스코",37.505871, 127.055804));
 
-        youngpungdatas.add(new info("경산이마트",35.834630, 128.720367));
-        youngpungdatas.add(new info("광복롯데",35.097984, 129.036127));
-        youngpungdatas.add(new info("광주터미널",35.160348, 126.879341));
-        youngpungdatas.add(new info("구리롯데아울렛",37.611897, 127.140533));
-        youngpungdatas.add(new info("구미롯데마트",36.113763, 128.365376));
-        youngpungdatas.add(new info("군산롯데아울렛",35.976096, 126.738330));
-        youngpungdatas.add(new info("김포공항롯데",37.566783, 126.802505));
-        youngpungdatas.add(new info("대구대백",35.869901, 128.595839));
-        youngpungdatas.add(new info("대전터미널",36.351442, 127.437320));
-        youngpungdatas.add(new info("마산롯데",35.201495, 128.573422));
+        youngpungdatas.add(new Info("경산이마트",35.834630, 128.720367));
+        youngpungdatas.add(new Info("광복롯데",35.097984, 129.036127));
+        youngpungdatas.add(new Info("광주터미널",35.160348, 126.879341));
+        youngpungdatas.add(new Info("구리롯데아울렛",37.611897, 127.140533));
+        youngpungdatas.add(new Info("구미롯데마트",36.113763, 128.365376));
+        youngpungdatas.add(new Info("군산롯데아울렛",35.976096, 126.738330));
+        youngpungdatas.add(new Info("김포공항롯데",37.566783, 126.802505));
+        youngpungdatas.add(new Info("대구대백",35.869901, 128.595839));
+        youngpungdatas.add(new Info("대전터미널",36.351442, 127.437320));
+        youngpungdatas.add(new Info("마산롯데",35.201495, 128.573422));
 
-        youngpungdatas.add(new info("목포터미널",34.812733, 126.417201));
-        youngpungdatas.add(new info("미아롯데",37.608314, 127.028873));
-        youngpungdatas.add(new info("부산남포",35.098653, 129.029547));
-        youngpungdatas.add(new info("부산대",35.232170, 129.083919));
-        youngpungdatas.add(new info("부산하단",35.106801, 128.966996));
-        youngpungdatas.add(new info("분당서현",37.383023, 127.121429));
-        youngpungdatas.add(new info("분당오리",37.340834, 127.106664));
-        youngpungdatas.add(new info("세종",36.495476, 127.262672));
-        youngpungdatas.add(new info("수원NC",37.250211, 127.019922));
-        youngpungdatas.add(new info("스타필드고양",37.647486, 126.896365));
+        youngpungdatas.add(new Info("목포터미널",34.812733, 126.417201));
+        youngpungdatas.add(new Info("미아롯데",37.608314, 127.028873));
+        youngpungdatas.add(new Info("부산남포",35.098653, 129.029547));
+        youngpungdatas.add(new Info("부산대",35.232170, 129.083919));
+        youngpungdatas.add(new Info("부산하단",35.106801, 128.966996));
+        youngpungdatas.add(new Info("분당서현",37.383023, 127.121429));
+        youngpungdatas.add(new Info("분당오리",37.340834, 127.106664));
+        youngpungdatas.add(new Info("세종",36.495476, 127.262672));
+        youngpungdatas.add(new Info("수원NC",37.250211, 127.019922));
+        youngpungdatas.add(new Info("스타필드고양",37.647486, 126.896365));
 
-        youngpungdatas.add(new info("스타필드시티위례",37.479884, 127.148427));
-        youngpungdatas.add(new info("스타필드코엑스몰",37.511582, 127.059597));
-        youngpungdatas.add(new info("스타필드하남",37.545743, 127.224034));
-        youngpungdatas.add(new info("신림포도몰",37.483992, 126.930185));
-        youngpungdatas.add(new info("여의도IFC몰",37.525992, 126.925829));
-        youngpungdatas.add(new info("왕십리역",37.562171, 127.037923));
-        youngpungdatas.add(new info("용산아이파크몰",37.528867, 126.964055));
-        youngpungdatas.add(new info("위례",37.472917, 127.142830));
-        youngpungdatas.add(new info("유성",36.358754, 127.344112));
-        youngpungdatas.add(new info("의정부신세계",37.735403, 127.046987));
+        youngpungdatas.add(new Info("스타필드시티위례",37.479884, 127.148427));
+        youngpungdatas.add(new Info("스타필드코엑스몰",37.511582, 127.059597));
+        youngpungdatas.add(new Info("스타필드하남",37.545743, 127.224034));
+        youngpungdatas.add(new Info("신림포도몰",37.483992, 126.930185));
+        youngpungdatas.add(new Info("여의도IFC몰",37.525992, 126.925829));
+        youngpungdatas.add(new Info("왕십리역",37.562171, 127.037923));
+        youngpungdatas.add(new Info("용산아이파크몰",37.528867, 126.964055));
+        youngpungdatas.add(new Info("위례",37.472917, 127.142830));
+        youngpungdatas.add(new Info("유성",36.358754, 127.344112));
+        youngpungdatas.add(new Info("의정부신세계",37.735403, 127.046987));
 
-        youngpungdatas.add(new info("인천스퀘어원",37.442585, 126.702508));
-        youngpungdatas.add(new info("인천터미널",37.442585, 126.702508));
-        youngpungdatas.add(new info("전주터미널",35.834641, 127.128749));
-        youngpungdatas.add(new info("종각종로",37.569824, 126.982259));
-        youngpungdatas.add(new info("죽전이마트",37.325775, 127.109630));
-        youngpungdatas.add(new info("진주",35.164465, 128.127278));
-        youngpungdatas.add(new info("천안불당",36.813416, 127.105776));
-        youngpungdatas.add(new info("청주",36.626746, 127.431979));
-        youngpungdatas.add(new info("포항남구",36.012756, 129.348911));
-        youngpungdatas.add(new info("홍대",37.556942, 126.923369));
+        youngpungdatas.add(new Info("인천스퀘어원",37.442585, 126.702508));
+        youngpungdatas.add(new Info("인천터미널",37.442585, 126.702508));
+        youngpungdatas.add(new Info("전주터미널",35.834641, 127.128749));
+        youngpungdatas.add(new Info("종각종로",37.569824, 126.982259));
+        youngpungdatas.add(new Info("죽전이마트",37.325775, 127.109630));
+        youngpungdatas.add(new Info("진주",35.164465, 128.127278));
+        youngpungdatas.add(new Info("천안불당",36.813416, 127.105776));
+        youngpungdatas.add(new Info("청주",36.626746, 127.431979));
+        youngpungdatas.add(new Info("포항남구",36.012756, 129.348911));
+        youngpungdatas.add(new Info("홍대",37.556942, 126.923369));
 
     }
 }
