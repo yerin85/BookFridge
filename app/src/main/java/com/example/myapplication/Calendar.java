@@ -200,6 +200,8 @@ public class  Calendar extends Fragment {
                         if(textArr.length()!=0){
                             textArr = textArr.substring(1);
                             textView.setText(textArr);
+                        }else{
+                            textView.setText("");
                         }
                     }
                 });
