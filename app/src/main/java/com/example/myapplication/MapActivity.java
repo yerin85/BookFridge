@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -46,6 +48,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Map;
+
+import dmax.dialog.SpotsDialog;
 
 
 public class MapActivity extends AppCompatActivity implements MapView.CurrentLocationEventListener, LocationListener {
@@ -72,16 +78,23 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
     LocationAdapter locationAdapter;
     LikeButton currentButton;
     Drawable drawable;
+
+    AlertDialog alertDialog;
+    Hashtable<String,MapPOIItem> markerTable;
+
     public class Info {
-        String name; //매장명
-        double lati; //위도
-        double longi; //경도
-        boolean kyobo; //교보:1,영풍 0
+        private String name; //매장명
+        private double lati; //위도
+        private double longi; //경도
+        private boolean kyobo; //교보:1,영풍 0
+        private boolean stock;
+
         Info(String name, double lati, double longi){   //영풍기본셋
             this.name = name;
             this.lati = lati;
             this.longi = longi;
             this.kyobo = false;
+            this.stock = false;
         }
 
         Info(String name, double lati, double longi,boolean kyobo){
@@ -89,6 +102,7 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
             this.lati = lati;
             this.longi = longi;
             this.kyobo = kyobo;
+            this.stock = false;
         }
         double calcDistance(double latitude, double longitude){
             return Math.sqrt(Math.pow(latitude-lati,2)+Math.pow(longitude-longi,2));
@@ -109,6 +123,14 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         public boolean isKyobo() {
             return kyobo;
         }
+
+        public boolean isStock() {
+            return stock;
+        }
+
+        public void setStock(boolean stock) {
+            this.stock = stock;
+        }
     }
 
     ArrayList<Info> kyobodatas= new ArrayList<>();
@@ -127,18 +149,21 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         kyoboUrl = "http://www.kyobobook.co.kr/prom/2013/general/StoreStockTable.jsp?barcode=" + isbn13 + "&ejkgb=KOR";
         ypSearchUrl = "http://www.ypbooks.co.kr/search.yp?query=" + isbn13 + "&collection=books_kor";
 
+        alertDialog = new SpotsDialog.Builder().setContext(this).setTheme(R.style.spotsDialog_custom).build();
+        markerTable = new Hashtable<>();
+
         JSoupAsyncTask jSoupAsyncTask = new JSoupAsyncTask();
         jSoupAsyncTask.execute();
 
-        mapView = new MapView(this);
+        mapView = new MapView(MapActivity.this);
         mapViewContainer = findViewById(R.id.map_view);
-        mapView.setCurrentLocationEventListener(this);
+        mapView.setCurrentLocationEventListener(MapActivity.this);
         mapView.setMapViewEventListener(mapViewEventListener);  //지도 이동,확대,축소 or 사용자 클릭,드래그등 이벤트 감지
         currentMarker = new MapPOIItem();
 
         recyclerView = findViewById(R.id.location_list); //거리순 리스트뷰
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(MapActivity.this,DividerItemDecoration.VERTICAL));
 
         currentButton = findViewById(R.id.button_current);
         currentButton.setLiked(false);
@@ -152,6 +177,7 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         }
 
         mapViewContainer.addView(mapView);
+
     }
 
     @Override
@@ -161,12 +187,18 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
             mapPoint = MapPoint.mapPointWithGeoCoord(kyobodatas.get(i).lati, kyobodatas.get(i).longi);
             marker = new MapPOIItem();
             if(kyoboCount.size() != 0){
+                if(Integer.parseInt(kyoboCount.get(i))==0)
+                    kyobodatas.get(i).setStock(false);
+                else
+                    kyobodatas.get(i).setStock(true);
                 marker.setItemName(kyobodatas.get(i).name +" " + kyoboCount.get(i)+"권");
             }else{
+                kyobodatas.get(i).setStock(false);
                 marker.setItemName(kyobodatas.get(i).name + ": 해당 책을 판매하지않습니다.");
             }
             marker.setMarkerType(MapPOIItem.MarkerType.BluePin);
             marker.setMapPoint(mapPoint);
+            markerTable.put(kyobodatas.get(i).name,marker);
             mapView.addPOIItem(marker);
             mapView.selectPOIItem(marker,true);
         }
@@ -175,13 +207,19 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
             mapPoint = MapPoint.mapPointWithGeoCoord(youngpungdatas.get(i).lati, youngpungdatas.get(i).longi);
             marker = new MapPOIItem();
             if(youngpungCount.size() != 0){
+                if(Integer.parseInt(youngpungCount.get(i))==0)
+                    youngpungdatas.get(i).setStock(false);
+                else
+                    youngpungdatas.get(i).setStock(true);
                 marker.setItemName(youngpungdatas.get(i).name +" " + youngpungCount.get(i)+"권");
             }else{
+                youngpungdatas.get(i).setStock(false);
                 marker.setItemName(youngpungdatas.get(i).name+ ": 해당 책을 판매하지않습니다.");
 
             }
             marker.setMarkerType(MapPOIItem.MarkerType.YellowPin);
             marker.setMapPoint(mapPoint);
+            markerTable.put(youngpungdatas.get(i).name,marker);
             mapView.addPOIItem(marker);
             mapView.selectPOIItem(marker,true);
         }
@@ -195,11 +233,13 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         mapView.addPOIItem(currentMarker);
         mapView.selectPOIItem(currentMarker,true);
 
-        /*
-        거리순 찾기-슬라이딩 패널
-         */
+        if(sortDates!=null)
+            sortDates.clear();
+        //서점 정렬
         sortDates.addAll(kyobodatas);
         sortDates.addAll(youngpungdatas);
+        sortDates.removeIf(n->(!n.isStock()));
+
         Collections.sort(sortDates, new Comparator<Info>() {
             @Override
             public int compare(Info o1, Info o2) {
@@ -211,12 +251,15 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
 
         locationAdapter = new LocationAdapter(sortDates);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         recyclerView.setAdapter(locationAdapter);
 
+        //현재 위치 이동
         currentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mapView.setMapCenterPoint(currentMarker.getMapPoint(), true);
+                mapView.selectPOIItem(currentMarker,true);
                 currentButton.setLiked(true);
             }
         });
@@ -252,7 +295,9 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
                     for (Element l : e.getElementsByTag("td")) {
                         //l.text()가 순서대로 광화문~해운대까지 재고 수량
                         temp.append(l.text() + " ");
+                        if(!l.text().isEmpty())
                         kyoboCount.add(l.text());
+
                     }
                     System.out.println("교보문고 재고: " + temp.toString());
                     temp.delete(0, temp.length());
@@ -280,6 +325,13 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
 
         @Override
         protected void onPostExecute(Void result) {
+            alertDialog.dismiss();
+        }
+        @Override
+        protected  void onPreExecute(){
+            super.onPreExecute();
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialog.show();
 
         }
     }
@@ -416,6 +468,7 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
                 public void onClick(View v) {
                     mapPoint = MapPoint.mapPointWithGeoCoord(info.getLati(), info.getLongi());
                     mapView.setMapCenterPoint(mapPoint, true);
+                    mapView.selectPOIItem(markerTable.get(info.getName()),true);
                     currentButton.setLiked(false);
                 }
             });
