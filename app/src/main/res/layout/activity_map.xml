@@ -85,7 +85,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- 스크롤 해서 보여줄 부분은 listview 또는 custom listview 또는 recyclerview를 사용 -->
+            <!-- 스크롤 해서 보여줄 부분은 recyclerview를 사용 -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/location_list"
                 android:layout_width="match_parent"

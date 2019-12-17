@@ -24,6 +24,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,7 +88,7 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         private double lati; //위도
         private double longi; //경도
         private boolean kyobo; //교보:1,영풍 0
-        private boolean stock;
+        private boolean stock; //재고 여부
 
         Info(String name, double lati, double longi){   //영풍기본셋
             this.name = name;
@@ -152,31 +153,44 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         alertDialog = new SpotsDialog.Builder().setContext(this).setTheme(R.style.spotsDialog_custom_map).build();
         markerTable = new Hashtable<>();
 
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
         JSoupAsyncTask jSoupAsyncTask = new JSoupAsyncTask();
         jSoupAsyncTask.execute();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(alertDialog.isShowing())
+                    alertDialog.dismiss();
 
-        mapView = new MapView(MapActivity.this);
-        mapViewContainer = findViewById(R.id.map_view);
-        mapView.setCurrentLocationEventListener(MapActivity.this);
-        mapView.setMapViewEventListener(mapViewEventListener);  //지도 이동,확대,축소 or 사용자 클릭,드래그등 이벤트 감지
-        currentMarker = new MapPOIItem();
 
-        recyclerView = findViewById(R.id.location_list); //거리순 리스트뷰
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(MapActivity.this,DividerItemDecoration.VERTICAL));
+                mapView = new MapView(MapActivity.this);
+                mapViewContainer = findViewById(R.id.map_view);
+                mapView.setCurrentLocationEventListener(MapActivity.this);
+                mapView.setMapViewEventListener(mapViewEventListener);  //지도 이동,확대,축소 or 사용자 클릭,드래그등 이벤트 감지
+                currentMarker = new MapPOIItem();
 
-        currentButton = findViewById(R.id.button_current);
-        currentButton.setLiked(false);
-        Kyobo(); //교보문고 매장정보저장
-        Youngpung(); //영풍문고 매장정보저장
+                recyclerView = findViewById(R.id.location_list); //거리순 리스트뷰
+                recyclerView.setHasFixedSize(true);
+                recyclerView.addItemDecoration(new DividerItemDecoration(MapActivity.this,DividerItemDecoration.VERTICAL));
 
-        if (checkLocationServicesStatus()) {//gps 허용아면
-            checkPermission();
-        } else {
-            locationServiceSetting();
-        }
+                currentButton = findViewById(R.id.button_current);
+                currentButton.setLiked(false);
+                Kyobo(); //교보문고 매장정보저장
+                Youngpung(); //영풍문고 매장정보저장
 
-        mapViewContainer.addView(mapView);
+
+                if (checkLocationServicesStatus()) {//gps 허용아면
+                    checkPermission();
+                } else {
+                    locationServiceSetting();
+                }
+
+                mapViewContainer.addView(mapView);
+
+            }
+        }, 4000);
 
     }
 
@@ -251,7 +265,6 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
 
         locationAdapter = new LocationAdapter(sortDates);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         recyclerView.setAdapter(locationAdapter);
 
         //현재 위치 이동
@@ -325,15 +338,17 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
 
         @Override
         protected void onPostExecute(Void result) {
-            alertDialog.dismiss();
+         //   alertDialog.dismiss();
+
         }
         @Override
         protected  void onPreExecute(){
             super.onPreExecute();
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            alertDialog.show();
+           // alertDialog.show();
 
         }
+
     }
 
     boolean checkLocationServicesStatus() {

@@ -243,7 +243,7 @@ public class HomeMenu extends Fragment {
                         password = passwordEditText.getText().toString();
                         id = idEditText.getText().toString();
                         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        alertDialog.show();
+
                         JSoupAsyncTask jSoupAsyncTask = new JSoupAsyncTask();
                         jSoupAsyncTask.execute();
                     }
@@ -362,6 +362,11 @@ public class HomeMenu extends Fragment {
         String query;
         ArrayList<BookItem> bookItemsParse = new ArrayList<BookItem>();
         @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            alertDialog.show();
+        }
+        @Override
         protected Void doInBackground(Void... voids) {
             try {
                 if(selectLibrary==0) {
@@ -449,7 +454,7 @@ public class HomeMenu extends Fragment {
                             getContext().startActivity(intent);
                         }
                     }
-                }, 1500);
+                }, 1000);
             }
         }
     }
