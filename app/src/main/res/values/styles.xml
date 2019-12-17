@@ -27,7 +27,14 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
     <style name="spotsDialog_custom" parent="android:Theme.DeviceDefault.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
-        <item name="DialogTitleText">@string/loading_message</item>
+        <item name="DialogTitleText">@string/ocr_message</item>
+        <item name="DialogSpotColor">@android:color/holo_blue_dark</item>
+        <item name="DialogSpotCount">5</item>
+        <item name ="android:background">@drawable/round_corners_white</item>
+    </style>
+    <style name="spotsDialog_custom_map" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
+        <item name="DialogTitleText">@string/map_message</item>
         <item name="DialogSpotColor">@android:color/holo_blue_dark</item>
         <item name="DialogSpotCount">5</item>
         <item name ="android:background">@drawable/round_corners_white</item>

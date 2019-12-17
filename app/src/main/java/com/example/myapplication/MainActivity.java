@@ -227,14 +227,16 @@ public class MainActivity extends AppCompatActivity {
         //알람시간 calendar에 set해주기
 
         calendar.set(calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE), 0 );
-        calendar.add(Calendar.DATE,1); //주석-1주단위
-        //주석-분단위로 반복       calendar.add(Calendar.MINUTE,1);
+        //calendar.add(Calendar.DATE,1); //주석-1주단위
+        //주석-분단위로 반복
+        calendar.add(Calendar.MINUTE,1);
         Date currentDateTime = calendar.getTime();
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분  ss초", Locale.getDefault()).format(currentDateTime);
         System.out.println("캘린더"+date_text);
         //알람 예약
-        //주석-분단위로 반복 am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_FIFTEEN_MINUTES/15, sender);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY*7, sender); //주석-1ㅜ단위
+        //주석-분단위로 반복
+        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_FIFTEEN_MINUTES/15, sender);
+        //am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY*7, sender); //주석-1ㅜ단위
 
     }
     public void showDialog() {

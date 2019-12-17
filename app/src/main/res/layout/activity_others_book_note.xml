@@ -131,20 +131,18 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <EditText
+    <TextView
         android:id="@+id/others_note"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="20dp"
         android:background="@drawable/round_corners_gray"
-        android:breakStrategy="high_quality"
-        android:cursorVisible="true"
-        android:gravity="top"
+        android:fadeScrollbars="false"
         android:padding="10dp"
+        android:scrollbars="vertical"
         android:textSize="16dp"
         app:layout_constraintBottom_toTopOf="@+id/others_note_buttons_layout"
-        app:layout_constraintTop_toBottomOf="@+id/others_note_book_layout" />
-
+        app:layout_constraintTop_toBottomOf="@+id/others_note_book_layout"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/others_note_buttons_layout"

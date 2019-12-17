@@ -149,7 +149,7 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         kyoboUrl = "http://www.kyobobook.co.kr/prom/2013/general/StoreStockTable.jsp?barcode=" + isbn13 + "&ejkgb=KOR";
         ypSearchUrl = "http://www.ypbooks.co.kr/search.yp?query=" + isbn13 + "&collection=books_kor";
 
-        alertDialog = new SpotsDialog.Builder().setContext(this).setTheme(R.style.spotsDialog_custom).build();
+        alertDialog = new SpotsDialog.Builder().setContext(this).setTheme(R.style.spotsDialog_custom_map).build();
         markerTable = new Hashtable<>();
 
         JSoupAsyncTask jSoupAsyncTask = new JSoupAsyncTask();
