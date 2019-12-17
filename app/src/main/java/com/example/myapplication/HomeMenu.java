@@ -158,7 +158,7 @@ public class HomeMenu extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home_menu, container, false);
 
         userInfo = (UserInfo) getArguments().getSerializable("userInfo");
-        alertDialog = new SpotsDialog.Builder().setContext(getContext()).setTheme(R.style.spotsDialog_custom).build();
+        alertDialog = new SpotsDialog.Builder().setContext(getContext()).setTheme(R.style.spotsDialog_custom_library).build();
 
         displayMetrics = v.getResources().getDisplayMetrics();
         dpWidth = displayMetrics.widthPixels / displayMetrics.density;
@@ -243,7 +243,6 @@ public class HomeMenu extends Fragment {
                         password = passwordEditText.getText().toString();
                         id = idEditText.getText().toString();
                         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
                         JSoupAsyncTask jSoupAsyncTask = new JSoupAsyncTask();
                         jSoupAsyncTask.execute();
                     }
@@ -400,6 +399,7 @@ public class HomeMenu extends Fragment {
                             .cookies(cookies)
                             .get();
                     elements = doc.select("div.delivery-list tbody");
+
                 }
 
                 for (Element e : elements) {
@@ -408,26 +408,55 @@ public class HomeMenu extends Fragment {
                     else  if(selectLibrary==1 &&e.getElementsByTag("td")!=null)
                     query = e.getElementsByTag("td").get(1).toString().split("<br>")[0].substring(4);
                     else break;
+
                     if(parseFail)break;
                     Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl("http://www.aladin.co.kr/ttb/api/")
                             .addConverterFactory(GsonConverterFactory.create())
                             .build();
                     ServiceApi serviceAladin = retrofit.create(ServiceApi.class);
-                    serviceAladin.itemSearch("Keyword", query, 1, 1).enqueue(new Callback<AladinResponse>() {
-                        @Override
-                        public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
-                            AladinResponse responseResult = response.body();
-                            ArrayList<BookItem> bookItems = responseResult.getBookItems();
-                            BookItem bookItem = bookItems.get(0);
-                            bookItemsParse.add(bookItem);
-                            System.out.println("확인"+bookItem.getTitle());
+
+                    if(selectLibrary==0){
+                        serviceAladin.itemSearch("Keyword", query, 1, 1).enqueue(new Callback<AladinResponse>() {
+                            @Override
+                            public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                                AladinResponse responseResult = response.body();
+                                ArrayList<BookItem> bookItems = responseResult.getBookItems();
+                                if(!bookItems.isEmpty()){
+                                    BookItem bookItem = bookItems.get(0);
+                                    bookItemsParse.add(bookItem);
+                                    System.out.println("확인" + bookItem.getTitle());
+                                }
+                            }
+                            @Override
+                            public void onFailure(Call<AladinResponse> call, Throwable t) {
+                                Toast.makeText(getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }else {
+                        for (Element l : e.getElementsByTag("tr")) {
+                            if (l.text().contains("취소")) continue;
+                            query = l.getElementsByTag("td").get(1).toString().split("<br>")[0].substring(4);
+                            System.out.println(query);
+                            serviceAladin.itemSearch("Keyword", query, 1, 1).enqueue(new Callback<AladinResponse>() {
+                                @Override
+                                public void onResponse(Call<AladinResponse> call, Response<AladinResponse> response) {
+                                    AladinResponse responseResult = response.body();
+                                    ArrayList<BookItem> bookItems = responseResult.getBookItems();
+                                    if (!bookItems.isEmpty()) {
+                                        BookItem bookItem = bookItems.get(0);
+                                        bookItemsParse.add(bookItem);
+                                        System.out.println("확인" + bookItem.getTitle());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<AladinResponse> call, Throwable t) {
+                                    Toast.makeText(getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                        @Override
-                        public void onFailure(Call<AladinResponse> call, Throwable t) {
-                            Toast.makeText(getContext(), "Fail", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -454,7 +483,7 @@ public class HomeMenu extends Fragment {
                             getContext().startActivity(intent);
                         }
                     }
-                }, 1000);
+                }, 3000);
             }
         }
     }

@@ -28,6 +28,7 @@
     <string name="image_preview_header">Preview:</string>
     <string name="ocr_message">이미지를 업로드하는 중입니다...</string>
     <string name="map_message">재고 검색 중입니다...</string>
+    <string name="library_message">구매목록을 불러오는 중입니다...</string>
 
     <string name="dialog_select_prompt">Choose a picture</string>
     <string name="dialog_select_camera">Camera</string>

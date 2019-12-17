@@ -39,4 +39,11 @@
         <item name="DialogSpotCount">5</item>
         <item name ="android:background">@drawable/round_corners_white</item>
     </style>
+    <style name="spotsDialog_custom_library" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Small</item>
+        <item name="DialogTitleText">@string/library_message</item>
+        <item name="DialogSpotColor">@android:color/holo_blue_dark</item>
+        <item name="DialogSpotCount">5</item>
+        <item name ="android:background">@drawable/round_corners_white</item>
+    </style>
 </resources>
