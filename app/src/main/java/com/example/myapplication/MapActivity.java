@@ -154,43 +154,10 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
         markerTable = new Hashtable<>();
 
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        alertDialog.show();
 
         JSoupAsyncTask jSoupAsyncTask = new JSoupAsyncTask();
         jSoupAsyncTask.execute();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(alertDialog.isShowing())
-                    alertDialog.dismiss();
 
-
-                mapView = new MapView(MapActivity.this);
-                mapViewContainer = findViewById(R.id.map_view);
-                mapView.setCurrentLocationEventListener(MapActivity.this);
-                mapView.setMapViewEventListener(mapViewEventListener);  //지도 이동,확대,축소 or 사용자 클릭,드래그등 이벤트 감지
-                currentMarker = new MapPOIItem();
-
-                recyclerView = findViewById(R.id.location_list); //거리순 리스트뷰
-                recyclerView.setHasFixedSize(true);
-                recyclerView.addItemDecoration(new DividerItemDecoration(MapActivity.this,DividerItemDecoration.VERTICAL));
-
-                currentButton = findViewById(R.id.button_current);
-                currentButton.setLiked(false);
-                Kyobo(); //교보문고 매장정보저장
-                Youngpung(); //영풍문고 매장정보저장
-
-
-                if (checkLocationServicesStatus()) {//gps 허용아면
-                    checkPermission();
-                } else {
-                    locationServiceSetting();
-                }
-
-                mapViewContainer.addView(mapView);
-
-            }
-        }, 4000);
 
     }
 
@@ -338,14 +305,40 @@ public class MapActivity extends AppCompatActivity implements MapView.CurrentLoc
 
         @Override
         protected void onPostExecute(Void result) {
-         //   alertDialog.dismiss();
+            if(alertDialog.isShowing())
+                alertDialog.dismiss();
+
+
+            mapView = new MapView(MapActivity.this);
+            mapViewContainer = findViewById(R.id.map_view);
+            mapView.setCurrentLocationEventListener(MapActivity.this);
+            mapView.setMapViewEventListener(mapViewEventListener);  //지도 이동,확대,축소 or 사용자 클릭,드래그등 이벤트 감지
+            currentMarker = new MapPOIItem();
+
+            recyclerView = findViewById(R.id.location_list); //거리순 리스트뷰
+            recyclerView.setHasFixedSize(true);
+            recyclerView.addItemDecoration(new DividerItemDecoration(MapActivity.this,DividerItemDecoration.VERTICAL));
+
+            currentButton = findViewById(R.id.button_current);
+            currentButton.setLiked(false);
+            Kyobo(); //교보문고 매장정보저장
+            Youngpung(); //영풍문고 매장정보저장
+
+
+            if (checkLocationServicesStatus()) {//gps 허용아면
+                checkPermission();
+            } else {
+                locationServiceSetting();
+            }
+
+            mapViewContainer.addView(mapView);
 
         }
         @Override
         protected  void onPreExecute(){
             super.onPreExecute();
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-           // alertDialog.show();
+            alertDialog.show();
 
         }
 
